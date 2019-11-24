@@ -1,0 +1,46 @@
+{
+    "name": "barley-break",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Barley-break game",
+    "main": "index.js",
+    "scripts": {
+        "start": "webpack-dev-server --colors --hot --inline --progress --config \"./webpack.config.js\"",
+        "build": "webpack --mode production",
+        "test": "react-scripts test --env=jsdom",
+        "lint": "tslint --project ."
+    },
+    "author": {
+        "name": "Roman Varkuta",
+        "email": "roman.varkuta@gmail.com",
+        "url": "https://www.linkedin.com/in/roman-varkuta-431a9b169/"
+    },
+    "license": "ISC",
+    "dependencies": {
+        "@babel/core": "^7.7.4",
+        "@babel/plugin-transform-runtime": "^7.7.4",
+        "@babel/polyfill": "^7.7.0",
+        "@babel/preset-env": "^7.7.4",
+        "@babel/preset-react": "^7.7.4",
+        "bootstrap": "^4.3.1",
+        "popper.js": "^1.16.0",
+        "react": "^16.12.0",
+        "react-dom": "^16.12.0",
+        "react-scripts": "^3.2.0"
+    },
+    "devDependencies": {
+        "@types/react": "^16.9.13",
+        "@types/react-dom": "^16.9.4",
+        "awesome-typescript-loader": "^5.2.1",
+        "babel-loader": "^8.0.6",
+        "css-loader": "^3.2.0",
+        "html-webpack-plugin": "^3.2.0",
+        "react-hot-loader": "^4.12.18",
+        "source-map-loader": "^0.2.4",
+        "style-loader": "^1.0.0",
+        "typescript": "^3.7.2",
+        "webpack": "^4.41.2",
+        "webpack-cli": "^3.3.10",
+        "webpack-dev-server": "^3.9.0"
+    }
+}

@@ -11,6 +11,7 @@ export default class App extends React.Component<{}, AppState> {
         matrix: [],
         settings: {
             size: 3,
+            availableSizes: [2, 3, 4, 5, 6, 7]
         },
         moves: 0,
         run: false,
@@ -44,24 +45,17 @@ export default class App extends React.Component<{}, AppState> {
                 }}
             />
             <div className="container-fluid m-2">
-                <button
-                    type={"button"}
-                    className={"btn btn-dark btn-sm col-4 m-1"}
-                    onClickCapture={() => {
-                        this.handleReset(3);
-                    }}
-                >
-                    3
-                </button>
-                <button
-                    type={"button"}
-                    className={"btn btn-dark btn-sm col-4 m-1"}
-                    onClickCapture={() => {
-                        this.handleReset(4);
-                    }}
-                >
-                    4
-                </button>
+                {this.state.settings.availableSizes.map((size: number) => {
+                    return <button
+                        type={"button"}
+                        className={"btn btn-dark btn-sm col-2"}
+                        onClickCapture={() => {
+                            this.handleReset(size);
+                        }}
+                    >
+                        {size}
+                    </button>
+                })}
             </div>
             <Container
                 size={this.windowSize}
@@ -101,6 +95,7 @@ export default class App extends React.Component<{}, AppState> {
             time: 0,
             settings: {
                 size: size,
+                availableSizes: this.state.settings.availableSizes
             },
             relativeSize: this.windowSize / size,
         });

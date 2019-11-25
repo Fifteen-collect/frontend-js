@@ -27,7 +27,7 @@ export default class Block extends React.Component<BlockProps> {
                         width: `${relativeSize}px`,
                         height: `${relativeSize}px`,
                         flex: `0 0 ${relativeSize}px`,
-                        fontSize: '4rem',
+                        fontSize: '3rem',
                         cursor: 'pointer'
                     }}
         >

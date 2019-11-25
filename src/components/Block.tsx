@@ -6,7 +6,7 @@ export interface BlockProps {
     size: number,
     clickHandler: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void,
     touchHandler: (event: React.TouchEvent<HTMLDivElement>) => void,
-    solved: boolean,
+    color: string,
 }
 
 export const BlockPropTypes: { [T in keyof BlockProps]: PropTypes.Validator<any> } = {
@@ -14,7 +14,7 @@ export const BlockPropTypes: { [T in keyof BlockProps]: PropTypes.Validator<any>
     size: PropTypes.number,
     clickHandler: PropTypes.func,
     touchHandler: PropTypes.func,
-    solved: PropTypes.bool
+    color: PropTypes.string,
 };
 
 export default class Block extends React.Component<BlockProps> {
@@ -22,12 +22,9 @@ export default class Block extends React.Component<BlockProps> {
 
     public render(): React.ReactNode {
         const relativeSize = Math.floor(this.props.size);
-        const bgColor = !this.isEmpty()
-            ? (this.props.solved ? 'bg-success' : 'bg-dark')
-            : 'bg-light';
 
         return <div
-            className={`noselect border rounded text-light d-flex align-items-center justify-content-center ${bgColor}`}
+            className={`noselect border rounded text-light d-flex align-items-center justify-content-center`}
             onMouseDown={this.props.clickHandler}
             onTouchStart={this.props.touchHandler}
             style={{
@@ -35,14 +32,11 @@ export default class Block extends React.Component<BlockProps> {
                 height: `${relativeSize}px`,
                 flex: `0 0 ${relativeSize}px`,
                 fontSize: '3rem',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                backgroundColor: this.props.color,
             }}
         >
             {this.props.value}
         </div>
-    }
-
-    protected isEmpty(): boolean {
-        return this.props.value === 0;
     }
 }

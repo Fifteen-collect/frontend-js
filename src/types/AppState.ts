@@ -1,12 +1,17 @@
-export interface State {
-    matrix?: number[][],
+import {Method} from "./Method";
+import Bar from "../components/Bar";
+
+export interface AppState {
+    matrix?: Bar[][],
     buffer?: {
         x: number,
         y: number,
     },
     settings?: {
         size: number,
-        availableSizes: number[]
+        method: Method,
+        availableSizes: number[],
+        availableMethods: Method[]
     },
     moves: number,
     run: boolean,

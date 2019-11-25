@@ -10,11 +10,24 @@
 
 .main {
     height: 100vh;
-    margin: 0;
     flex-direction: column;
+    flex-wrap: nowrap;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .inner-content {
     height: 10vh;
     width: 100vw;
+}
+
+.block-container {
+    margin-left: -15px;
+    margin-right: auto;
+}
+
+@media (min-width: 1140px) {
+    .block-container {
+        margin-left: auto;
+    }
 }

@@ -3,7 +3,6 @@ import {ReactNode} from "react";
 import Block from "./Block";
 import {State as AppState} from "./App/State";
 import randomInt from "random-int";
-import {Direction} from "../enums/Direction";
 
 export default class App extends React.Component<{}, AppState> {
     public readonly state: AppState = {

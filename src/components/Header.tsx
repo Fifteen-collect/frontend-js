@@ -19,7 +19,10 @@ export class Header extends React.Component<HeaderProps> {
     render() {
         return <div className={"container-fluid inner-content"}>
             <div className="row p-2 d-flex align-items-center">
-                <button className={"btn btn-primary btn-sm col-4"} onClick={this.props.resetHandler}>
+                <button
+                    className={"btn btn-primary btn-sm col-4"}
+                    onClickCapture={this.props.resetHandler}
+                >
                     Reset
                 </button>
                 <div className={"text-center col-4"}>

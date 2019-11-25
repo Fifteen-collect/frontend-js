@@ -5,7 +5,8 @@ export interface State {
         y: number,
     },
     settings?: {
-        size: number
+        size: number,
+        availableSizes: number[]
     },
     moves: number,
     run: boolean,

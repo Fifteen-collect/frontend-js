@@ -7,13 +7,22 @@ import {Header} from "./Header";
 import {Container} from "./Container";
 import {Settings} from "./Settings";
 import {Method} from "../types/Method";
+import {Color} from "../types/Color";
+import Bar from "./Bar";
+import {scheme} from '../types/ColorScheme';
 
 export default class App extends React.Component<{}, AppState> {
     public readonly state: AppState = {
         matrix: [],
         settings: {
             size: 3,
-            availableSizes: [2, 3, 4, 5, 6, 7]
+            method: Method.DEFAULT,
+            availableSizes: [2, 3, 4, 5, 6, 7],
+            availableMethods: [
+                Method.DEFAULT,
+                Method.LAYERED,
+                Method.FRIDGE,
+            ]
         },
         moves: 0,
         run: false,
@@ -23,7 +32,6 @@ export default class App extends React.Component<{}, AppState> {
             y: 0,
         },
         solved: false,
-        method: Method.DEFAULT
     };
     private readonly windowSize: number;
 
@@ -31,7 +39,7 @@ export default class App extends React.Component<{}, AppState> {
         super(props);
 
         const {matrix, buffer} = this.randomizeMatrix(
-            App.createDefaultMatrix(this.state.settings.size),
+            App.createDefaultMatrix(this.state.settings.size, this.state.settings.method),
             {
                 x: this.state.settings.size - 1,
                 y: this.state.settings.size - 1,
@@ -52,21 +60,37 @@ export default class App extends React.Component<{}, AppState> {
                     return this.handleReset(this.state.settings.size);
                 }}
             />
-            <Settings sizes={this.state.settings.availableSizes} resetHandler={this.handleReset.bind(this)}/>
+            <Settings
+                methods={this.state.settings.availableMethods}
+                sizes={this.state.settings.availableSizes}
+                resetHandler={this.handleReset.bind(this)}
+                changeMethodHandler={(method: Method) => {
+                    let {settings, matrix} = this.state;
+
+                    matrix.forEach((row: Bar[]) => {
+                        row.forEach((block: Bar) => {
+                            block.Color = scheme[method][this.state.settings.size][block.X][block.Y];
+                        })
+                    });
+                    settings.method = method;
+                    this.setState({
+                        matrix: matrix,
+                        settings: settings,
+                    })
+                }}
+            />
             <Container
                 size={this.windowSize}
             >
-                {this.state.matrix.map((row: number[], currentRow: number) => {
-                    return row.map((block: number, currentColumn: number) => {
+                {this.state.matrix.map((row: Bar[], currentRow: number) => {
+                    return row.map((block: Bar, currentColumn: number) => {
                         return <Block
                             key={`${currentRow}-${currentColumn}`}
-                            value={block}
+                            value={block.Value}
                             size={this.state.relativeSize}
-                            color={
-                                this.state.matrix[currentRow][currentColumn] === 0
-                                    ? '#f8f9fa'
-                                    : '#343a40'
-                            }
+                            color={!this.state.solved
+                                ? this.state.matrix[currentRow][currentColumn].Color
+                                : (block.Value !== 0 ? Color.SUCCESS : block.Color)}
                             clickHandler={() => {
                                 this.blockEventHandler(currentRow, currentColumn);
                             }}
@@ -82,11 +106,14 @@ export default class App extends React.Component<{}, AppState> {
 
     handleReset(size: number): void {
         const {matrix, buffer} = this.randomizeMatrix(
-            App.createDefaultMatrix(size),
+            App.createDefaultMatrix(size, this.state.settings.method),
             {x: size - 1, y: size - 1}
         );
+        const {settings} = this.state;
 
+        settings.size = size;
         clearInterval(this.state.timerInterval);
+
         this.setState({
             matrix: matrix,
             buffer: buffer,
@@ -95,10 +122,7 @@ export default class App extends React.Component<{}, AppState> {
             timerInterval: undefined,
             time: 0,
             solved: false,
-            settings: {
-                size: size,
-                availableSizes: this.state.settings.availableSizes
-            },
+            settings: settings,
             relativeSize: this.windowSize / size,
         });
     }
@@ -124,20 +148,21 @@ export default class App extends React.Component<{}, AppState> {
                             solved: true,
                         })
                     } else {
-                        time += 1;
+                        time += 10;
 
                         this.setState({
                             time: time,
                         })
                     }
-                }, 1);
+                }, 10);
             }
 
             if (this.state.solved) {
                 return;
             }
+            let temp = matrix[y][x];
             matrix[y][x] = current;
-            matrix[rowIndex][blockIndex] = 0;
+            matrix[rowIndex][blockIndex] = temp;
             buffer = {x: blockIndex, y: rowIndex};
             moves++;
             run = true;
@@ -152,17 +177,17 @@ export default class App extends React.Component<{}, AppState> {
         });
     }
 
-    static createDefaultMatrix(size: number): number[][] {
-        let matrix: number[][] = [];
+    static createDefaultMatrix(size: number, method: Method): Bar[][] {
+        let matrix: Bar[][] = [];
 
         for (let i = 0, count = 1; i < size; i++) {
             matrix.push([]);
 
             for (let j = 0; j < size; j++) {
                 if (i + 1 === size && j + 1 === size) {
-                    matrix[i][j] = 0;
+                    matrix[i][j] = new Bar(Color.LIGHT, 0, size - 1, size - 1);
                 } else {
-                    matrix[i][j] = count++;
+                    matrix[i][j] = new Bar(scheme[method][size][i][j], count++, i, j);
                 }
             }
         }
@@ -170,26 +195,26 @@ export default class App extends React.Component<{}, AppState> {
         return matrix;
     }
 
-    static isBlockCanMove(matrix: number[][], y: number, x: number): boolean {
+    static isBlockCanMove(matrix: Bar[][], y: number, x: number): boolean {
         return App.isBlockCanMoveUp(matrix, y, x)
             || App.isBlockCanMoveDown(matrix, y, x)
             || App.isBlockCanMoveLeft(matrix, y, x)
             || App.isBlockCanMoveRight(matrix, y, x);
     }
 
-    static isBlockCanMoveUp(matrix: number[][], y: number, x: number): boolean {
+    static isBlockCanMoveUp(matrix: Bar[][], y: number, x: number): boolean {
         return !App.isBlockOnUpEdge(y) && App.isBlockEmpty(matrix, y - 1, x);
     }
 
-    static isBlockCanMoveDown(matrix: number[][], y: number, x: number): boolean {
+    static isBlockCanMoveDown(matrix: Bar[][], y: number, x: number): boolean {
         return !App.isBlockOnDownEdge(y, matrix.length) && App.isBlockEmpty(matrix, y + 1, x);
     }
 
-    static isBlockCanMoveLeft(matrix: number[][], y: number, x: number): boolean {
+    static isBlockCanMoveLeft(matrix: Bar[][], y: number, x: number): boolean {
         return !App.isBlockOnLeftEdge(x) && App.isBlockEmpty(matrix, y, x - 1);
     }
 
-    static isBlockCanMoveRight(matrix: number[][], y: number, x: number): boolean {
+    static isBlockCanMoveRight(matrix: Bar[][], y: number, x: number): boolean {
         return !App.isBlockOnRightEdge(x, matrix.length) && App.isBlockEmpty(matrix, y, x + 1);
     }
 
@@ -209,8 +234,8 @@ export default class App extends React.Component<{}, AppState> {
         return x === size - 1;
     }
 
-    static isBlockEmpty(matrix: number[][], y: number, x: number): boolean {
-        return matrix[y][x] === 0;
+    static isBlockEmpty(matrix: Bar[][], y: number, x: number): boolean {
+        return matrix[y][x].Value === 0;
     }
 
     isMatrixSolved(): boolean {
@@ -218,10 +243,10 @@ export default class App extends React.Component<{}, AppState> {
             for (let col = 0; col < this.state.matrix[row].length; col++) {
                 ++counterValue;
 
-                if (this.state.matrix[row][col] === 0) {
+                if (this.state.matrix[row][col].Value === 0) {
                     continue;
                 }
-                if (this.state.matrix[row][col] !== counterValue) {
+                if (this.state.matrix[row][col].Value !== counterValue) {
                     return false;
                 }
             }
@@ -230,14 +255,15 @@ export default class App extends React.Component<{}, AppState> {
         return true;
     }
 
-    randomizeMatrix(matrix: number[][], buffer: { x: number, y: number }) {
+    randomizeMatrix(matrix: Bar[][], buffer: { x: number, y: number }) {
         for (let move = 0; move < 50000; move++) {
             let rndX = randomInt(matrix.length - 1);
             let rndY = randomInt(matrix.length - 1);
 
             if (App.isBlockCanMove(matrix, rndY, rndX)) {
+                let temp = matrix[buffer.y][buffer.x];
                 matrix[buffer.y][buffer.x] = matrix[rndY][rndX];
-                matrix[rndY][rndX] = 0;
+                matrix[rndY][rndX] = temp;
                 buffer.y = rndY;
                 buffer.x = rndX;
             }

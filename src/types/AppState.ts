@@ -1,14 +1,17 @@
 import {Method} from "./Method";
+import Bar from "../components/Bar";
 
 export interface AppState {
-    matrix?: number[][],
+    matrix?: Bar[][],
     buffer?: {
         x: number,
         y: number,
     },
     settings?: {
         size: number,
-        availableSizes: number[]
+        method: Method,
+        availableSizes: number[],
+        availableMethods: Method[]
     },
     moves: number,
     run: boolean,
@@ -16,5 +19,4 @@ export interface AppState {
     time: number | 0;
     relativeSize?: number,
     solved: boolean,
-    method: Method,
 }

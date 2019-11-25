@@ -1,11 +1,12 @@
 import * as React from "react";
 import {ReactNode} from "react";
 import Block from "./Block";
-import {State as AppState} from "./App/State";
+import {AppState} from "../types/AppState";
 import randomInt from "random-int";
 import {Header} from "./Header";
 import {Container} from "./Container";
 import {Settings} from "./Settings";
+import {Method} from "../types/Method";
 
 export default class App extends React.Component<{}, AppState> {
     public readonly state: AppState = {
@@ -22,6 +23,7 @@ export default class App extends React.Component<{}, AppState> {
             y: 0,
         },
         solved: false,
+        method: Method.DEFAULT
     };
     private readonly windowSize: number;
 
@@ -60,7 +62,11 @@ export default class App extends React.Component<{}, AppState> {
                             key={`${currentRow}-${currentColumn}`}
                             value={block}
                             size={this.state.relativeSize}
-                            solved={this.state.solved}
+                            color={
+                                this.state.matrix[currentRow][currentColumn] === 0
+                                    ? '#f8f9fa'
+                                    : '#343a40'
+                            }
                             clickHandler={() => {
                                 this.blockEventHandler(currentRow, currentColumn);
                             }}
@@ -118,13 +124,13 @@ export default class App extends React.Component<{}, AppState> {
                             solved: true,
                         })
                     } else {
-                        time += 10;
+                        time += 1;
 
                         this.setState({
                             time: time,
                         })
                     }
-                }, 10);
+                }, 1);
             }
 
             if (this.state.solved) {

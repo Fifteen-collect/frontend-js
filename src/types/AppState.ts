@@ -1,4 +1,6 @@
-export interface State {
+import {Method} from "./Method";
+
+export interface AppState {
     matrix?: number[][],
     buffer?: {
         x: number,
@@ -14,4 +16,5 @@ export interface State {
     time: number | 0;
     relativeSize?: number,
     solved: boolean,
+    method: Method,
 }

@@ -4,13 +4,15 @@ import * as PropTypes from "prop-types";
 export interface BlockProps {
     value: number,
     size: number,
-    onClickHandler: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+    clickHandler: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void,
+    touchHandler: (event: React.TouchEvent<HTMLDivElement>) => void,
 }
 
 export const BlockPropTypes: { [T in keyof BlockProps]: PropTypes.Validator<any> } = {
     value: PropTypes.number,
     size: PropTypes.number,
-    onClickHandler: PropTypes.func,
+    clickHandler: PropTypes.func,
+    touchHandler: PropTypes.func,
 };
 
 export default class Block extends React.Component<BlockProps> {
@@ -19,12 +21,14 @@ export default class Block extends React.Component<BlockProps> {
     public render(): React.ReactNode {
         const relativeSize = Math.floor(this.props.size);
         return <div className={`noselect border rounded text-light d-flex align-items-center justify-content-center ${!this.isEmpty() ? 'bg-dark' : 'bg-light'}`}
-                    onClick={this.props.onClickHandler}
+                    onMouseDown={this.props.clickHandler}
+                    onTouchStart={this.props.touchHandler}
                     style={{
                         width: `${relativeSize}px`,
                         height: `${relativeSize}px`,
                         flex: `0 0 ${relativeSize}px`,
                         fontSize: '4rem',
+                        cursor: 'pointer'
                     }}
         >
             {this.props.value}

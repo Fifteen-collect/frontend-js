@@ -10,7 +10,7 @@ export default class App extends React.Component<{}, AppState> {
     public readonly state: AppState = {
         matrix: [],
         settings: {
-            size: 4,
+            size: 3,
         },
         moves: 0,
         run: false,

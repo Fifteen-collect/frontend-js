@@ -110,7 +110,7 @@ export default class App extends React.Component<{}, AppState> {
                             run: run,
                         })
                     } else {
-                        time += 0.01;
+                        time += 10;
 
                         this.setState({
                             time: time,
@@ -214,7 +214,7 @@ export default class App extends React.Component<{}, AppState> {
     }
 
     randomizeMatrix(matrix: number[][], buffer: { x: number, y: number }) {
-        for (let move = 0; move < 10000; move++) {
+        for (let move = 0; move < 50000; move++) {
             let rndX = randomInt(matrix.length - 1);
             let rndY = randomInt(matrix.length - 1);
 

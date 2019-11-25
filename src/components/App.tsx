@@ -5,6 +5,7 @@ import {State as AppState} from "./App/State";
 import randomInt from "random-int";
 import {Header} from "./Header";
 import {Container} from "./Container";
+import {Settings} from "./Settings";
 
 export default class App extends React.Component<{}, AppState> {
     public readonly state: AppState = {
@@ -44,20 +45,7 @@ export default class App extends React.Component<{}, AppState> {
                     return this.handleReset(this.state.settings.size);
                 }}
             />
-            <div className="container-fluid m-2">
-                {this.state.settings.availableSizes.map((size: number) => {
-                    return <button
-                        type={"button"}
-                        key={size}
-                        className={"btn btn-dark btn-sm col-2"}
-                        onClickCapture={() => {
-                            this.handleReset(size);
-                        }}
-                    >
-                        {size}
-                    </button>
-                })}
-            </div>
+            <Settings sizes={this.state.settings.availableSizes} resetHandler={this.handleReset.bind(this)}/>
             <Container
                 size={this.windowSize}
             >

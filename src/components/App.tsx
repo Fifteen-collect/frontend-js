@@ -48,6 +48,7 @@ export default class App extends React.Component<{}, AppState> {
                 {this.state.settings.availableSizes.map((size: number) => {
                     return <button
                         type={"button"}
+                        key={size}
                         className={"btn btn-dark btn-sm col-2"}
                         onClickCapture={() => {
                             this.handleReset(size);

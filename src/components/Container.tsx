@@ -17,7 +17,6 @@ export class Container extends React.Component<ContainerProps> {
                     style={{
                         width: `${this.props.size}px`,
                         height: `${this.props.size}px`,
-                        margin: '-7.5px',
                     }}
         >
             {this.props.children}

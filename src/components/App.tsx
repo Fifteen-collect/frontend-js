@@ -3,6 +3,8 @@ import {ReactNode} from "react";
 import Block from "./Block";
 import {State as AppState} from "./App/State";
 import randomInt from "random-int";
+import {Header} from "./Header";
+import {Container} from "./Container";
 
 export default class App extends React.Component<{}, AppState> {
     public readonly state: AppState = {
@@ -37,40 +39,27 @@ export default class App extends React.Component<{}, AppState> {
 
     render(): ReactNode {
         return <div className={"container-fluid row d-flex justify-content-center main"}>
-            <div className={"container-fluid inner-content"}>
-                <div className="row p-2 d-flex align-items-center">
-                    <button className={"btn btn-primary btn-sm col-4"} onClick={() => {
-                        let {matrix, buffer} = this.randomizeMatrix(
-                            App.createDefaultMatrix(this.state.settings.size),
-                            {x: 0, y: 0}
-                        );
+            <Header
+                time={this.state.time}
+                moves={this.state.moves}
+                resetHandler={() => {
+                    let {matrix, buffer} = this.randomizeMatrix(
+                        App.createDefaultMatrix(this.state.settings.size),
+                        {x: 0, y: 0}
+                    );
 
-                        clearInterval(this.state.timerInterval);
-                        this.setState({
-                            matrix: matrix,
-                            buffer: buffer,
-                            moves: 0,
-                            run: false,
-                            timerInterval: undefined,
-                            time: 0,
-                        });
-                    }}>
-                        Reset
-                    </button>
-                    <div className={"text-center col-4"}>
-                        <b>{this.state.time.toFixed(2)}</b>
-                    </div>
-                    <div className={"text-center col-4"}>
-                        <b>Moves: {this.state.moves}</b>
-                    </div>
-                </div>
-            </div>
-            <div className={"row d-flex justify-content-center"}
-                 style={{
-                     width: `${this.windowSize}px`,
-                     height: `${this.windowSize}px`,
-                 }}
-            >
+                    clearInterval(this.state.timerInterval);
+                    this.setState({
+                        matrix: matrix,
+                        buffer: buffer,
+                        moves: 0,
+                        run: false,
+                        timerInterval: undefined,
+                        time: 0,
+                    });
+                }}
+            />
+            <Container size={this.windowSize}>
                 {this.state.matrix.map((row: number[], currentRow: number) => {
                     return row.map((block: number, currentColumn: number) => {
                         return <Block
@@ -86,7 +75,7 @@ export default class App extends React.Component<{}, AppState> {
                         />
                     })
                 })}
-            </div>
+            </Container>
         </div>
     }
 
@@ -107,7 +96,7 @@ export default class App extends React.Component<{}, AppState> {
 
                         this.setState({
                             timerInterval: timerInterval,
-                            run: false,
+                            run: run,
                         })
                     } else {
                         time += 0.01;

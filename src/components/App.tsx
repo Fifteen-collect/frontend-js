@@ -45,6 +45,10 @@ export default class App extends React.Component<{}, AppState> {
                     return this.handleReset(this.state.settings.size);
                 }}
             />
+            <div className="container-fluid">
+                <button className={"btn btn-dark btn-sm col-4 m-1"} onClick={() => {this.handleReset(3);}}>3</button>
+                <button className={"btn btn-dark btn-sm col-4 m-1"} onClick={() => {this.handleReset(4);}}>4</button>
+            </div>
             <Container
                 size={this.windowSize}
             >
@@ -64,8 +68,6 @@ export default class App extends React.Component<{}, AppState> {
                     })
                 })}
             </Container>
-            <button className={"btn btn-dark btn-sm col-4 m-1"} onClick={() => {this.handleReset(3);}}>3</button>
-            <button className={"btn btn-dark btn-sm col-4 m-1"} onClick={() => {this.handleReset(4);}}>4</button>
         </div>
     }
 

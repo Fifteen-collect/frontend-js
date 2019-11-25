@@ -18,12 +18,12 @@ export default class Block extends React.Component<BlockProps> {
 
     public render(): React.ReactNode {
         const relativeSize = Math.floor(this.props.size);
-        return <div className={`border rounded text-light d-flex align-items-center justify-content-center ${!this.isEmpty() ? 'bg-dark' : 'bg-light'}`}
+        return <div className={`noselect border rounded text-light d-flex align-items-center justify-content-center ${!this.isEmpty() ? 'bg-dark' : 'bg-light'}`}
                     onClick={this.props.onClickHandler}
                     style={{
-                        maxWidth: `${relativeSize}%`,
-                        height: `${relativeSize}vw`,
-                        flex: `0 0 ${relativeSize}%`,
+                        width: `${relativeSize}px`,
+                        height: `${relativeSize}px`,
+                        flex: `0 0 ${relativeSize}px`,
                         fontSize: '4rem',
                     }}
         >

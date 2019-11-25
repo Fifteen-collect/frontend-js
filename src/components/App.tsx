@@ -1,31 +1,26 @@
 import * as React from "react";
 import {ReactNode} from "react";
 import Block from "./Block";
-
-export interface AppState {
-    matrix?: number[][],
-    buffer?: {
-        x: number,
-        y: number,
-    },
-    settings?: {
-        size: number
-    },
-    moves: number,
-}
+import {State as AppState} from "./App/State";
 
 export default class App extends React.Component<{}, AppState> {
     public readonly state: AppState = {
         matrix: [],
         settings: {
-            size: 4
+            size: 3,
         },
         moves: 0,
+        run: false,
+        time: 0,
     };
+    private readonly windowSize: number;
+    private readonly relativeSize: number;
 
     constructor(props: {}) {
         super(props);
 
+        this.windowSize = innerWidth > innerHeight ? (innerHeight - innerHeight / 10) : innerWidth;
+        this.relativeSize = this.windowSize / this.state.settings.size;
         this.state.matrix = App.createDefaultMatrix(this.state.settings.size);
         this.state.buffer = {
             x: 0,
@@ -34,35 +29,95 @@ export default class App extends React.Component<{}, AppState> {
     }
 
     render(): ReactNode {
-        return <div className={"container-fluid"} style={{height: "100vh"}}>
-            <div className={"text-center"} style={{height: "10vh"}}>
-                Moves: {this.state.moves}
+        return <div className={"container-fluid row d-flex justify-content-center"}
+                    style={{
+                        height: "100vh",
+                        margin: "0"
+                    }}
+        >
+            <div className={"container-fluid"} style={{height: "10vh", width: "100vw"}}>
+                <div className="row p-2 d-flex align-items-center">
+                    <button className={"btn btn-primary btn-sm col-4"} onClick={() => {
+                        const matrix = App.createDefaultMatrix(this.state.settings.size);
+
+
+                        clearInterval(this.state.timerInterval);
+                        this.setState({
+                            matrix: matrix,
+                            moves: 0,
+                            buffer: {
+                                x: 0,
+                                y: 0,
+                            },
+                            run: false,
+                            timerInterval: undefined,
+                            time: 0,
+                        });
+                    }}>
+                        Reset
+                    </button>
+                    <div className={"text-center col-4"}>
+                        <b>{this.state.time.toFixed(2)}</b>
+                    </div>
+                    <div className={"text-center col-4"}>
+                        <b>Moves: {this.state.moves}</b>
+                    </div>
+                </div>
             </div>
-            <div className={"row d-flex justify-content-center"}>
+            <div className={"row d-flex justify-content-center"}
+                 style={{
+                     width: `${this.windowSize}px`,
+                     height: `${this.windowSize}px`,
+                 }}
+            >
                 {this.state.matrix.map((row: number[], currentRow: number) => {
                     return row.map((block: number, currentColumn: number) => {
                         return <Block
                             key={`${currentRow}-${currentColumn}`}
                             value={block}
-                            size={100 / this.state.settings.size}
+                            size={this.relativeSize}
                             onClickHandler={(): void => {
-                                let {matrix, moves} = this.state;
+                                let {matrix, moves, run, timerInterval, time} = this.state;
                                 let current = matrix[currentRow][currentColumn];
                                 let buffer = this.state.buffer;
 
                                 if (this.isBlockCanMove(currentRow, currentColumn)) {
                                     const {x, y} = buffer;
 
+                                    if (!run) {
+                                        timerInterval = setInterval((): void => {
+                                            if (this.isMatrixSolved()) {
+                                                clearInterval(timerInterval);
+                                                timerInterval = undefined;
+                                                run = false;
+
+                                                this.setState({
+                                                    timerInterval: timerInterval,
+                                                    run: false,
+                                                })
+                                            } else {
+                                                time += 0.01;
+
+                                                this.setState({
+                                                    time: time,
+                                                })
+                                            }
+                                        }, 10);
+                                    }
+
                                     matrix[y][x] = current;
                                     matrix[currentRow][currentColumn] = 0;
                                     buffer = {x: currentColumn, y: currentRow};
                                     moves++;
+                                    run = true;
                                 }
 
                                 this.setState({
                                     matrix: matrix,
                                     buffer: buffer,
                                     moves: moves,
+                                    timerInterval: timerInterval,
+                                    run: run,
                                 });
                             }}
                         />
@@ -127,5 +182,22 @@ export default class App extends React.Component<{}, AppState> {
 
     isBlockEmpty(y: number, x: number): boolean {
         return this.state.matrix[y][x] === 0;
+    }
+
+    isMatrixSolved(): boolean {
+        for (let row = 0, counterValue = 0; row < this.state.matrix.length; row++) {
+            for (let col = 0; col < this.state.matrix[row].length; col++) {
+                ++counterValue;
+
+                if (this.state.matrix[row][col] === 0) {
+                    continue;
+                }
+                if (this.state.matrix[row][col] !== counterValue) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 }

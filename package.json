@@ -15,6 +15,14 @@
         "email": "roman.varkuta@gmail.com",
         "url": "https://www.linkedin.com/in/roman-varkuta-431a9b169/"
     },
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:KartaviK/barley-break"
+    },
+    "bugs": {
+        "url": "https://github.com/KartaviK/barley-break/issues"
+    },
+    "homepage": "https://github.com/KartaviK/barley-break#readme",
     "license": "ISC",
     "dependencies": {
         "@babel/core": "^7.7.4",

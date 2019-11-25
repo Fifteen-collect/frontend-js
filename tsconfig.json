@@ -4,7 +4,6 @@
         "jsx": "react",
         "target": "esnext",
         "module": "esnext",
-        "outDir": "dist",
         "noImplicitAny": true,
         "removeComments": true,
         "preserveConstEnums": true,

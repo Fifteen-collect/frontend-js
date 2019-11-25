@@ -7,7 +7,7 @@ module.exports = {
     devServer: {
         host: 'localhost',
         publicPath: "/",
-        contentBase: "./build",
+        contentBase: "./src",
         watchContentBase: true,
         noInfo: false,
         hot: true,
@@ -19,7 +19,7 @@ module.exports = {
         }
     },
     output: {
-        path: path.join(__dirname, "/build"),
+        path: path.join(__dirname, "/"),
         filename: "bundle.js",
     },
     resolve: {

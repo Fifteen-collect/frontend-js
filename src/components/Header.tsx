@@ -36,7 +36,7 @@ export class Header extends React.Component<HeaderProps> {
                         {time.milliseconds}
                     </b>
                 </div>
-                <div className={"text-center col-4"}>
+                <div className={"text-center col-5"}>
                     <b>Moves: {this.props.moves}</b>
                 </div>
             </div>

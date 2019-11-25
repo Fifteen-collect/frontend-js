@@ -25,19 +25,17 @@ export default class App extends React.Component<{}, AppState> {
     constructor(props: {}) {
         super(props);
 
-        let {matrix, buffer} = App.randomizeMatrix(
-            App.createDefaultMatrix(this.state.settings.size),
-            this.state.buffer
-        );
-
-        this.state.buffer = buffer;
-        this.state.matrix = matrix;
+        this.state.buffer = {
+            x: this.state.settings.size - 1,
+            y: this.state.settings.size - 1,
+        };
+        this.state.matrix = App.createDefaultMatrix(this.state.settings.size);
         this.windowSize = innerWidth > innerHeight ? (innerHeight - innerHeight / 10) : innerWidth;
         this.state.relativeSize = this.windowSize / this.state.settings.size;
     }
 
     render(): ReactNode {
-        return <div className={"container-fluid row d-flex justify-content-center main"}>
+        return <div className={"container-fluid row main"}>
             <Header
                 time={this.state.time}
                 moves={this.state.moves}
@@ -45,9 +43,25 @@ export default class App extends React.Component<{}, AppState> {
                     return this.handleReset(this.state.settings.size);
                 }}
             />
-            <div className="container-fluid">
-                <button className={"btn btn-dark btn-sm col-4 m-1"} onClick={() => {this.handleReset(3);}}>3</button>
-                <button className={"btn btn-dark btn-sm col-4 m-1"} onClick={() => {this.handleReset(4);}}>4</button>
+            <div className="container-fluid m-2">
+                <button
+                    type={"button"}
+                    className={"btn btn-dark btn-sm col-4 m-1"}
+                    onClickCapture={() => {
+                        this.handleReset(3);
+                    }}
+                >
+                    3
+                </button>
+                <button
+                    type={"button"}
+                    className={"btn btn-dark btn-sm col-4 m-1"}
+                    onClickCapture={() => {
+                        this.handleReset(4);
+                    }}
+                >
+                    4
+                </button>
             </div>
             <Container
                 size={this.windowSize}
@@ -72,9 +86,9 @@ export default class App extends React.Component<{}, AppState> {
     }
 
     handleReset(size: number): void {
-        const {matrix, buffer} = App.randomizeMatrix(
+        const {matrix, buffer} = this.randomizeMatrix(
             App.createDefaultMatrix(size),
-            {x: 0, y: 0}
+            {x: size - 1, y: size - 1}
         );
 
         clearInterval(this.state.timerInterval);
@@ -140,11 +154,15 @@ export default class App extends React.Component<{}, AppState> {
     static createDefaultMatrix(size: number): number[][] {
         let matrix: number[][] = [];
 
-        for (let i = 0, count = 0; i < size; i++) {
+        for (let i = 0, count = 1; i < size; i++) {
             matrix.push([]);
 
             for (let j = 0; j < size; j++) {
-                matrix[i][j] = count++;
+                if (i + 1 === size && j + 1 === size) {
+                    matrix[i][j] = 0;
+                } else {
+                    matrix[i][j] = count++;
+                }
             }
         }
 
@@ -211,12 +229,12 @@ export default class App extends React.Component<{}, AppState> {
         return true;
     }
 
-    static randomizeMatrix(matrix: number[][], buffer: { x: number, y: number }) {
+    randomizeMatrix(matrix: number[][], buffer: { x: number, y: number }) {
         for (let move = 0; move < 10000; move++) {
             let rndX = randomInt(matrix.length - 1);
             let rndY = randomInt(matrix.length - 1);
 
-            if (this.isBlockCanMove(matrix, rndY, rndX)) {
+            if (App.isBlockCanMove(matrix, rndY, rndX)) {
                 matrix[buffer.y][buffer.x] = matrix[rndY][rndX];
                 matrix[rndY][rndX] = 0;
                 buffer.y = rndY;

@@ -43,7 +43,7 @@ export default class App extends React.Component<{}, AppState> {
                     <button className={"btn btn-primary btn-sm col-4"} onClick={() => {
                         let {matrix, buffer} = this.randomizeMatrix(
                             App.createDefaultMatrix(this.state.settings.size),
-                            this.state.buffer
+                            {x: 0, y: 0}
                         );
 
                         clearInterval(this.state.timerInterval);
@@ -167,7 +167,7 @@ export default class App extends React.Component<{}, AppState> {
     }
 
     isBlockOnUpEdge(y: number): boolean {
-        return y <= 0;
+        return y === 0;
     }
 
     isBlockOnDownEdge(y: number): boolean {
@@ -175,7 +175,7 @@ export default class App extends React.Component<{}, AppState> {
     }
 
     isBlockOnLeftEdge(x: number): boolean {
-        return x <= 0;
+        return x === 0;
     }
 
     isBlockOnRightEdge(x: number): boolean {
@@ -204,39 +204,15 @@ export default class App extends React.Component<{}, AppState> {
     }
 
     randomizeMatrix(matrix: number[][], buffer: {x: number, y: number}) {
-        for (let move = 0; move < 20; move++) {
-            let randomDirection = randomInt(4);
+        for (let move = 0; move < 10000; move++) {
+            let rndX = randomInt(2);
+            let rndY = randomInt(2);
 
-            console.log(randomDirection, matrix, buffer);
-            switch (randomDirection) {
-                case Direction.UP:
-                    if (this.isBlockCanMoveUp(matrix, buffer.y + 1, buffer.x)) {
-                        matrix[buffer.y][buffer.x] = matrix[buffer.y + 1][buffer.x];
-                        matrix[buffer.y + 1][buffer.x] = 0;
-                        buffer.y += 1;
-                    }
-                    break;
-                case Direction.RIGHT:
-                    if (this.isBlockCanMoveRight(matrix, buffer.y, buffer.x + 1)) {
-                        matrix[buffer.y][buffer.x] = matrix[buffer.y][buffer.x + 1];
-                        matrix[buffer.y][buffer.x + 1] = 0;
-                        buffer.x += 1;
-                    }
-                    break;
-                case Direction.DOWN:
-                    if (this.isBlockCanMoveDown(matrix, buffer.y - 1, buffer.x)) {
-                        matrix[buffer.y][buffer.x] = matrix[buffer.y - 1][buffer.x];
-                        matrix[buffer.y - 1][buffer.x] = 0;
-                        buffer.y -= 1;
-                    }
-                    break;
-                case Direction.LEFT:
-                    if (this.isBlockCanMoveLeft(matrix, buffer.y, buffer.x - 1)) {
-                        matrix[buffer.y][buffer.x] = matrix[buffer.y][buffer.x - 1];
-                        matrix[buffer.y][buffer.x - 1] = 0;
-                        buffer.x -= 1;
-                    }
-                    break;
+            if (this.isBlockCanMove(matrix, rndY, rndX)) {
+                matrix[buffer.y][buffer.x] = matrix[rndY][rndX];
+                matrix[rndY][rndX] = 0;
+                buffer.y = rndY;
+                buffer.x = rndX;
             }
         }
 

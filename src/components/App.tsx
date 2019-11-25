@@ -2,6 +2,8 @@ import * as React from "react";
 import {ReactNode} from "react";
 import Block from "./Block";
 import {State as AppState} from "./App/State";
+import randomInt from "random-int";
+import {Direction} from "../enums/Direction";
 
 export default class App extends React.Component<{}, AppState> {
     public readonly state: AppState = {
@@ -12,6 +14,10 @@ export default class App extends React.Component<{}, AppState> {
         moves: 0,
         run: false,
         time: 0,
+        buffer: {
+            x: 0,
+            y: 0,
+        }
     };
     private readonly windowSize: number;
     private readonly relativeSize: number;
@@ -19,36 +25,32 @@ export default class App extends React.Component<{}, AppState> {
     constructor(props: {}) {
         super(props);
 
+        let {matrix, buffer} = this.randomizeMatrix(
+            App.createDefaultMatrix(this.state.settings.size),
+            this.state.buffer
+        );
+
+        this.state.buffer = buffer;
+        this.state.matrix = matrix;
         this.windowSize = innerWidth > innerHeight ? (innerHeight - innerHeight / 10) : innerWidth;
         this.relativeSize = this.windowSize / this.state.settings.size;
-        this.state.matrix = App.createDefaultMatrix(this.state.settings.size);
-        this.state.buffer = {
-            x: 0,
-            y: 0
-        };
     }
 
     render(): ReactNode {
-        return <div className={"container-fluid row d-flex justify-content-center"}
-                    style={{
-                        height: "100vh",
-                        margin: "0"
-                    }}
-        >
-            <div className={"container-fluid"} style={{height: "10vh", width: "100vw"}}>
+        return <div className={"container-fluid row d-flex justify-content-center main"}>
+            <div className={"container-fluid inner-content"}>
                 <div className="row p-2 d-flex align-items-center">
                     <button className={"btn btn-primary btn-sm col-4"} onClick={() => {
-                        const matrix = App.createDefaultMatrix(this.state.settings.size);
-
+                        let {matrix, buffer} = this.randomizeMatrix(
+                            App.createDefaultMatrix(this.state.settings.size),
+                            this.state.buffer
+                        );
 
                         clearInterval(this.state.timerInterval);
                         this.setState({
                             matrix: matrix,
+                            buffer: buffer,
                             moves: 0,
-                            buffer: {
-                                x: 0,
-                                y: 0,
-                            },
                             run: false,
                             timerInterval: undefined,
                             time: 0,
@@ -81,7 +83,7 @@ export default class App extends React.Component<{}, AppState> {
                                 let current = matrix[currentRow][currentColumn];
                                 let buffer = this.state.buffer;
 
-                                if (this.isBlockCanMove(currentRow, currentColumn)) {
+                                if (this.isBlockCanMove(matrix, currentRow, currentColumn)) {
                                     const {x, y} = buffer;
 
                                     if (!run) {
@@ -141,31 +143,31 @@ export default class App extends React.Component<{}, AppState> {
         return matrix;
     }
 
-    isBlockCanMove(y: number, x: number): boolean {
-        return this.isBlockCanMoveUp(y, x)
-            || this.isBlockCanMoveDown(y, x)
-            || this.isBlockCanMoveLeft(y, x)
-            || this.isBlockCanMoveRight(y, x);
+    isBlockCanMove(matrix: number[][], y: number, x: number): boolean {
+        return this.isBlockCanMoveUp(matrix, y, x)
+            || this.isBlockCanMoveDown(matrix, y, x)
+            || this.isBlockCanMoveLeft(matrix, y, x)
+            || this.isBlockCanMoveRight(matrix, y, x);
     }
 
-    isBlockCanMoveUp(y: number, x: number): boolean {
-        return !this.isBlockOnUpEdge(y) && this.isBlockEmpty(y - 1, x);
+    isBlockCanMoveUp(matrix: number[][], y: number, x: number): boolean {
+        return !this.isBlockOnUpEdge(y) && this.isBlockEmpty(matrix, y - 1, x);
     }
 
-    isBlockCanMoveDown(y: number, x: number): boolean {
-        return !this.isBlockOnDownEdge(y) && this.isBlockEmpty(y + 1, x);
+    isBlockCanMoveDown(matrix: number[][], y: number, x: number): boolean {
+        return !this.isBlockOnDownEdge(y) && this.isBlockEmpty(matrix, y + 1, x);
     }
 
-    isBlockCanMoveLeft(y: number, x: number): boolean {
-        return !this.isBlockOnLeftEdge(x) && this.isBlockEmpty(y, x - 1);
+    isBlockCanMoveLeft(matrix: number[][], y: number, x: number): boolean {
+        return !this.isBlockOnLeftEdge(x) && this.isBlockEmpty(matrix, y, x - 1);
     }
 
-    isBlockCanMoveRight(y: number, x: number): boolean {
-        return !this.isBlockOnRightEdge(x) && this.isBlockEmpty(y, x + 1);
+    isBlockCanMoveRight(matrix: number[][], y: number, x: number): boolean {
+        return !this.isBlockOnRightEdge(x) && this.isBlockEmpty(matrix, y, x + 1);
     }
 
     isBlockOnUpEdge(y: number): boolean {
-        return y === 0;
+        return y <= 0;
     }
 
     isBlockOnDownEdge(y: number): boolean {
@@ -173,15 +175,15 @@ export default class App extends React.Component<{}, AppState> {
     }
 
     isBlockOnLeftEdge(x: number): boolean {
-        return x === 0;
+        return x <= 0;
     }
 
     isBlockOnRightEdge(x: number): boolean {
         return x === this.state.settings.size - 1;
     }
 
-    isBlockEmpty(y: number, x: number): boolean {
-        return this.state.matrix[y][x] === 0;
+    isBlockEmpty(matrix: number[][], y: number, x: number): boolean {
+        return matrix[y][x] === 0;
     }
 
     isMatrixSolved(): boolean {
@@ -199,5 +201,48 @@ export default class App extends React.Component<{}, AppState> {
         }
 
         return true;
+    }
+
+    randomizeMatrix(matrix: number[][], buffer: {x: number, y: number}) {
+        for (let move = 0; move < 20; move++) {
+            let randomDirection = randomInt(4);
+
+            console.log(randomDirection, matrix, buffer);
+            switch (randomDirection) {
+                case Direction.UP:
+                    if (this.isBlockCanMoveUp(matrix, buffer.y + 1, buffer.x)) {
+                        matrix[buffer.y][buffer.x] = matrix[buffer.y + 1][buffer.x];
+                        matrix[buffer.y + 1][buffer.x] = 0;
+                        buffer.y += 1;
+                    }
+                    break;
+                case Direction.RIGHT:
+                    if (this.isBlockCanMoveRight(matrix, buffer.y, buffer.x + 1)) {
+                        matrix[buffer.y][buffer.x] = matrix[buffer.y][buffer.x + 1];
+                        matrix[buffer.y][buffer.x + 1] = 0;
+                        buffer.x += 1;
+                    }
+                    break;
+                case Direction.DOWN:
+                    if (this.isBlockCanMoveDown(matrix, buffer.y - 1, buffer.x)) {
+                        matrix[buffer.y][buffer.x] = matrix[buffer.y - 1][buffer.x];
+                        matrix[buffer.y - 1][buffer.x] = 0;
+                        buffer.y -= 1;
+                    }
+                    break;
+                case Direction.LEFT:
+                    if (this.isBlockCanMoveLeft(matrix, buffer.y, buffer.x - 1)) {
+                        matrix[buffer.y][buffer.x] = matrix[buffer.y][buffer.x - 1];
+                        matrix[buffer.y][buffer.x - 1] = 0;
+                        buffer.x -= 1;
+                    }
+                    break;
+            }
+        }
+
+        return {
+            matrix: matrix,
+            buffer: buffer,
+        };
     }
 }

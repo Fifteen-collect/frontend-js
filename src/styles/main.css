@@ -7,3 +7,13 @@
     user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Opera and Firefox */
 }
+
+.main {
+    height: 100vh;
+    margin: 0;
+}
+
+.inner-content {
+    height: 10vh;
+    width: 100vw;
+}

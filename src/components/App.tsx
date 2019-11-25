@@ -10,7 +10,7 @@ export default class App extends React.Component<{}, AppState> {
     public readonly state: AppState = {
         matrix: [],
         settings: {
-            size: 4,
+            size: 3,
         },
         moves: 0,
         run: false,
@@ -25,13 +25,13 @@ export default class App extends React.Component<{}, AppState> {
     constructor(props: {}) {
         super(props);
 
-        // let {matrix, buffer} = App.randomizeMatrix(
-        //     App.createDefaultMatrix(this.state.settings.size),
-        //     this.state.buffer
-        // );
+        let {matrix, buffer} = App.randomizeMatrix(
+            App.createDefaultMatrix(this.state.settings.size),
+            this.state.buffer
+        );
 
-        // this.state.buffer = buffer;
-        this.state.matrix = App.createDefaultMatrix(this.state.settings.size);
+        this.state.buffer = buffer;
+        this.state.matrix = matrix;
         this.windowSize = innerWidth > innerHeight ? (innerHeight - innerHeight / 10) : innerWidth;
         this.state.relativeSize = this.windowSize / this.state.settings.size;
     }

@@ -15,8 +15,7 @@
         "checkJs": false,
         "typeRoots": [
             "types"
-        ],
-        "declaration": true
+        ]
     },
     "include": [
         "src/**/*"

@@ -28,8 +28,6 @@ export default class Block extends React.Component<BlockProps> {
             onMouseDown={this.props.clickHandler}
             onTouchStart={this.props.touchHandler}
             style={{
-                width: `calc(${relativeSize}px - 10vh)`,
-                height: `calc(${relativeSize}px - 1ovh)`,
                 flex: `0 0 ${relativeSize}px`,
                 fontSize: '3rem',
                 cursor: 'pointer',

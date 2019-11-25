@@ -30,13 +30,13 @@ export class Settings extends React.Component<SettingsProps, SettingsState> {
     };
 
     public render() {
-        return <div className="container-fluid">
-            <div className="row">
+        return <div className="container-fluid noselect">
+            <div className="row noselect">
                 {this.props.methods.map((method: Method) => {
                     return <button
                         type={"button"}
                         key={method}
-                        className={`btn btn-light col-4 ${this.state.method === method ? 'active' : ''}`}
+                        className={`btn btn-light col-4 noselect ${this.state.method === method ? 'active' : ''}`}
                         onClickCapture={() => {
                             this.setState({
                                 method: method
@@ -51,7 +51,7 @@ export class Settings extends React.Component<SettingsProps, SettingsState> {
                     return <button
                         type={"button"}
                         key={size}
-                        className={`btn btn-light col-2 ${this.state.size === size ? 'active' : ''}`}
+                        className={`btn btn-light col-2 noselect ${this.state.size === size ? 'active' : ''}`}
                         onClickCapture={() => {
                             this.setState({
                                 size: size

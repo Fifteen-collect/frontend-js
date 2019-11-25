@@ -77,55 +77,62 @@ export default class App extends React.Component<{}, AppState> {
                             key={`${currentRow}-${currentColumn}`}
                             value={block}
                             size={this.relativeSize}
-                            onClickHandler={(): void => {
-                                let {matrix, moves, run, timerInterval, time} = this.state;
-                                let current = matrix[currentRow][currentColumn];
-                                let buffer = this.state.buffer;
-
-                                if (this.isBlockCanMove(matrix, currentRow, currentColumn)) {
-                                    const {x, y} = buffer;
-
-                                    if (!run) {
-                                        timerInterval = setInterval((): void => {
-                                            if (this.isMatrixSolved()) {
-                                                clearInterval(timerInterval);
-                                                timerInterval = undefined;
-                                                run = false;
-
-                                                this.setState({
-                                                    timerInterval: timerInterval,
-                                                    run: false,
-                                                })
-                                            } else {
-                                                time += 0.01;
-
-                                                this.setState({
-                                                    time: time,
-                                                })
-                                            }
-                                        }, 10);
-                                    }
-
-                                    matrix[y][x] = current;
-                                    matrix[currentRow][currentColumn] = 0;
-                                    buffer = {x: currentColumn, y: currentRow};
-                                    moves++;
-                                    run = true;
-                                }
-
-                                this.setState({
-                                    matrix: matrix,
-                                    buffer: buffer,
-                                    moves: moves,
-                                    timerInterval: timerInterval,
-                                    run: run,
-                                });
+                            clickHandler={() => {
+                                this.blockEventHandler(currentRow, currentColumn);
+                            }}
+                            touchHandler={() => {
+                                this.blockEventHandler(currentRow, currentColumn);
                             }}
                         />
                     })
                 })}
             </div>
         </div>
+    }
+
+    blockEventHandler(rowIndex: number, blockIndex: number): void {
+        let {matrix, moves, run, timerInterval, time} = this.state;
+        let current = matrix[rowIndex][blockIndex];
+        let buffer = this.state.buffer;
+
+        if (this.isBlockCanMove(matrix, rowIndex, blockIndex)) {
+            const {x, y} = buffer;
+
+            if (!run) {
+                timerInterval = setInterval((): void => {
+                    if (this.isMatrixSolved()) {
+                        clearInterval(timerInterval);
+                        timerInterval = undefined;
+                        run = false;
+
+                        this.setState({
+                            timerInterval: timerInterval,
+                            run: false,
+                        })
+                    } else {
+                        time += 0.01;
+
+                        this.setState({
+                            time: time,
+                        })
+                    }
+                }, 10);
+            }
+
+            matrix[y][x] = current;
+            matrix[rowIndex][blockIndex] = 0;
+            buffer = {x: blockIndex, y: rowIndex};
+            moves++;
+            run = true;
+        }
+
+        this.setState({
+            matrix: matrix,
+            buffer: buffer,
+            moves: moves,
+            timerInterval: timerInterval,
+            run: run,
+        });
     }
 
     static createDefaultMatrix(size: number): number[][] {
@@ -202,7 +209,7 @@ export default class App extends React.Component<{}, AppState> {
         return true;
     }
 
-    randomizeMatrix(matrix: number[][], buffer: {x: number, y: number}) {
+    randomizeMatrix(matrix: number[][], buffer: { x: number, y: number }) {
         for (let move = 0; move < 10000; move++) {
             let rndX = randomInt(2);
             let rndY = randomInt(2);

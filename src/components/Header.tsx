@@ -32,7 +32,7 @@ export class Header extends React.Component<HeaderProps> {
                     <b>
                         {time.hours ? `${time.hours}:` : ''}
                         {time.minutes}:
-                        {time.seconds}:
+                        {time.seconds}.
                         {time.milliseconds}
                     </b>
                 </div>

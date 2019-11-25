@@ -21,17 +21,22 @@ export default class App extends React.Component<{}, AppState> {
             x: 0,
             y: 0,
         },
+        solved: false,
     };
     private readonly windowSize: number;
 
     constructor(props: {}) {
         super(props);
 
-        this.state.buffer = {
-            x: this.state.settings.size - 1,
-            y: this.state.settings.size - 1,
-        };
-        this.state.matrix = App.createDefaultMatrix(this.state.settings.size);
+        const {matrix, buffer} = this.randomizeMatrix(
+            App.createDefaultMatrix(this.state.settings.size),
+            {
+                x: this.state.settings.size - 1,
+                y: this.state.settings.size - 1,
+            }
+        );
+        this.state.buffer = buffer;
+        this.state.matrix = matrix;
         this.windowSize = innerWidth > innerHeight ? (innerHeight - innerHeight / 10) : innerWidth;
         this.state.relativeSize = this.windowSize / this.state.settings.size;
     }
@@ -55,6 +60,7 @@ export default class App extends React.Component<{}, AppState> {
                             key={`${currentRow}-${currentColumn}`}
                             value={block}
                             size={this.state.relativeSize}
+                            solved={this.state.solved}
                             clickHandler={() => {
                                 this.blockEventHandler(currentRow, currentColumn);
                             }}
@@ -82,6 +88,7 @@ export default class App extends React.Component<{}, AppState> {
             run: false,
             timerInterval: undefined,
             time: 0,
+            solved: false,
             settings: {
                 size: size,
                 availableSizes: this.state.settings.availableSizes
@@ -98,7 +105,7 @@ export default class App extends React.Component<{}, AppState> {
         if (App.isBlockCanMove(matrix, rowIndex, blockIndex)) {
             const {x, y} = buffer;
 
-            if (!run) {
+            if (!run && !this.state.solved) {
                 timerInterval = setInterval((): void => {
                     if (this.isMatrixSolved()) {
                         clearInterval(timerInterval);
@@ -108,6 +115,7 @@ export default class App extends React.Component<{}, AppState> {
                         this.setState({
                             timerInterval: timerInterval,
                             run: run,
+                            solved: true,
                         })
                     } else {
                         time += 10;
@@ -119,6 +127,9 @@ export default class App extends React.Component<{}, AppState> {
                 }, 10);
             }
 
+            if (this.state.solved) {
+                return;
+            }
             matrix[y][x] = current;
             matrix[rowIndex][blockIndex] = 0;
             buffer = {x: blockIndex, y: rowIndex};

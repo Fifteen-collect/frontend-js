@@ -13,4 +13,5 @@ export interface State {
     timerInterval?: number | undefined,
     time: number | 0;
     relativeSize?: number,
+    solved: boolean,
 }

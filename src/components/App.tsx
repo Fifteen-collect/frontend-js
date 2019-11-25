@@ -10,7 +10,7 @@ export default class App extends React.Component<{}, AppState> {
     public readonly state: AppState = {
         matrix: [],
         settings: {
-            size: 3,
+            size: 4,
         },
         moves: 0,
         run: false,
@@ -18,23 +18,22 @@ export default class App extends React.Component<{}, AppState> {
         buffer: {
             x: 0,
             y: 0,
-        }
+        },
     };
     private readonly windowSize: number;
-    private readonly relativeSize: number;
 
     constructor(props: {}) {
         super(props);
 
-        let {matrix, buffer} = this.randomizeMatrix(
-            App.createDefaultMatrix(this.state.settings.size),
-            this.state.buffer
-        );
+        // let {matrix, buffer} = App.randomizeMatrix(
+        //     App.createDefaultMatrix(this.state.settings.size),
+        //     this.state.buffer
+        // );
 
-        this.state.buffer = buffer;
-        this.state.matrix = matrix;
+        // this.state.buffer = buffer;
+        this.state.matrix = App.createDefaultMatrix(this.state.settings.size);
         this.windowSize = innerWidth > innerHeight ? (innerHeight - innerHeight / 10) : innerWidth;
-        this.relativeSize = this.windowSize / this.state.settings.size;
+        this.state.relativeSize = this.windowSize / this.state.settings.size;
     }
 
     render(): ReactNode {
@@ -43,29 +42,18 @@ export default class App extends React.Component<{}, AppState> {
                 time={this.state.time}
                 moves={this.state.moves}
                 resetHandler={() => {
-                    let {matrix, buffer} = this.randomizeMatrix(
-                        App.createDefaultMatrix(this.state.settings.size),
-                        {x: 0, y: 0}
-                    );
-
-                    clearInterval(this.state.timerInterval);
-                    this.setState({
-                        matrix: matrix,
-                        buffer: buffer,
-                        moves: 0,
-                        run: false,
-                        timerInterval: undefined,
-                        time: 0,
-                    });
+                    return this.handleReset(this.state.settings.size);
                 }}
             />
-            <Container size={this.windowSize}>
+            <Container
+                size={this.windowSize}
+            >
                 {this.state.matrix.map((row: number[], currentRow: number) => {
                     return row.map((block: number, currentColumn: number) => {
                         return <Block
                             key={`${currentRow}-${currentColumn}`}
                             value={block}
-                            size={this.relativeSize}
+                            size={this.state.relativeSize}
                             clickHandler={() => {
                                 this.blockEventHandler(currentRow, currentColumn);
                             }}
@@ -76,7 +64,30 @@ export default class App extends React.Component<{}, AppState> {
                     })
                 })}
             </Container>
+            <button className={"btn btn-dark btn-sm col-4 m-1"} onClick={() => {this.handleReset(3);}}>3</button>
+            <button className={"btn btn-dark btn-sm col-4 m-1"} onClick={() => {this.handleReset(4);}}>4</button>
         </div>
+    }
+
+    handleReset(size: number): void {
+        const {matrix, buffer} = App.randomizeMatrix(
+            App.createDefaultMatrix(size),
+            {x: 0, y: 0}
+        );
+
+        clearInterval(this.state.timerInterval);
+        this.setState({
+            matrix: matrix,
+            buffer: buffer,
+            moves: 0,
+            run: false,
+            timerInterval: undefined,
+            time: 0,
+            settings: {
+                size: size,
+            },
+            relativeSize: this.windowSize / size,
+        });
     }
 
     blockEventHandler(rowIndex: number, blockIndex: number): void {
@@ -84,7 +95,7 @@ export default class App extends React.Component<{}, AppState> {
         let current = matrix[rowIndex][blockIndex];
         let buffer = this.state.buffer;
 
-        if (this.isBlockCanMove(matrix, rowIndex, blockIndex)) {
+        if (App.isBlockCanMove(matrix, rowIndex, blockIndex)) {
             const {x, y} = buffer;
 
             if (!run) {
@@ -138,46 +149,46 @@ export default class App extends React.Component<{}, AppState> {
         return matrix;
     }
 
-    isBlockCanMove(matrix: number[][], y: number, x: number): boolean {
-        return this.isBlockCanMoveUp(matrix, y, x)
-            || this.isBlockCanMoveDown(matrix, y, x)
-            || this.isBlockCanMoveLeft(matrix, y, x)
-            || this.isBlockCanMoveRight(matrix, y, x);
+    static isBlockCanMove(matrix: number[][], y: number, x: number): boolean {
+        return App.isBlockCanMoveUp(matrix, y, x)
+            || App.isBlockCanMoveDown(matrix, y, x)
+            || App.isBlockCanMoveLeft(matrix, y, x)
+            || App.isBlockCanMoveRight(matrix, y, x);
     }
 
-    isBlockCanMoveUp(matrix: number[][], y: number, x: number): boolean {
-        return !this.isBlockOnUpEdge(y) && this.isBlockEmpty(matrix, y - 1, x);
+    static isBlockCanMoveUp(matrix: number[][], y: number, x: number): boolean {
+        return !App.isBlockOnUpEdge(y) && App.isBlockEmpty(matrix, y - 1, x);
     }
 
-    isBlockCanMoveDown(matrix: number[][], y: number, x: number): boolean {
-        return !this.isBlockOnDownEdge(y) && this.isBlockEmpty(matrix, y + 1, x);
+    static isBlockCanMoveDown(matrix: number[][], y: number, x: number): boolean {
+        return !App.isBlockOnDownEdge(y, matrix.length) && App.isBlockEmpty(matrix, y + 1, x);
     }
 
-    isBlockCanMoveLeft(matrix: number[][], y: number, x: number): boolean {
-        return !this.isBlockOnLeftEdge(x) && this.isBlockEmpty(matrix, y, x - 1);
+    static isBlockCanMoveLeft(matrix: number[][], y: number, x: number): boolean {
+        return !App.isBlockOnLeftEdge(x) && App.isBlockEmpty(matrix, y, x - 1);
     }
 
-    isBlockCanMoveRight(matrix: number[][], y: number, x: number): boolean {
-        return !this.isBlockOnRightEdge(x) && this.isBlockEmpty(matrix, y, x + 1);
+    static isBlockCanMoveRight(matrix: number[][], y: number, x: number): boolean {
+        return !App.isBlockOnRightEdge(x, matrix.length) && App.isBlockEmpty(matrix, y, x + 1);
     }
 
-    isBlockOnUpEdge(y: number): boolean {
+    static isBlockOnUpEdge(y: number): boolean {
         return y === 0;
     }
 
-    isBlockOnDownEdge(y: number): boolean {
-        return y === this.state.settings.size - 1;
+    static isBlockOnDownEdge(y: number, size: number): boolean {
+        return y === size - 1;
     }
 
-    isBlockOnLeftEdge(x: number): boolean {
+    static isBlockOnLeftEdge(x: number): boolean {
         return x === 0;
     }
 
-    isBlockOnRightEdge(x: number): boolean {
-        return x === this.state.settings.size - 1;
+    static isBlockOnRightEdge(x: number, size: number): boolean {
+        return x === size - 1;
     }
 
-    isBlockEmpty(matrix: number[][], y: number, x: number): boolean {
+    static isBlockEmpty(matrix: number[][], y: number, x: number): boolean {
         return matrix[y][x] === 0;
     }
 
@@ -198,10 +209,10 @@ export default class App extends React.Component<{}, AppState> {
         return true;
     }
 
-    randomizeMatrix(matrix: number[][], buffer: { x: number, y: number }) {
+    static randomizeMatrix(matrix: number[][], buffer: { x: number, y: number }) {
         for (let move = 0; move < 10000; move++) {
-            let rndX = randomInt(2);
-            let rndY = randomInt(2);
+            let rndX = randomInt(matrix.length - 1);
+            let rndY = randomInt(matrix.length - 1);
 
             if (this.isBlockCanMove(matrix, rndY, rndX)) {
                 matrix[buffer.y][buffer.x] = matrix[rndY][rndX];

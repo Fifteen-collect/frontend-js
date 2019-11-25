@@ -11,4 +11,5 @@ export interface State {
     run: boolean,
     timerInterval?: number | undefined,
     time: number | 0;
+    relativeSize?: number,
 }

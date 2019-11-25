@@ -17,15 +17,15 @@ export class Header extends React.Component<HeaderProps> {
     public static readonly propTypes = HeaderPropTypes;
 
     render() {
-        return <div className={"container-fluid inner-content"}>
-            <div className="row p-2 d-flex align-items-center">
+        return <div className={"container-fluid inner-content"} style={{marginLeft: "-15px"}}>
+            <div className="row p-2 d-flex align-items-center justify-content-between">
                 <button
-                    className={"btn btn-primary btn-sm col-4"}
+                    className={"btn btn-primary btn-sm col-3"}
                     onClickCapture={this.props.resetHandler}
                 >
                     Reset
                 </button>
-                <div className={"text-center col-4"}>
+                <div className={"text-center col-3"}>
                     <b>{this.props.time.toFixed(2)}</b>
                 </div>
                 <div className={"text-center col-4"}>

@@ -9,15 +9,15 @@ import {Settings} from "./Settings";
 import {Method} from "../types/Method";
 import {Color} from "../types/Color";
 import Bar from "./Bar";
-import {scheme} from '../types/ColorScheme';
+import {scheme, Size} from '../types/ColorScheme';
 
 export default class App extends React.Component<{}, AppState> {
     public readonly state: AppState = {
         matrix: [],
         settings: {
-            size: 3,
+            size: Size.X4,
             method: Method.DEFAULT,
-            availableSizes: [2, 3, 4, 5, 6, 7],
+            availableSizes: [Size.X2, Size.X3, Size.X4, Size.X5, Size.X6, Size.X7],
             availableMethods: [
                 Method.DEFAULT,
                 Method.LAYERED,
@@ -179,9 +179,7 @@ export default class App extends React.Component<{}, AppState> {
                     }
                 }
             } else if (blockIndex === x) {
-                console.log('blockIndex === x');
                 if (rowIndex > y) {
-                    console.log('rowIndex > y');
                     for (let elementY = y + 1; elementY <= rowIndex; elementY++) {
                         let temp = matrix[buffer.y][buffer.x];
                         matrix[buffer.y][buffer.x] = matrix[elementY][buffer.x];
@@ -190,7 +188,6 @@ export default class App extends React.Component<{}, AppState> {
                         moves++;
                     }
                 } else if (rowIndex < y) {
-                    console.log('rowIndex < y');
                     for (let elementY = y - 1; elementY >= rowIndex; elementY--) {
                         let temp = matrix[buffer.y][buffer.x];
                         matrix[buffer.y][buffer.x] = matrix[elementY][buffer.x];
@@ -321,11 +318,39 @@ export default class App extends React.Component<{}, AppState> {
             let rndY = randomInt(matrix.length - 1);
 
             if (App.isBlockCanMove(matrix, rndY, rndX)) {
-                let temp = matrix[buffer.y][buffer.x];
-                matrix[buffer.y][buffer.x] = matrix[rndY][rndX];
-                matrix[rndY][rndX] = temp;
-                buffer.y = rndY;
-                buffer.x = rndX;
+                if (rndY === buffer.y) {
+                    if (rndX > buffer.x) {
+                        for (let elementX = buffer.x + 1; elementX <= rndX; elementX++) {
+                            let temp = matrix[buffer.y][buffer.x];
+                            matrix[buffer.y][buffer.x] = matrix[rndY][elementX];
+                            matrix[rndY][elementX] = temp;
+                            buffer.x++;
+                        }
+                    } else if (rndX < buffer.x) {
+                        for (let elementX = buffer.x - 1; elementX >= rndX; elementX--) {
+                            let temp = matrix[buffer.y][buffer.x];
+                            matrix[buffer.y][buffer.x] = matrix[rndY][elementX];
+                            matrix[rndY][elementX] = temp;
+                            buffer.x--;
+                        }
+                    }
+                } else if (rndX === buffer.x) {
+                    if (rndY > buffer.y) {
+                        for (let elementY = buffer.y + 1; elementY <= rndY; elementY++) {
+                            let temp = matrix[buffer.y][buffer.x];
+                            matrix[buffer.y][buffer.x] = matrix[elementY][buffer.x];
+                            matrix[elementY][buffer.x] = temp;
+                            buffer.y++;
+                        }
+                    } else if (rndY < buffer.y) {
+                        for (let elementY = buffer.y - 1; elementY >= rndY; elementY--) {
+                            let temp = matrix[buffer.y][buffer.x];
+                            matrix[buffer.y][buffer.x] = matrix[elementY][buffer.x];
+                            matrix[elementY][buffer.x] = temp;
+                            buffer.y--;
+                        }
+                    }
+                }
             }
         }
 

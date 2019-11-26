@@ -27,7 +27,7 @@ export default class App extends React.Component<{}, AppState> {
         },
         moves: 0,
         run: false,
-        time: 0,
+        startTime: 0,
         buffer: {
             x: 0,
             y: 0,
@@ -55,7 +55,8 @@ export default class App extends React.Component<{}, AppState> {
     render(): ReactNode {
         return <div className={"container-fluid row main"}>
             <Header
-                time={this.state.time}
+                run={this.state.run}
+                startTime={this.state.startTime}
                 moves={this.state.moves}
                 solved={this.state.solved}
                 resetHandler={() => {
@@ -123,15 +124,13 @@ export default class App extends React.Component<{}, AppState> {
         const {settings} = this.state;
 
         settings.size = size;
-        clearInterval(this.state.timerInterval);
 
         this.setState({
             matrix: matrix,
             buffer: buffer,
             moves: 0,
             run: false,
-            timerInterval: undefined,
-            time: 0,
+            startTime: 0,
             solved: false,
             settings: settings,
             relativeSize: this.windowSize / size,
@@ -139,32 +138,16 @@ export default class App extends React.Component<{}, AppState> {
     }
 
     blockEventHandler(rowIndex: number, blockIndex: number): void {
-        let {matrix, moves, run, timerInterval, time} = this.state;
+        let {matrix, moves, run} = this.state;
         let buffer = this.state.buffer;
 
         if (App.isBlockCanMove(matrix, rowIndex, blockIndex)) {
             const {x, y} = buffer;
 
             if (!run && !this.state.solved) {
-                timerInterval = setInterval((): void => {
-                    if (this.isMatrixSolved()) {
-                        clearInterval(timerInterval);
-                        timerInterval = undefined;
-                        run = false;
-
-                        this.setState({
-                            timerInterval: timerInterval,
-                            run: run,
-                            solved: true,
-                        })
-                    } else {
-                        time += 10;
-
-                        this.setState({
-                            time: time,
-                        })
-                    }
-                }, 10);
+                this.setState({
+                    startTime: Date.now(),
+                })
             }
 
             if (this.state.solved) {
@@ -209,6 +192,15 @@ export default class App extends React.Component<{}, AppState> {
                 }
             }
 
+            if (this.isMatrixSolved()) {
+                this.setState({
+                    run: false,
+                    solved: true,
+                });
+
+                return;
+            }
+
             run = true;
         }
 
@@ -216,7 +208,6 @@ export default class App extends React.Component<{}, AppState> {
             matrix: matrix,
             buffer: buffer,
             moves: moves,
-            timerInterval: timerInterval,
             run: run,
         });
     }

@@ -1,28 +1,42 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
-import parseMs from "parse-ms";
+import parseMs, {Parsed} from "parse-ms";
+import {HeaderState} from "types/HeaderState";
 
 export interface HeaderProps {
     resetHandler: (event: React.MouseEvent<Element, MouseEvent>) => void,
-    time: number,
+    startTime: number,
     moves: number,
     solved: boolean,
-    openSettingsHandler: (event: React.MouseEvent<Element, MouseEvent>) => void
+    openSettingsHandler: (event: React.MouseEvent<Element, MouseEvent>) => void,
+    run: boolean,
 }
 
 export const HeaderPropTypes: { [T in keyof HeaderProps]: PropTypes.Validator<any> } = {
     resetHandler: PropTypes.func,
     openSettingsHandler: PropTypes.func,
-    time: PropTypes.number,
+    startTime: PropTypes.number,
     moves: PropTypes.number,
     solved: PropTypes.bool,
+    run: PropTypes.bool,
 };
 
-export class Header extends React.Component<HeaderProps> {
+export class Header extends React.Component<HeaderProps, HeaderState> {
     public static readonly propTypes = HeaderPropTypes;
+    public readonly state: HeaderState = {
+        currentTime: 0,
+        intervalUpdateId: undefined,
+        lastSolveTime: 0,
+    };
 
     render() {
-        const time = parseMs(this.props.time);
+        let time: Parsed = parseMs(0);
+        if (!this.props.run && this.props.solved) {
+            time = parseMs(this.state.lastSolveTime);
+        } else if (this.state.currentTime !== 0) {
+            let milliseconds = this.state.currentTime - this.props.startTime;
+            time = parseMs(milliseconds);
+        }
 
         return <div className="container-fluid inner-content" style={{marginLeft: "-15px"}}>
             <div className="row p-2 d-flex align-items-center justify-content-between">
@@ -31,7 +45,6 @@ export class Header extends React.Component<HeaderProps> {
                     onClickCapture={this.props.resetHandler}
                 >
                     <svg
-                        onClickCapture={this.props.resetHandler}
                         aria-hidden="true"
                         focusable="false"
                         data-prefix="fas"
@@ -49,16 +62,19 @@ export class Header extends React.Component<HeaderProps> {
                 </button>
                 <div className={"text-center col-5"}>
                     <b>
-                        {time.hours ? `${time.hours}:` : ''}
-                        {time.minutes}:
-                        {time.seconds}.
-                        {time.milliseconds}
+                        {time
+                            ?
+                            <>{time.hours ? `${time.hours}:` : ''}
+                                {time.minutes}:
+                                {time.seconds}.
+                                {time.milliseconds}</>
+                            : '0:0.0'
+                        }
                     </b>
                     {this.props.solved
-                        ? <b>{` / ${(this.props.moves / (this.props.time || 1) * 1000).toFixed(2)}`}</b>
+                        ? <b>{` / ${(this.props.moves / (this.state.lastSolveTime || 1) * 1000).toFixed(2)}`}</b>
                         : <></>
                     }
-
                 </div>
                 <div className={"text-center col-4"}>
                     <b>Moves: {this.props.moves}</b>
@@ -88,5 +104,24 @@ export class Header extends React.Component<HeaderProps> {
                 </button>
             </div>
         </div>
+    }
+
+    componentDidMount(): void {
+        this.state.intervalUpdateId = setInterval(() => this.tick(), 10);
+    }
+
+    componentWillUnmount(): void {
+        clearInterval(this.state.intervalUpdateId);
+    }
+
+    tick() {
+        this.setState({
+            currentTime: this.props.run ? Date.now() : 0,
+        });
+        if (this.props.run && this.state.currentTime !== 0) {
+            this.setState({
+                lastSolveTime: this.state.currentTime - this.props.startTime
+            });
+        }
     }
 }

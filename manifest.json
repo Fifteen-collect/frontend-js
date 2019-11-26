@@ -3,12 +3,12 @@
     "name": "Barley-break",
     "icons": [
         {
-            "src": "/15_192.ico",
+            "src": "/barley-break/15_192.ico",
             "type": "image/x-icon",
             "sizes": "192x192"
         },
         {
-            "src": "/15_512.png",
+            "src": "/barley-break/15_512.png",
             "type": "image/png",
             "sizes": "512x512"
         }

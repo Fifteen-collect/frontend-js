@@ -196,6 +196,7 @@ export default class App extends React.Component<{}, AppState> {
                 this.setState({
                     run: false,
                     solved: true,
+                    moves: moves,
                 });
 
                 return;

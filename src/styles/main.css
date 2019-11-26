@@ -9,7 +9,6 @@
 }
 
 .main {
-    height: 100vh;
     flex-direction: column;
     flex-wrap: nowrap;
     margin-left: auto;

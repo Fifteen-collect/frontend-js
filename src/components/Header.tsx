@@ -72,7 +72,7 @@ export class Header extends React.Component<HeaderProps, HeaderState> {
                         }
                     </b>
                     {this.props.solved
-                        ? <b>{` / ${(this.props.moves / (this.state.lastSolveTime || 1) * 1000).toFixed(2)}`}</b>
+                        ? <b>{` / ${(this.props.moves / (this.state.lastSolveTime || 1) * (this.state.lastSolveTime ? 1000 : 0)).toFixed(2)}`}</b>
                         : <></>
                     }
                 </div>

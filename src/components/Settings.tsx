@@ -26,7 +26,7 @@ export class Settings extends React.Component<SettingsProps, SettingsState> {
     public static readonly propTypes = SettingsPropTypes;
     public readonly state: SettingsState = {
         method: Method.DEFAULT,
-        size: Size.X3
+        size: Size.X4
     };
 
     public render() {

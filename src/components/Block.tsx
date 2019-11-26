@@ -26,6 +26,8 @@ function Block({size, clickHandler, touchHandler, color, value}: BlockProps): Re
         onMouseDown={clickHandler}
         onTouchStart={touchHandler}
         style={{
+            width: `${relativeSize}px`,
+            height: `${relativeSize}px`,
             flex: `0 0 ${relativeSize}px`,
             fontSize: '3rem',
             cursor: 'pointer',

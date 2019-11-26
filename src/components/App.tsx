@@ -129,7 +129,6 @@ export default class App extends React.Component<{}, AppState> {
 
     blockEventHandler(rowIndex: number, blockIndex: number): void {
         let {matrix, moves, run, timerInterval, time} = this.state;
-        let current = matrix[rowIndex][blockIndex];
         let buffer = this.state.buffer;
 
         if (App.isBlockCanMove(matrix, rowIndex, blockIndex)) {
@@ -160,11 +159,48 @@ export default class App extends React.Component<{}, AppState> {
             if (this.state.solved) {
                 return;
             }
-            let temp = matrix[y][x];
-            matrix[y][x] = current;
-            matrix[rowIndex][blockIndex] = temp;
-            buffer = {x: blockIndex, y: rowIndex};
-            moves++;
+
+            if (rowIndex === y) {
+                if (blockIndex > x) {
+                    for (let elementX = x + 1; elementX <= blockIndex; elementX++) {
+                        let temp = matrix[buffer.y][buffer.x];
+                        matrix[buffer.y][buffer.x] = matrix[rowIndex][elementX];
+                        matrix[rowIndex][elementX] = temp;
+                        buffer.x++;
+                        moves++;
+                    }
+                } else if (blockIndex < x) {
+                    for (let elementX = x - 1; elementX >= blockIndex; elementX--) {
+                        let temp = matrix[buffer.y][buffer.x];
+                        matrix[buffer.y][buffer.x] = matrix[rowIndex][elementX];
+                        matrix[rowIndex][elementX] = temp;
+                        buffer.x--;
+                        moves++;
+                    }
+                }
+            } else if (blockIndex === x) {
+                console.log('blockIndex === x');
+                if (rowIndex > y) {
+                    console.log('rowIndex > y');
+                    for (let elementY = y + 1; elementY <= rowIndex; elementY++) {
+                        let temp = matrix[buffer.y][buffer.x];
+                        matrix[buffer.y][buffer.x] = matrix[elementY][buffer.x];
+                        matrix[elementY][buffer.x] = temp;
+                        buffer.y++;
+                        moves++;
+                    }
+                } else if (rowIndex < y) {
+                    console.log('rowIndex < y');
+                    for (let elementY = y - 1; elementY >= rowIndex; elementY--) {
+                        let temp = matrix[buffer.y][buffer.x];
+                        matrix[buffer.y][buffer.x] = matrix[elementY][buffer.x];
+                        matrix[elementY][buffer.x] = temp;
+                        buffer.y--;
+                        moves++;
+                    }
+                }
+            }
+
             run = true;
         }
 
@@ -203,19 +239,43 @@ export default class App extends React.Component<{}, AppState> {
     }
 
     static isBlockCanMoveUp(matrix: Bar[][], y: number, x: number): boolean {
-        return !App.isBlockOnUpEdge(y) && App.isBlockEmpty(matrix, y - 1, x);
+        for (let yTarget = y; yTarget > 0; yTarget--) {
+            if (App.isBlockEmpty(matrix, yTarget - 1, x)) {
+                return !App.isBlockOnUpEdge(y)
+            }
+        }
+
+        return false;
     }
 
     static isBlockCanMoveDown(matrix: Bar[][], y: number, x: number): boolean {
-        return !App.isBlockOnDownEdge(y, matrix.length) && App.isBlockEmpty(matrix, y + 1, x);
+        for (let yTarget = y; yTarget < matrix.length - 1; yTarget++) {
+            if (App.isBlockEmpty(matrix, yTarget + 1, x)) {
+                return !App.isBlockOnDownEdge(y, matrix.length)
+            }
+        }
+
+        return false;
     }
 
     static isBlockCanMoveLeft(matrix: Bar[][], y: number, x: number): boolean {
-        return !App.isBlockOnLeftEdge(x) && App.isBlockEmpty(matrix, y, x - 1);
+        for (let xTarget = x; xTarget > 0; xTarget--) {
+            if (App.isBlockEmpty(matrix, y, xTarget - 1)) {
+                return !App.isBlockOnLeftEdge(x)
+            }
+        }
+
+        return  false;
     }
 
     static isBlockCanMoveRight(matrix: Bar[][], y: number, x: number): boolean {
-        return !App.isBlockOnRightEdge(x, matrix.length) && App.isBlockEmpty(matrix, y, x + 1);
+        for (let xTarget = x; xTarget < matrix.length - 1; xTarget++) {
+            if (App.isBlockEmpty(matrix, y, xTarget + 1)) {
+                return !App.isBlockOnRightEdge(x, matrix.length)
+            }
+        }
+
+        return false;
     }
 
     static isBlockOnUpEdge(y: number): boolean {

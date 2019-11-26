@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
 import {Method} from "../types/Method";
+import {Size} from "../types/ColorScheme";
 
 export interface SettingsProps {
     sizes: number[],
@@ -16,18 +17,30 @@ export const SettingsPropTypes: { [T in keyof SettingsProps]: PropTypes.Validato
     changeMethodHandler: PropTypes.func,
 };
 
-export class Settings extends React.Component<SettingsProps> {
+export interface SettingsState {
+    method: Method;
+    size: Size;
+}
+
+export class Settings extends React.Component<SettingsProps, SettingsState> {
     public static readonly propTypes = SettingsPropTypes;
+    public readonly state: SettingsState = {
+        method: Method.DEFAULT,
+        size: Size.X3
+    };
 
     public render() {
-        return <div className="container-fluid">
-            <div className="row">
+        return <div className="container-fluid noselect">
+            <div className="row noselect">
                 {this.props.methods.map((method: Method) => {
                     return <button
                         type={"button"}
                         key={method}
-                        className="btn btn-dark btn-sm col-4"
+                        className={`btn btn-light col-4 noselect ${this.state.method === method ? 'active' : ''}`}
                         onClickCapture={() => {
+                            this.setState({
+                                method: method
+                            });
                             this.props.changeMethodHandler(method);
                         }}
                     >
@@ -38,8 +51,11 @@ export class Settings extends React.Component<SettingsProps> {
                     return <button
                         type={"button"}
                         key={size}
-                        className={"btn btn-dark btn-sm col-2"}
+                        className={`btn btn-light col-2 noselect ${this.state.size === size ? 'active' : ''}`}
                         onClickCapture={() => {
+                            this.setState({
+                                size: size
+                            });
                             this.props.resetHandler(size);
                         }}
                     >

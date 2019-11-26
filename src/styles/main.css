@@ -26,7 +26,7 @@
     margin-right: auto;
 }
 
-@media (min-width: 1140px) {
+@media (min-width: 768px) {
     .block-container {
         margin-left: auto;
     }

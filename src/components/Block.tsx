@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
+import {ReactElement} from "react";
 
 export interface BlockProps {
     value: number,
@@ -9,7 +10,7 @@ export interface BlockProps {
     color: string,
 }
 
-export const BlockPropTypes: { [T in keyof BlockProps]: PropTypes.Validator<any> } = {
+Block.propTypes = {
     value: PropTypes.number,
     size: PropTypes.number,
     clickHandler: PropTypes.func,
@@ -17,26 +18,24 @@ export const BlockPropTypes: { [T in keyof BlockProps]: PropTypes.Validator<any>
     color: PropTypes.string,
 };
 
-export default class Block extends React.Component<BlockProps> {
-    public static readonly propTypes = BlockPropTypes;
+function Block({size, clickHandler, touchHandler, color, value}: BlockProps): ReactElement {
+    const relativeSize = Math.floor(size);
 
-    public render(): React.ReactNode {
-        const relativeSize = Math.floor(this.props.size);
-
-        return <div
-            className={`noselect border rounded text-light d-flex align-items-center justify-content-center`}
-            onMouseDown={this.props.clickHandler}
-            onTouchStart={this.props.touchHandler}
-            style={{
-                width: `${relativeSize}px`,
-                height: `${relativeSize}px`,
-                flex: `0 0 ${relativeSize}px`,
-                fontSize: '3rem',
-                cursor: 'pointer',
-                backgroundColor: this.props.color,
-            }}
-        >
-            {this.props.value}
-        </div>
-    }
+    return <div
+        className={`noselect border rounded text-light d-flex align-items-center justify-content-center`}
+        onMouseDown={clickHandler}
+        onTouchStart={touchHandler}
+        style={{
+            width: `${relativeSize}px`,
+            height: `${relativeSize}px`,
+            flex: `0 0 ${relativeSize}px`,
+            fontSize: '3rem',
+            cursor: 'pointer',
+            backgroundColor: color,
+        }}
+    >
+        {value}
+    </div>
 }
+
+export default Block;

@@ -13,11 +13,12 @@ export class Container extends React.Component<ContainerProps> {
     public static readonly propTypes = ContainerPropTypes;
 
     public render() {
-        return <div className={"row d-flex justify-content-center mt-2 block-container"}
-                    style={{
-                        width: `${this.props.size}px`,
-                        height: `${this.props.size}px`
-                    }}
+        return <div
+            className={"row d-flex justify-content-center mt-2 block-container"}
+            style={{
+                width: `${this.props.size}px`,
+                height: `${this.props.size}px`,
+            }}
         >
             {this.props.children}
         </div>

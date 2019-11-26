@@ -3,19 +3,19 @@
     "name": "Barley-break",
     "icons": [
         {
-            "src": "/barley-break/images/15_192.ico",
+            "src": "/15_192.ico",
             "type": "image/x-icon",
             "sizes": "192x192"
         },
         {
-            "src": "/barley-break/images/15_512.png",
+            "src": "/15_512.png",
             "type": "image/png",
             "sizes": "512x512"
         }
     ],
-    "start_url": "/",
+    "start_url": "/barley-break/",
     "background_color": "white",
     "display": "fullscreen",
-    "scope": "/",
+    "scope": "/barley-break/",
     "theme_color": "white"
 }

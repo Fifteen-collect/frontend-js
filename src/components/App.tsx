@@ -10,6 +10,7 @@ import {Method} from "../types/Method";
 import {Color} from "../types/Color";
 import Bar from "./Bar";
 import {scheme, Size} from '../types/ColorScheme';
+import {PersonalBest} from "./PersonalBest";
 
 export default class App extends React.Component<{}, AppState> {
     public readonly state: AppState = {
@@ -71,6 +72,7 @@ export default class App extends React.Component<{}, AppState> {
                     })
                 }}
             />
+            <PersonalBest size={this.state.settings.size}/>
             <Settings
                 collapsed={this.state.settings.menuCollapsed}
                 methods={this.state.settings.availableMethods}

@@ -16,8 +16,7 @@ export interface AppState {
     },
     moves: number,
     run: boolean,
-    timerInterval?: number | undefined,
-    time: number | 0;
+    startTime: number | 0;
     relativeSize?: number,
     solved: boolean,
 }

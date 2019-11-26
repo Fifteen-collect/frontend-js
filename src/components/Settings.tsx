@@ -8,6 +8,7 @@ export interface SettingsProps {
     methods: Method[],
     resetHandler: (size: number) => void;
     changeMethodHandler: (method: Method) => void;
+    collapsed: boolean,
 }
 
 export const SettingsPropTypes: { [T in keyof SettingsProps]: PropTypes.Validator<any> } = {
@@ -15,6 +16,7 @@ export const SettingsPropTypes: { [T in keyof SettingsProps]: PropTypes.Validato
     methods: PropTypes.array,
     resetHandler: PropTypes.func,
     changeMethodHandler: PropTypes.func,
+    collapsed: PropTypes.bool,
 };
 
 export interface SettingsState {
@@ -26,11 +28,11 @@ export class Settings extends React.Component<SettingsProps, SettingsState> {
     public static readonly propTypes = SettingsPropTypes;
     public readonly state: SettingsState = {
         method: Method.DEFAULT,
-        size: Size.X4
+        size: Size.X4,
     };
 
     public render() {
-        return <div className="container-fluid noselect">
+        return <div className={`container-fluid noselect ${this.props.collapsed ? 'collapse' : ''}`}>
             <div className="row noselect">
                 {this.props.methods.map((method: Method) => {
                     return <button

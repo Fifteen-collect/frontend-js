@@ -22,7 +22,8 @@ export default class App extends React.Component<{}, AppState> {
                 Method.DEFAULT,
                 Method.LAYERED,
                 Method.FRIDGE,
-            ]
+            ],
+            menuCollapsed: true,
         },
         moves: 0,
         run: false,
@@ -56,11 +57,21 @@ export default class App extends React.Component<{}, AppState> {
             <Header
                 time={this.state.time}
                 moves={this.state.moves}
+                solved={this.state.solved}
                 resetHandler={() => {
                     return this.handleReset(this.state.settings.size);
                 }}
+                openSettingsHandler={() => {
+                    const {settings} = this.state;
+                    settings.menuCollapsed = !settings.menuCollapsed;
+
+                    this.setState({
+                        settings: settings,
+                    })
+                }}
             />
             <Settings
+                collapsed={this.state.settings.menuCollapsed}
                 methods={this.state.settings.availableMethods}
                 sizes={this.state.settings.availableSizes}
                 resetHandler={this.handleReset.bind(this)}

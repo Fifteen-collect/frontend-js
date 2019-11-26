@@ -11,7 +11,8 @@ export interface AppState {
         size: number,
         method: Method,
         availableSizes: number[],
-        availableMethods: Method[]
+        availableMethods: Method[],
+        menuCollapsed: boolean,
     },
     moves: number,
     run: boolean,

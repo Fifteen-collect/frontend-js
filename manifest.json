@@ -1,0 +1,21 @@
+{
+    "short_name": "Barley-break",
+    "name": "Barley-break",
+    "icons": [
+        {
+            "src": "/src/images/15_192.ico",
+            "type": "image/x-icon",
+            "sizes": "192x192"
+        },
+        {
+            "src": "/src/images/15_512.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ],
+    "start_url": "/",
+    "background_color": "white",
+    "display": "fullscreen",
+    "scope": "/",
+    "theme_color": "white"
+}

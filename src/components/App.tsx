@@ -4,13 +4,12 @@ import Block from "./Block";
 import {AppState} from "../types/AppState";
 import randomInt from "random-int";
 import {Header} from "./Header";
-import {Container} from "./Container";
 import {Settings} from "./Settings";
 import {Method} from "../types/Method";
 import {Color} from "../types/Color";
 import Bar from "./Bar";
 import {scheme, Size} from '../types/ColorScheme';
-import {PersonalBest} from "./PersonalBest";
+import StatCountsService from "./Service/StatCountsService";
 
 export default class App extends React.Component<{}, AppState> {
     public readonly state: AppState = {
@@ -54,12 +53,13 @@ export default class App extends React.Component<{}, AppState> {
     }
 
     render(): ReactNode {
-        return <div className={"container-fluid row main"}>
+        return <div className="main h-100">
             <Header
                 run={this.state.run}
                 startTime={this.state.startTime}
                 moves={this.state.moves}
                 solved={this.state.solved}
+                sizes={this.state.settings.availableSizes}
                 resetHandler={() => {
                     return this.handleReset(this.state.settings.size);
                 }}
@@ -72,7 +72,6 @@ export default class App extends React.Component<{}, AppState> {
                     })
                 }}
             />
-            <PersonalBest size={this.state.settings.size}/>
             <Settings
                 collapsed={this.state.settings.menuCollapsed}
                 methods={this.state.settings.availableMethods}
@@ -93,28 +92,28 @@ export default class App extends React.Component<{}, AppState> {
                     })
                 }}
             />
-            <Container
-                size={this.windowSize}
-            >
+            <div style={{height: `${this.windowSize}`}}>
                 {this.state.matrix.map((row: Bar[], currentRow: number) => {
-                    return row.map((block: Bar, currentColumn: number) => {
-                        return <Block
-                            key={`${currentRow}-${currentColumn}`}
-                            value={block.Value}
-                            size={this.state.relativeSize}
-                            color={!this.state.solved
-                                ? this.state.matrix[currentRow][currentColumn].Color
-                                : (block.Value !== 0 ? Color.SUCCESS : block.Color)}
-                            clickHandler={() => {
-                                this.blockEventHandler(currentRow, currentColumn);
-                            }}
-                            touchHandler={() => {
-                                this.blockEventHandler(currentRow, currentColumn);
-                            }}
-                        />
-                    })
+                    return <div key={currentRow} className="block-row">
+                        {row.map((block: Bar, currentColumn: number) => {
+                            return <Block
+                                key={`${currentRow}-${currentColumn}`}
+                                value={block.Value}
+                                size={this.state.relativeSize}
+                                color={!this.state.solved
+                                    ? this.state.matrix[currentRow][currentColumn].Color
+                                    : (block.Value !== 0 ? Color.SUCCESS : block.Color)}
+                                clickHandler={() => {
+                                    this.blockEventHandler(currentRow, currentColumn);
+                                }}
+                                touchHandler={() => {
+                                    this.blockEventHandler(currentRow, currentColumn);
+                                }}
+                            />
+                        })}
+                    </div>;
                 })}
-            </Container>
+            </div>
         </div>
     }
 
@@ -200,6 +199,7 @@ export default class App extends React.Component<{}, AppState> {
                     solved: true,
                     moves: moves,
                 });
+                StatCountsService.increment(this.state.settings.size);
 
                 return;
             }
@@ -267,7 +267,7 @@ export default class App extends React.Component<{}, AppState> {
             }
         }
 
-        return  false;
+        return false;
     }
 
     static isBlockCanMoveRight(matrix: Bar[][], y: number, x: number): boolean {

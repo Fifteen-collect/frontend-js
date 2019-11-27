@@ -1,33 +1,44 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
-import {Size} from "types/ColorScheme";
-import {PersonalBestInterface} from "interfaces/PersonalBestInterface";
-import PersonalBestService from "./Service/PersonalBestService";
+
+export enum PersonalBestType {
+    TIME,
+    TPS,
+    MOVES,
+}
 
 export interface PersonalBestProps {
-    size: Size
+    toggle: boolean,
+    toggleHandler: (event: React.MouseEvent) => void,
 }
 
 export const PersonalBestPropTypes: { [T in keyof PersonalBestProps]: PropTypes.Validator<any> } = {
-    size: PropTypes.number,
+    toggle: PropTypes.bool,
+    toggleHandler: PropTypes.func,
 };
 
-export class PersonalBest extends React.Component<PersonalBestProps, PersonalBestInterface> {
+export class PersonalBest extends React.Component<PersonalBestProps> {
     public static readonly propTypes = PersonalBestPropTypes;
 
-    constructor(props: PersonalBestProps) {
-        super(props);
-
-        this.state = PersonalBestService.getStats(props.size) || {};
-    }
-
     public render() {
-        return <div className="container-fluid">
-            <div className="row">
-                <div className="col-3 p-0">Pb: </div>
-                <div className="col-3 p-0">Time: {this.state.time || '-'} </div>
-                <div className="col-3 p-0">Tps: {this.state.tps || '-'} </div>
-                <div className="col-3 p-0">Moves: {this.state.moves || '-'} </div>
+        return <div
+            className="modal"
+            onClick={this.props.toggleHandler}
+        >
+            <div className="modal-dialog">
+                <div className="modal-content">
+                    <div className="modal-header">
+                        <h5 className="modal-title">Personal best results</h5>
+                        <button type="button" className="close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div className="modal-body">
+                        <p>Time:</p>
+                        <p>Tps:</p>
+                        <p>Moves:</p>
+                    </div>
+                </div>
             </div>
         </div>
     }

@@ -1,3 +1,11 @@
+html {
+    height: 100%;
+}
+
+body {
+    height: 100%;
+}
+
 .noselect {
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
@@ -16,13 +24,19 @@
 }
 
 .inner-content {
-    height: 10vh;
     width: 100vw;
 }
 
 .block-container {
     margin-left: -15px;
     margin-right: auto;
+}
+
+.block-row {
+    display: flex;
+    width: 100vw;
+    flex-wrap: nowrap;
+    justify-content: space-between;
 }
 
 @media (min-width: 768px) {

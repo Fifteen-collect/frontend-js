@@ -20,16 +20,14 @@ Block.propTypes = {
 
 function Block({size, clickHandler, touchHandler, color, value}: BlockProps): ReactElement {
     const relativeSize = Math.floor(size);
-    let pixels = `${relativeSize}px`;
 
     return <div
         className={`noselect border rounded text-light d-flex align-items-center justify-content-center`}
         onMouseDown={clickHandler}
         onTouchStart={touchHandler}
         style={{
-            width: pixels,
-            height: pixels,
-            flex: `0 0 ${relativeSize}px`,
+            width: "100%",
+            height: `${relativeSize}px`,
             fontSize: '2.5rem',
             cursor: 'pointer',
             backgroundColor: color,

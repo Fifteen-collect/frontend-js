@@ -23,6 +23,10 @@ body {
     margin-right: auto;
 }
 
+.main.dark {
+    background-color: #110301;
+}
+
 .inner-content {
     width: 100vw;
 }
@@ -37,6 +41,12 @@ body {
     width: 100vw;
     flex-wrap: nowrap;
     justify-content: space-between;
+}
+
+.block-node {
+    font-size: 2.5rem;
+    cursor: pointer;
+    width: 100%;
 }
 
 @media (min-width: 768px) {

@@ -1,5 +1,5 @@
-import {Color} from "./Color";
-import {Method} from "./Method";
+import {Color} from "../Color";
+import {Method} from "../Method";
 
 export enum Size {
     X2 = 2,

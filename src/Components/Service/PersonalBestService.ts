@@ -1,5 +1,5 @@
-import {Size} from "types/ColorScheme";
-import {PersonalBestInterface} from "interfaces/PersonalBestInterface";
+import {Size} from "../../Types/Block/ColorScheme";
+import {PersonalBestInterface} from "../../Interfaces/PersonalBestInterface";
 
 export default class PersonalBestService {
     public static getStats(size: Size): PersonalBestInterface | null {

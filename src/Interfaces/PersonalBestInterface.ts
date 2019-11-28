@@ -1,4 +1,4 @@
-import Bar from "../components/Bar";
+import Bar from "../Components/Bar";
 
 export interface PersonalBestInterface {
     time?: number,

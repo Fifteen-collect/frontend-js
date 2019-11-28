@@ -1,4 +1,4 @@
-import {Color} from "types/Color";
+import {Color} from "../Types/Color";
 
 export default class Bar {
     private color: Color;

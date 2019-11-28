@@ -1,15 +1,17 @@
 import * as React from "react";
 import {ReactNode} from "react";
 import Block from "./Block";
-import {AppState} from "../types/AppState";
+import {AppState} from "../Types/AppState";
 import randomInt from "random-int";
 import {Header} from "./Header";
 import {Settings} from "./Settings";
-import {Method} from "../types/Method";
-import {Color} from "../types/Color";
+import {Method} from "../Types/Method";
+import {Color} from "../Types/Color";
 import Bar from "./Bar";
-import {scheme, Size} from '../types/ColorScheme';
+import {scheme, Size} from '../Types/Block/ColorScheme';
 import StatCountsService from "./Service/StatCountsService";
+import {Theme} from "../Types/Theme";
+import {ThemeService} from "./Service/ThemeService";
 
 export default class App extends React.Component<{}, AppState> {
     public readonly state: AppState = {
@@ -23,6 +25,7 @@ export default class App extends React.Component<{}, AppState> {
                 Method.LAYERED,
                 Method.FRIDGE,
             ],
+            availableThemes: [Theme.LIGHT, Theme.DARK],
             menuCollapsed: true,
         },
         moves: 0,
@@ -33,6 +36,7 @@ export default class App extends React.Component<{}, AppState> {
             y: 0,
         },
         solved: false,
+        theme: Theme.LIGHT,
     };
     private readonly windowSize: number;
 
@@ -50,16 +54,18 @@ export default class App extends React.Component<{}, AppState> {
         this.state.matrix = matrix;
         this.windowSize = innerWidth > innerHeight ? (innerHeight - innerHeight / 10) : innerWidth;
         this.state.relativeSize = this.windowSize / this.state.settings.size;
+        this.state.theme = ThemeService.get();
     }
 
     render(): ReactNode {
-        return <div className="main h-100">
+        return <div className={`main h-100 ${this.state.theme === Theme.DARK ? 'bg-dark' : ''}`}>
             <Header
                 run={this.state.run}
                 startTime={this.state.startTime}
                 moves={this.state.moves}
                 solved={this.state.solved}
                 sizes={this.state.settings.availableSizes}
+                theme={this.state.theme}
                 resetHandler={() => {
                     return this.handleReset(this.state.settings.size);
                 }}
@@ -76,7 +82,13 @@ export default class App extends React.Component<{}, AppState> {
                 collapsed={this.state.settings.menuCollapsed}
                 methods={this.state.settings.availableMethods}
                 sizes={this.state.settings.availableSizes}
+                themes={this.state.settings.availableThemes}
                 resetHandler={this.handleReset.bind(this)}
+                theme={this.state.theme}
+                changeTheme={(theme: Theme) => {
+                    this.setState({theme: theme});
+                    ThemeService.set(theme);
+                }}
                 changeMethodHandler={(method: Method) => {
                     let {settings, matrix} = this.state;
 
@@ -100,6 +112,7 @@ export default class App extends React.Component<{}, AppState> {
                                 key={`${currentRow}-${currentColumn}`}
                                 value={block.Value}
                                 size={this.state.relativeSize}
+                                theme={this.state.theme}
                                 color={!this.state.solved
                                     ? this.state.matrix[currentRow][currentColumn].Color
                                     : (block.Value !== 0 ? Color.SUCCESS : block.Color)}

@@ -1,5 +1,6 @@
 import {Method} from "./Method";
-import Bar from "../components/Bar";
+import Bar from "../Components/Bar";
+import {Theme} from "./Theme";
 
 export interface AppState {
     matrix?: Bar[][],
@@ -13,10 +14,12 @@ export interface AppState {
         availableSizes: number[],
         availableMethods: Method[],
         menuCollapsed: boolean,
+        availableThemes: Theme[],
     },
     moves: number,
     run: boolean,
     startTime: number | 0;
     relativeSize?: number,
     solved: boolean,
+    theme: Theme,
 }

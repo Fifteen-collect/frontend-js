@@ -1,7 +1,8 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
-import {Method} from "../types/Method";
-import {Size} from "../types/ColorScheme";
+import {Method} from "../Types/Method";
+import {Size} from "../Types/Block/ColorScheme";
+import {Theme} from "../Types/Theme";
 
 export interface SettingsProps {
     sizes: number[],
@@ -9,6 +10,9 @@ export interface SettingsProps {
     resetHandler: (size: number) => void;
     changeMethodHandler: (method: Method) => void;
     collapsed: boolean,
+    changeTheme: (theme: Theme) => void;
+    themes: Theme[],
+    theme?: Theme;
 }
 
 export const SettingsPropTypes: { [T in keyof SettingsProps]: PropTypes.Validator<any> } = {
@@ -17,6 +21,9 @@ export const SettingsPropTypes: { [T in keyof SettingsProps]: PropTypes.Validato
     resetHandler: PropTypes.func,
     changeMethodHandler: PropTypes.func,
     collapsed: PropTypes.bool,
+    changeTheme: PropTypes.func,
+    themes: PropTypes.array,
+    theme: PropTypes.string,
 };
 
 export interface SettingsState {
@@ -34,6 +41,16 @@ export class Settings extends React.Component<SettingsProps, SettingsState> {
     public render() {
         return <div className={`container-fluid noselect ${this.props.collapsed ? 'collapse' : ''}`}>
             <div className="row noselect">
+                {this.props.themes.map((theme: Theme) => {
+                    return <button
+                        type={"button"}
+                        key={theme}
+                        className={`btn btn-light col-6 noselect ${this.props.theme === theme ? 'active' : ''}`}
+                        onClickCapture={() => this.props.changeTheme(theme)}
+                    >
+                        {theme}
+                    </button>
+                })}
                 {this.props.methods.map((method: Method) => {
                     return <button
                         type={"button"}

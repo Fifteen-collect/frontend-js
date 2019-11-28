@@ -1,5 +1,5 @@
-import {Size} from "../../types/ColorScheme";
-import {StatCounts} from "../../types/StatCounts";
+import {Size} from "../../Types/Block/ColorScheme";
+import {StatCounts} from "../../Types/StatCounts";
 
 const STATS_COUNT_KEY = 'counts';
 

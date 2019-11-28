@@ -1,5 +1,4 @@
 import * as React from "react";
-import {ReactNode} from "react";
 import {AppState} from "../Types/AppState";
 import randomInt from "random-int";
 import {Header} from "./Header";
@@ -14,6 +13,7 @@ import {ThemeContext} from "../Types/ThemeContext";
 import {GameContext} from "../Types/GameContext";
 import {ThemeStorage} from "./Service/ThemeStorage";
 import {Container} from "./Container";
+import {Timer} from "./Header/Timer";
 
 export default class App extends React.Component<{}, AppState> {
     public readonly state: AppState = {
@@ -61,15 +61,13 @@ export default class App extends React.Component<{}, AppState> {
         this.state.relativeSize = this.windowSize / this.state.settings.size;
     }
 
-    render(): ReactNode {
+    render(): React.ReactElement {
         return <ThemeContext.Provider value={this.state.theme}>
             <GameContext.Provider value={{run: this.state.run, solved: this.state.solved}}>
                 <div className="main h-100" style={{
                     backgroundColor: this.state.theme === Theme.DARK ? Color.SEADARK : Color.LIGHT
                 }}>
                     <Header
-                        startTime={this.state.startTime}
-                        moves={this.state.moves}
                         sizes={this.state.settings.availableSizes}
                         resetHandler={() => {
                             return this.handleReset(this.state.settings.size);
@@ -108,6 +106,11 @@ export default class App extends React.Component<{}, AppState> {
                             })
                         }}
                     />
+                    <div className="container">
+                        <div className="row d-flex align-items-center justify-content-around">
+                            <Timer moves={this.state.moves} startTime={this.state.startTime}/>
+                        </div>
+                    </div>
                     <Container
                         matrix={this.state.matrix}
                         style={{height: `${this.windowSize}`}}
@@ -149,12 +152,6 @@ export default class App extends React.Component<{}, AppState> {
         if (App.isBlockCanMove(matrix, rowIndex, blockIndex)) {
             const {x, y} = buffer;
 
-            if (!run && !this.state.solved) {
-                this.setState({
-                    startTime: Date.now(),
-                })
-            }
-
             if (this.state.solved) {
                 return;
             }
@@ -195,6 +192,12 @@ export default class App extends React.Component<{}, AppState> {
                         moves++;
                     }
                 }
+            }
+
+            if (!run && !this.state.solved) {
+                this.setState({
+                    startTime: Date.now(),
+                });
             }
 
             if (this.isMatrixSolved()) {

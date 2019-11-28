@@ -8,6 +8,7 @@ import ResetHandler from "../Interfaces/ResetHandler";
 import {ResetButton} from "./Header/ResetButton";
 import {Timer} from "./Header/Timer";
 import {StatsButton} from "./Header/StatsButton";
+import {Color} from "../Types/Color";
 
 export interface HeaderProps {
     resetHandler: ResetHandler,
@@ -47,26 +48,37 @@ export class Header extends React.Component<HeaderProps, HeaderState> {
 
     public render(): ReactElement {
         return <div
-            className={`container-fluid inner-content border-bottom shadow mb-2 ${this.props.theme === Theme.DARK ? 'border-dark' : ''}`}>
+            className={`container-fluid inner-content shadow mb-2`}
+            style={{
+                backgroundColor: this.props.theme === Theme.DARK ? Color.DEEPDARK : Color.LIGHT,
+            }}
+        >
             <div className="row p-2 d-flex align-items-center justify-content-between">
-                <ResetButton resetHandler={this.props.resetHandler}/>
+                <ResetButton
+                    theme={this.props.theme}
+                    resetHandler={this.props.resetHandler}
+                />
                 <div className="text-center col-10 d-flex justify-content-around">
                     {!this.state.additionalMenuToggle
                         ? <Timer
+                            theme={this.props.theme}
                             startTime={this.props.startTime}
                             solved={this.props.solved}
                             run={this.props.run}
                             moves={this.props.moves}
                         />
                         : <>
-                            <StatsButton onClick={() => this.setState({toggleStats: true})}/>
+                            <StatsButton
+                                theme={this.props.theme}
+                                onClick={() => this.setState({toggleStats: true})}
+                            />
                             <Stats
                                 toggle={this.state.toggleStats}
                                 sizes={this.props.sizes}
                                 toggleHandler={() => this.setState({toggleStats: false})}
                             />
                             <button
-                                className="btn btn-sm btn-block btn-primary mr-3 ml-3 mt-0 p-1 d-flex justify-content-center align-items-center"
+                                className={`btn btn-sm btn-block mr-3 ml-3 mt-0 p-1 d-flex justify-content-center align-items-center ${this.props.theme === Theme.DARK ? 'btn-dark text-white-50' : 'btn-primary'}`}
                                 onClick={this.toggleSettings.bind(this)}
                                 onClickCapture={this.props.openSettingsHandler}
                             >
@@ -75,7 +87,7 @@ export class Header extends React.Component<HeaderProps, HeaderState> {
                                     focusable="false"
                                     data-prefix="fas"
                                     data-icon="cog"
-                                    className="svg-inline--fa fa-cog fa-w-16 mr-2"
+                                    className={`svg-inline--fa fa-cog fa-w-16 mr-2`}
                                     role="img"
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 512 512"
@@ -94,7 +106,7 @@ export class Header extends React.Component<HeaderProps, HeaderState> {
                         </>}
                 </div>
                 <button
-                    className="btn btn-sm btn-primary col-1 p-1"
+                    className={`btn btn-sm col-1 p-1 ${this.props.theme === Theme.DARK ? 'btn-dark' : 'btn-primary'}`}
                     onClick={() => {
                         this.setState({
                             additionalMenuToggle: !this.state.additionalMenuToggle,
@@ -107,7 +119,7 @@ export class Header extends React.Component<HeaderProps, HeaderState> {
                         focusable="false"
                         data-prefix="fas"
                         data-icon="ellipsis-h"
-                        className="svg-inline--fa fa-ellipsis-h fa-w-16"
+                        className={`svg-inline--fa fa-ellipsis-h fa-w-16 ${this.props.theme === Theme.DARK ? 'text-white-50' : 'text-white'}`}
                         role="img"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 512 512"

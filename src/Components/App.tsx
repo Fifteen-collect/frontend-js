@@ -1,6 +1,5 @@
 import * as React from "react";
 import {ReactNode} from "react";
-import Block from "./Block";
 import {AppState} from "../Types/AppState";
 import randomInt from "random-int";
 import {Header} from "./Header";
@@ -12,6 +11,7 @@ import {scheme, Size} from '../Types/Block/ColorScheme';
 import StatCountsService from "./Service/StatCountsService";
 import {Theme} from "../Types/Theme";
 import {ThemeService} from "./Service/ThemeService";
+import {Container} from "./Container";
 
 export default class App extends React.Component<{}, AppState> {
     public readonly state: AppState = {
@@ -43,22 +43,26 @@ export default class App extends React.Component<{}, AppState> {
     constructor(props: {}) {
         super(props);
 
+        const theme =  ThemeService.get();
         const {matrix, buffer} = this.randomizeMatrix(
-            App.createDefaultMatrix(this.state.settings.size, this.state.settings.method),
+            App.createDefaultMatrix(this.state.settings.size, this.state.settings.method, theme),
             {
                 x: this.state.settings.size - 1,
                 y: this.state.settings.size - 1,
             }
         );
+
+        this.state.theme = theme;
         this.state.buffer = buffer;
         this.state.matrix = matrix;
         this.windowSize = innerWidth > innerHeight ? (innerHeight - innerHeight / 10) : innerWidth;
         this.state.relativeSize = this.windowSize / this.state.settings.size;
-        this.state.theme = ThemeService.get();
     }
 
     render(): ReactNode {
-        return <div className={`main h-100 ${this.state.theme === Theme.DARK ? 'bg-dark' : ''}`}>
+        return <div className={`main h-100`} style={{
+            backgroundColor: this.state.theme === Theme.DARK ? Color.SEADARK : Color.LIGHT
+        }}>
             <Header
                 run={this.state.run}
                 startTime={this.state.startTime}
@@ -94,7 +98,7 @@ export default class App extends React.Component<{}, AppState> {
 
                     matrix.forEach((row: Bar[]) => {
                         row.forEach((block: Bar) => {
-                            block.Color = scheme[method][this.state.settings.size][block.X][block.Y];
+                            block.Color = scheme[this.state.theme][method][this.state.settings.size][block.X][block.Y];
                         })
                     });
                     settings.method = method;
@@ -104,35 +108,22 @@ export default class App extends React.Component<{}, AppState> {
                     })
                 }}
             />
-            <div style={{height: `${this.windowSize}`}}>
-                {this.state.matrix.map((row: Bar[], currentRow: number) => {
-                    return <div key={currentRow} className="block-row">
-                        {row.map((block: Bar, currentColumn: number) => {
-                            return <Block
-                                key={`${currentRow}-${currentColumn}`}
-                                value={block.Value}
-                                size={this.state.relativeSize}
-                                theme={this.state.theme}
-                                color={!this.state.solved
-                                    ? this.state.matrix[currentRow][currentColumn].Color
-                                    : (block.Value !== 0 ? Color.SUCCESS : block.Color)}
-                                clickHandler={() => {
-                                    this.blockEventHandler(currentRow, currentColumn);
-                                }}
-                                touchHandler={() => {
-                                    this.blockEventHandler(currentRow, currentColumn);
-                                }}
-                            />
-                        })}
-                    </div>;
-                })}
-            </div>
+            <Container
+                matrix={this.state.matrix}
+                style={{height: `${this.windowSize}`}}
+                size={this.state.settings.size}
+                solved={this.state.solved}
+                relativeSize={this.state.relativeSize}
+                theme={this.state.theme}
+                clickHandler={this.blockEventHandler.bind(this)}
+                touchHandler={this.blockEventHandler.bind(this)}
+            />
         </div>
     }
 
     handleReset(size: number): void {
         const {matrix, buffer} = this.randomizeMatrix(
-            App.createDefaultMatrix(size, this.state.settings.method),
+            App.createDefaultMatrix(size, this.state.settings.method, this.state.theme),
             {x: size - 1, y: size - 1}
         );
         const {settings} = this.state;
@@ -228,17 +219,19 @@ export default class App extends React.Component<{}, AppState> {
         });
     }
 
-    static createDefaultMatrix(size: number, method: Method): Bar[][] {
+    static createDefaultMatrix(size: number, method: Method, theme: Theme): Bar[][] {
         let matrix: Bar[][] = [];
 
         for (let i = 0, count = 1; i < size; i++) {
             matrix.push([]);
 
             for (let j = 0; j < size; j++) {
-                if (i + 1 === size && j + 1 === size) {
-                    matrix[i][j] = new Bar(Color.LIGHT, 0, size - 1, size - 1);
+                matrix[i][j] = new Bar(scheme[theme][method][size][i][j], count, i, j);
+
+                if (count === (size * size) - 1) {
+                    count = 0;
                 } else {
-                    matrix[i][j] = new Bar(scheme[method][size][i][j], count++, i, j);
+                    count++
                 }
             }
         }

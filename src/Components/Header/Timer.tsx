@@ -1,19 +1,22 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
 import parseMs, {Parsed} from "parse-ms";
+import {Theme} from "../../Types/Theme";
 
 export interface TimerProps {
     solved: boolean,
     run: boolean,
     moves: number,
     startTime: number,
+    theme: Theme
 }
 
 export const TimerPropTypes: { [T in keyof TimerProps]: PropTypes.Validator<any> } = {
     solved: PropTypes.bool,
     run: PropTypes.bool,
     moves: PropTypes.number,
-    startTime: PropTypes.number
+    startTime: PropTypes.number,
+    theme: PropTypes.string,
 };
 
 export interface TimerState {
@@ -39,9 +42,10 @@ export class Timer extends React.Component<TimerProps, TimerState> {
             let milliseconds = this.state.currentTime - this.props.startTime;
             time = parseMs(milliseconds);
         }
+        const color = this.props.theme === Theme.DARK ? "text-white-50" : "text-dark-50";
 
         return <>
-            <b>
+            <b className={color}>
                 {time
                     ?
                     <>{time.hours ? `${time.hours}:` : ''}
@@ -52,12 +56,12 @@ export class Timer extends React.Component<TimerProps, TimerState> {
                 }
             </b>
             {this.props.solved
-                ? <b>
-                    tps:{(this.props.moves / (this.state.lastSolveTime || 1) * (this.state.lastSolveTime ? 1000 : 0)).toFixed(2)}
+                ? <b className={color}>
+                    tps: {(this.props.moves / (this.state.lastSolveTime || 1) * (this.state.lastSolveTime ? 1000 : 0)).toFixed(2)}
                 </b>
                 : <></>
             }
-            <b> Moves: {this.props.moves}</b>
+            <b className={color}> Moves: {this.props.moves}</b>
         </>
     }
 

@@ -1,12 +1,15 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
+import {Theme} from "../../Types/Theme";
 
 export interface StatsButtonProps {
     onClick: (event: React.MouseEvent) => void,
+    theme: Theme
 }
 
 export const StatsButtonPropTypes: { [T in keyof StatsButtonProps]: PropTypes.Validator<any> } = {
     onClick: PropTypes.func,
+    theme: PropTypes.string,
 };
 
 export class StatsButton extends React.Component<StatsButtonProps> {
@@ -14,8 +17,8 @@ export class StatsButton extends React.Component<StatsButtonProps> {
 
     public render() {
         return <button
-            className="btn btn-sm btn-block mr-3 ml-3 btn-primary p-1 d-flex justify-content-center align-items-center"
-            {...this.props}
+            className={`btn btn-sm btn-block mr-3 ml-3 p-1 d-flex justify-content-center align-items-center ${this.props.theme === Theme.DARK ? 'btn-dark text-white-50' : 'btn-primary'}`}
+            onClick={this.props.onClick}
         >
             <svg aria-hidden="true"
                  focusable="false"

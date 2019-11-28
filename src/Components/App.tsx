@@ -10,7 +10,9 @@ import Bar from "./Bar";
 import {scheme, Size} from '../Types/Block/ColorScheme';
 import StatCountsService from "./Service/StatCountsService";
 import {Theme} from "../Types/Theme";
-import {ThemeService} from "./Service/ThemeService";
+import {ThemeContext} from "../Types/ThemeContext";
+import {GameContext} from "../Types/GameContext";
+import {ThemeStorage} from "./Service/ThemeStorage";
 import {Container} from "./Container";
 
 export default class App extends React.Component<{}, AppState> {
@@ -43,7 +45,7 @@ export default class App extends React.Component<{}, AppState> {
     constructor(props: {}) {
         super(props);
 
-        const theme =  ThemeService.get();
+        const theme = ThemeStorage.get();
         const {matrix, buffer} = this.randomizeMatrix(
             App.createDefaultMatrix(this.state.settings.size, this.state.settings.method, theme),
             {
@@ -60,65 +62,63 @@ export default class App extends React.Component<{}, AppState> {
     }
 
     render(): ReactNode {
-        return <div className={`main h-100`} style={{
-            backgroundColor: this.state.theme === Theme.DARK ? Color.SEADARK : Color.LIGHT
-        }}>
-            <Header
-                run={this.state.run}
-                startTime={this.state.startTime}
-                moves={this.state.moves}
-                solved={this.state.solved}
-                sizes={this.state.settings.availableSizes}
-                theme={this.state.theme}
-                resetHandler={() => {
-                    return this.handleReset(this.state.settings.size);
-                }}
-                openSettingsHandler={() => {
-                    const {settings} = this.state;
-                    settings.menuCollapsed = !settings.menuCollapsed;
+        return <ThemeContext.Provider value={this.state.theme}>
+            <GameContext.Provider value={{run: this.state.run, solved: this.state.solved}}>
+                <div className="main h-100" style={{
+                    backgroundColor: this.state.theme === Theme.DARK ? Color.SEADARK : Color.LIGHT
+                }}>
+                    <Header
+                        startTime={this.state.startTime}
+                        moves={this.state.moves}
+                        sizes={this.state.settings.availableSizes}
+                        resetHandler={() => {
+                            return this.handleReset(this.state.settings.size);
+                        }}
+                        openSettingsHandler={() => {
+                            const {settings} = this.state;
+                            settings.menuCollapsed = !settings.menuCollapsed;
 
-                    this.setState({
-                        settings: settings,
-                    })
-                }}
-            />
-            <Settings
-                collapsed={this.state.settings.menuCollapsed}
-                methods={this.state.settings.availableMethods}
-                sizes={this.state.settings.availableSizes}
-                themes={this.state.settings.availableThemes}
-                resetHandler={this.handleReset.bind(this)}
-                theme={this.state.theme}
-                changeTheme={(theme: Theme) => {
-                    this.setState({theme: theme});
-                    ThemeService.set(theme);
-                }}
-                changeMethodHandler={(method: Method) => {
-                    let {settings, matrix} = this.state;
+                            this.setState({
+                                settings: settings,
+                            })
+                        }}
+                    />
+                    <Settings
+                        collapsed={this.state.settings.menuCollapsed}
+                        methods={this.state.settings.availableMethods}
+                        sizes={this.state.settings.availableSizes}
+                        themes={this.state.settings.availableThemes}
+                        resetHandler={this.handleReset.bind(this)}
+                        changeTheme={(theme: Theme) => {
+                            this.setState({theme: theme});
+                            ThemeStorage.set(theme);
+                        }}
+                        changeMethodHandler={(method: Method) => {
+                            let {settings, matrix} = this.state;
 
-                    matrix.forEach((row: Bar[]) => {
-                        row.forEach((block: Bar) => {
-                            block.Color = scheme[this.state.theme][method][this.state.settings.size][block.X][block.Y];
-                        })
-                    });
-                    settings.method = method;
-                    this.setState({
-                        matrix: matrix,
-                        settings: settings,
-                    })
-                }}
-            />
-            <Container
-                matrix={this.state.matrix}
-                style={{height: `${this.windowSize}`}}
-                size={this.state.settings.size}
-                solved={this.state.solved}
-                relativeSize={this.state.relativeSize}
-                theme={this.state.theme}
-                clickHandler={this.blockEventHandler.bind(this)}
-                touchHandler={this.blockEventHandler.bind(this)}
-            />
-        </div>
+                            matrix.forEach((row: Bar[]) => {
+                                row.forEach((block: Bar) => {
+                                    block.Color = scheme[this.state.theme][method][this.state.settings.size][block.X][block.Y];
+                                })
+                            });
+                            settings.method = method;
+                            this.setState({
+                                matrix: matrix,
+                                settings: settings,
+                            })
+                        }}
+                    />
+                    <Container
+                        matrix={this.state.matrix}
+                        style={{height: `${this.windowSize}`}}
+                        size={this.state.settings.size}
+                        relativeSize={this.state.relativeSize}
+                        clickHandler={this.blockEventHandler.bind(this)}
+                        touchHandler={this.blockEventHandler.bind(this)}
+                    />
+                </div>
+            </GameContext.Provider>
+        </ThemeContext.Provider>
     }
 
     handleReset(size: number): void {

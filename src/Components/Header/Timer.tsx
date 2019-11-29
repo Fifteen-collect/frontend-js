@@ -1,6 +1,5 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
-import parseMs, {Parsed} from "parse-ms";
 import {Context as ThemeContext} from "../../Types/Theme/Context";
 import {GameContext} from "../../Types/GameContext";
 import {ThemeProps} from "../../Types/Theme/ColorScheme";
@@ -35,12 +34,12 @@ export class Timer extends React.Component<TimerProps, TimerState> {
     };
 
     public render() {
-        let time: Parsed = parseMs(0);
+        let time: Date = new Date(0);
         if (!this.context.run && this.context.solved) {
-            time = parseMs(this.state.lastSolveTime);
+            time = new Date(this.state.lastSolveTime)
         } else if (this.state.currentTime !== 0) {
             let milliseconds = this.state.currentTime - this.props.startTime;
-            time = parseMs(milliseconds);
+            time = new Date(milliseconds)
         }
 
         return <ThemeContext.Consumer>
@@ -84,7 +83,7 @@ export class Timer extends React.Component<TimerProps, TimerState> {
 
 interface TimeInterface {
     children: string,
-    time: Parsed,
+    time: Date,
 }
 
 function Time({children, time}: TimeInterface): React.ReactElement {
@@ -92,10 +91,10 @@ function Time({children, time}: TimeInterface): React.ReactElement {
         {(theme: ThemeProps) => <b style={{color: theme.timerTextColor}}>
             {children}
             {time ? <>
-                {time.hours ? `${time.hours}:` : ''}
-                {time.minutes}:
-                {time.seconds}.
-                {time.milliseconds}
+                {time.getHours() - 3 ? `${time.getHours() - 3}:` : ''}
+                {time.getMinutes()}:
+                {time.getSeconds()}.
+                {time.getMilliseconds()}
             </> : '0:0.0'}
         </b>}
     </ThemeContext.Consumer>

@@ -1,10 +1,9 @@
 import * as React from "react";
 import {AppState} from "../Types/AppState";
-import randomInt from "random-int";
+import randomInt from "../Helpers/randomInt";
 import {Header} from "./Header";
 import {Settings} from "./Settings";
 import {Method} from "../Types/Method";
-import {Color} from "../Types/Color";
 import Bar from "./Bar";
 import {scheme as BlockColorScheme} from '../Types/Block/ColorScheme';
 import {Size} from '../Types/Block/Size';

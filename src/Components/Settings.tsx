@@ -1,10 +1,10 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
-import {Method} from "../Types/Method";
-import {Size} from "../Types/Block/Size";
-import {Theme} from "../Types/Theme";
-import {ThemeProps} from "../Types/Theme/ColorScheme";
-import {Context as ThemeContext} from "../Types/Theme/Context";
+import {Method} from "Types/Method";
+import {Size} from "Types/Block/Size";
+import {Theme} from "Types/Theme";
+import {ThemeProps} from "Types/Theme/ColorScheme";
+import {Context as ThemeContext} from "Types/Theme/Context";
 
 export interface SettingsProps {
     sizes: number[],

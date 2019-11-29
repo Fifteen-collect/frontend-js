@@ -1,4 +1,4 @@
-import {Theme} from "../../Types/Theme";
+import {Theme} from "Types/Theme";
 
 const THEME_KEY = 'theme';
 

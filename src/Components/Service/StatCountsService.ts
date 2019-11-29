@@ -1,5 +1,5 @@
-import {Size} from "../../Types/Block/Size";
-import {StatCounts} from "../../Types/StatCounts";
+import {Size} from "Types/Block/Size";
+import {StatCounts} from "Types/StatCounts";
 
 const STATS_COUNT_KEY = 'counts';
 

@@ -1,13 +1,13 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
-import {Stats} from "./Stats";
-import {Size} from "../Types/Block/Size";
-import ResetHandler from "../Interfaces/ResetHandler";
-import {Button as ResetButton} from "./Header/Reset/Button";
-import {StatsButton} from "./Header/StatsButton";
-import {Button as SettingsButton} from "./Header/Settings/Button";
-import {Context as ThemeContext} from "../Types/Theme/Context";
-import {ThemeProps} from "../Types/Theme/ColorScheme";
+import {Stats} from "Components/Stats";
+import {Size} from "Types/Block/Size";
+import ResetHandler from "Interfaces/ResetHandler";
+import {Button as ResetButton} from "Components/Header/Reset/Button";
+import {StatsButton} from "Components/Header/StatsButton";
+import {Button as SettingsButton} from "Components/Header/Settings/Button";
+import {Context as ThemeContext} from "Types/Theme/Context";
+import {ThemeProps} from "Types/Theme/ColorScheme";
 
 export interface HeaderProps {
     resetHandler: ResetHandler,

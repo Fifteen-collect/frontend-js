@@ -1,5 +1,5 @@
-import {Method} from "../Method";
-import {Color} from "../Color";
+import {Method} from "Types/Method";
+import {Color} from "Types/Color";
 
 export type Theme = {
     [method in Method]: {

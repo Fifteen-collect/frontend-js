@@ -1,20 +1,20 @@
 import * as React from "react";
-import {AppState} from "../Types/AppState";
-import randomInt from "../Helpers/randomInt";
-import {Header} from "./Header";
-import {Settings} from "./Settings";
-import {Method} from "../Types/Method";
-import Bar from "./Bar";
-import {scheme as BlockColorScheme} from '../Types/Block/ColorScheme';
-import {Size} from '../Types/Block/Size';
-import StatCountsService from "./Service/StatCountsService";
-import {Theme} from "../Types/Theme";
-import {Context as ThemeContext} from "../Types/Theme/Context";
-import {GameContext} from "../Types/GameContext";
-import {ThemeStorage} from "./Service/ThemeStorage";
-import {Container} from "./Container";
-import {Timer} from "./Header/Timer";
-import {scheme as ThemeColorScheme} from "../Types/Theme/ColorScheme";
+import {AppState} from "Types/AppState";
+import randomInt from "Helpers/randomInt";
+import {Header} from "Components/Header";
+import {Settings} from "Components/Settings";
+import {Method} from "Types/Method";
+import Bar from "Components/Bar";
+import {scheme as BlockColorScheme} from 'Types/Block/ColorScheme';
+import {Size} from 'Types/Block/Size';
+import StatCountsService from "Components/Service/StatCountsService";
+import {Theme} from "Types/Theme";
+import {Context as ThemeContext} from "Types/Theme/Context";
+import {GameContext} from "Types/GameContext";
+import {ThemeStorage} from "Components/Service/ThemeStorage";
+import {Container} from "Components/Container";
+import {Timer} from "Components/Header/Timer";
+import {scheme as ThemeColorScheme} from "Types/Theme/ColorScheme";
 
 export default class App extends React.Component<{}, AppState> {
     public readonly state: AppState = {

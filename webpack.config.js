@@ -6,7 +6,7 @@ module.exports = {
     context: path.join(__dirname, 'src'),
     devServer: {
         host: 'localhost',
-        publicPath: "/",
+        publicPath: "/src",
         contentBase: "./src",
         watchContentBase: true,
         noInfo: false,
@@ -25,7 +25,7 @@ module.exports = {
     },
     resolve: {
         modules: [
-            path.resolve('./src/*'),
+            path.resolve('./src'),
             path.resolve('./node_modules'),
         ],
         alias: {

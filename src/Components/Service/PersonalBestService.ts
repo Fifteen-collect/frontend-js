@@ -1,5 +1,5 @@
-import {Size} from "../../Types/Block/Size";
-import {PersonalBestInterface} from "../../Interfaces/PersonalBestInterface";
+import {Size} from "Types/Block/Size";
+import {PersonalBestInterface} from "Interfaces/PersonalBestInterface";
 
 export default class PersonalBestService {
     public static getStats(size: Size): PersonalBestInterface | null {

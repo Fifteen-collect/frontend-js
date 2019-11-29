@@ -1,9 +1,9 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
-import {Size} from "../Types/Block/Size";
-import {StatCounts} from "../Types/StatCounts";
-import {Context as ThemeContext} from "../Types/Theme/Context";
-import {ThemeProps} from "../Types/Theme/ColorScheme";
+import {Size} from "Types/Block/Size";
+import {StatCounts} from "Types/StatCounts";
+import {Context as ThemeContext} from "Types/Theme/Context";
+import {ThemeProps} from "Types/Theme/ColorScheme";
 
 export interface StatsProps {
     toggle: boolean,

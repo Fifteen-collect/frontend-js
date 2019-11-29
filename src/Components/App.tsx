@@ -7,11 +7,11 @@ import {Method} from "Types/Method";
 import Bar from "Components/Bar";
 import {scheme as BlockColorScheme} from 'Types/Block/ColorScheme';
 import {Size} from 'Types/Block/Size';
-import StatCountsService from "Components/Service/StatCountsService";
+import {incrementStat} from "Components/Service/StatCountsStorage";
 import {Theme} from "Types/Theme";
 import {Context as ThemeContext} from "Types/Theme/Context";
 import {GameContext} from "Types/GameContext";
-import {ThemeStorage} from "Components/Service/ThemeStorage";
+import {getThemeFromStorage, saveThemeToStorage} from "Components/Service/ThemeStorage";
 import {Container} from "Components/Container";
 import {Timer} from "Components/Header/Timer";
 import {scheme as ThemeColorScheme} from "Types/Theme/ColorScheme";
@@ -46,7 +46,7 @@ export default class App extends React.Component<{}, AppState> {
     constructor(props: {}) {
         super(props);
 
-        const theme = ThemeStorage.get();
+        const theme = getThemeFromStorage();
         const {matrix, buffer} = this.randomizeMatrix(
             App.createDefaultMatrix(this.state.settings.size, this.state.settings.method, theme),
             {
@@ -83,7 +83,6 @@ export default class App extends React.Component<{}, AppState> {
                         }}
                     />
                     <Settings
-                        currentTheme={this.state.theme}
                         toggle={this.state.settings.modalToggle}
                         methods={this.state.settings.availableMethods}
                         sizes={this.state.settings.availableSizes}
@@ -96,7 +95,8 @@ export default class App extends React.Component<{}, AppState> {
                         }}
                         changeTheme={(theme: Theme): void => {
                             this.setState({theme: theme});
-                            ThemeStorage.set(theme);
+                            this.handleReset(this.state.settings.size, theme);
+                            saveThemeToStorage(theme);
                         }}
                         changeMethodHandler={(method: Method): void => {
                             let {settings, matrix} = this.state;
@@ -131,9 +131,9 @@ export default class App extends React.Component<{}, AppState> {
         </ThemeContext.Provider>
     }
 
-    handleReset(size: number): void {
+    handleReset(size: number, theme?: Theme): void {
         const {matrix, buffer} = this.randomizeMatrix(
-            App.createDefaultMatrix(size, this.state.settings.method, this.state.theme),
+            App.createDefaultMatrix(size, this.state.settings.method, theme || this.state.theme),
             {x: size - 1, y: size - 1}
         );
         const {settings} = this.state;
@@ -213,7 +213,7 @@ export default class App extends React.Component<{}, AppState> {
                     solved: true,
                     moves: moves,
                 });
-                StatCountsService.increment(this.state.settings.size);
+                incrementStat(this.state.settings.size);
 
                 return;
             }

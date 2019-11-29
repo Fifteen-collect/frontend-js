@@ -6,7 +6,7 @@ module.exports = {
     context: path.join(__dirname, 'src'),
     devServer: {
         host: 'localhost',
-        publicPath: "/src",
+        publicPath: "/",
         contentBase: "./src",
         watchContentBase: true,
         noInfo: false,

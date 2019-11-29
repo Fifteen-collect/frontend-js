@@ -1,9 +1,10 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
-import {Size} from "../Types/Block/Size";
-import {StatCounts} from "../Types/StatCounts";
-import {Context as ThemeContext} from "../Types/Theme/Context";
-import {ThemeProps} from "../Types/Theme/ColorScheme";
+import {Size} from "Types/Block/Size";
+import {StatCounts} from "Types/StatCounts";
+import {Context as ThemeContext} from "Types/Theme/Context";
+import {ThemeProps} from "Types/Theme/ColorScheme";
+import {getStatCounts} from "Components/Service/StatCountsStorage";
 
 export interface StatsProps {
     toggle: boolean,
@@ -22,7 +23,7 @@ export function Stats(props: StatsProps): React.ReactElement {
         return <></>;
     }
 
-    let counts: StatCounts = JSON.parse(localStorage.getItem('counts'));
+    let counts: StatCounts = getStatCounts();
 
     return <ThemeContext.Consumer>
         {(theme: ThemeProps) => <div className="modal d-block" onClick={props.toggleHandler}>

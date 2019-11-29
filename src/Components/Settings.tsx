@@ -1,10 +1,10 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
-import {Method} from "../Types/Method";
-import {Size} from "../Types/Block/Size";
-import {Theme} from "../Types/Theme";
-import {ThemeProps} from "../Types/Theme/ColorScheme";
-import {Context as ThemeContext} from "../Types/Theme/Context";
+import {Method} from "Types/Method";
+import {Size} from "Types/Block/Size";
+import {Theme} from "Types/Theme";
+import {ThemeProps} from "Types/Theme/ColorScheme";
+import {Context as ThemeContext} from "Types/Theme/Context";
 
 export interface SettingsProps {
     sizes: number[],
@@ -15,7 +15,6 @@ export interface SettingsProps {
     toggleHandler: (event: React.MouseEvent) => void,
     changeTheme: (theme: Theme) => void;
     themes: Theme[],
-    currentTheme: Theme,
 }
 
 export const SettingsPropTypes: { [T in keyof SettingsProps]: PropTypes.Validator<any> } = {
@@ -27,7 +26,6 @@ export const SettingsPropTypes: { [T in keyof SettingsProps]: PropTypes.Validato
     toggleHandler: PropTypes.func,
     changeTheme: PropTypes.func,
     themes: PropTypes.array,
-    currentTheme: PropTypes.string,
 };
 
 export interface SettingsState {
@@ -48,11 +46,11 @@ export class Settings extends React.Component<SettingsProps, SettingsState> {
         }
 
         return <ThemeContext.Consumer>
-            {(theme: ThemeProps) => <div className="modal d-block">
+            {(currentTheme: ThemeProps) => <div className="modal d-block">
                 <div className="modal-dialog">
-                    <div className="modal-content" style={{color: theme.main.modal.text}}>
+                    <div className="modal-content" style={{color: currentTheme.main.modal.text}}>
                         <div className="modal-header border-bottom-0 shadow"
-                             style={{backgroundColor: theme.main.modal.header}}>
+                             style={{backgroundColor: currentTheme.main.modal.header}}>
                             <h5 className="modal-title">Settings</h5>
                             <button
                                 type="button"
@@ -62,7 +60,7 @@ export class Settings extends React.Component<SettingsProps, SettingsState> {
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                        <div className="modal-body" style={{backgroundColor: theme.main.modal.body}}>
+                        <div className="modal-body" style={{backgroundColor: currentTheme.main.modal.body}}>
                             <div className="container-fluid mt-1">
                                 Themes:
                                 <div className="row">
@@ -70,11 +68,13 @@ export class Settings extends React.Component<SettingsProps, SettingsState> {
                                         return <button
                                             type={"button"}
                                             key={availableTheme}
-                                            className={`btn col-6 noselect ${this.props.currentTheme === availableTheme ? 'active' : ''}`}
-                                            onClickCapture={() => this.props.changeTheme(availableTheme)}
+                                            className="btn col-6 noselect"
+                                            onClick={() => {
+                                                this.props.changeTheme(availableTheme);
+                                            }}
                                             style={{
-                                                backgroundColor: theme.main.header.background,
-                                                color: theme.main.modal.text,
+                                                backgroundColor: currentTheme.main.header.background,
+                                                color: currentTheme.main.modal.text,
                                             }}
                                         >
                                             {availableTheme}
@@ -97,8 +97,8 @@ export class Settings extends React.Component<SettingsProps, SettingsState> {
                                                 this.props.changeMethodHandler(method);
                                             }}
                                             style={{
-                                                backgroundColor: theme.main.header.background,
-                                                color: theme.main.modal.text,
+                                                backgroundColor: currentTheme.main.header.background,
+                                                color: currentTheme.main.modal.text,
                                             }}
                                         >
                                             {method}
@@ -121,8 +121,8 @@ export class Settings extends React.Component<SettingsProps, SettingsState> {
                                                 this.props.resetHandler(size);
                                             }}
                                             style={{
-                                                backgroundColor: theme.main.header.background,
-                                                color: theme.main.modal.text,
+                                                backgroundColor: currentTheme.main.header.background,
+                                                color: currentTheme.main.modal.text,
                                             }}
                                         >
                                             {size}

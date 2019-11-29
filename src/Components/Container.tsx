@@ -1,10 +1,10 @@
 import * as React from "react";
 import {CSSProperties} from "react";
 import * as PropTypes from "prop-types";
-import Bar from "./Bar";
-import {Context as ThemeContext} from "../Types/Theme/Context";
-import {GameContext} from "../Types/GameContext";
-import {ThemeProps} from "../Types/Theme/ColorScheme";
+import Bar from "Components/Bar";
+import {Context as ThemeContext} from "Types/Theme/Context";
+import {GameContext} from "Types/GameContext";
+import {ThemeProps} from "Types/Theme/ColorScheme";
 
 export interface ContainerProps {
     matrix: Bar[][],

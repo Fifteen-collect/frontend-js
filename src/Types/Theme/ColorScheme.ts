@@ -1,5 +1,5 @@
-import {Theme} from "../Theme";
-import {Color} from "../Color";
+import {Theme} from "Types/Theme";
+import {Color} from "Types/Color";
 
 export interface ThemeProps {
     text: Color,

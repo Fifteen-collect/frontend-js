@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
 import ResetHandler from "Interfaces/ResetHandler";
-import {Context as ThemeContext} from "../../../Types/Theme/Context";
+import {Context as ThemeContext} from "Types/Theme/Context";
 import {ThemeProps} from "Types/Theme/ColorScheme";
 
 export interface ResetButtonProps {

@@ -1,8 +1,8 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
-import {Context as ThemeContext} from "../../Types/Theme/Context";
-import {GameContext} from "../../Types/GameContext";
-import {ThemeProps} from "../../Types/Theme/ColorScheme";
+import {Context as ThemeContext} from "Types/Theme/Context";
+import {GameContext} from "Types/GameContext";
+import {ThemeProps} from "Types/Theme/ColorScheme";
 
 export interface TimerProps {
     moves: number,

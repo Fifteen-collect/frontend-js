@@ -15,6 +15,7 @@ import {getThemeFromStorage, saveThemeToStorage} from "Components/Service/ThemeS
 import {Container} from "Components/Container";
 import {Timer} from "Components/Header/Timer";
 import {scheme as ThemeColorScheme} from "Types/Theme/ColorScheme";
+import {Sizes} from "Components/Settings/Sizes";
 
 export default class App extends React.Component<{}, AppState> {
     public readonly state: AppState = {
@@ -30,6 +31,7 @@ export default class App extends React.Component<{}, AppState> {
             ],
             availableThemes: [Theme.LIGHT, Theme.DARK],
             modalToggle: false,
+            pinSizesToTop: false,
         },
         moves: 0,
         run: false,
@@ -83,6 +85,7 @@ export default class App extends React.Component<{}, AppState> {
                         }}
                     />
                     <Settings
+                        currentThemeType={this.state.theme}
                         toggle={this.state.settings.modalToggle}
                         methods={this.state.settings.availableMethods}
                         sizes={this.state.settings.availableSizes}
@@ -112,7 +115,33 @@ export default class App extends React.Component<{}, AppState> {
                                 settings: settings,
                             })
                         }}
+                        pinSizes={this.state.settings.pinSizesToTop}
+                        pinSizeToTop={() => {
+                            const {settings} = this.state;
+                            settings.pinSizesToTop = !settings.pinSizesToTop;
+                            this.setState({
+                                settings: settings
+                            });
+                        }}
                     />
+
+                    {this.state.settings.pinSizesToTop
+                        ? <div className="container-fluid">
+                            <Sizes
+                                sizes={this.state.settings.availableSizes}
+                                size={this.state.settings.size}
+                                changeSize={(size) => {
+                                    const {settings} = this.state;
+
+                                    settings.size = size;
+                                    this.setState({
+                                        settings: settings
+                                    });
+                                    this.handleReset(size);
+                                }}
+                            />
+                        </div>
+                        : <></>}
                     <div className="container">
                         <div className="row d-flex align-items-center justify-content-around">
                             <Timer moves={this.state.moves} startTime={this.state.startTime}/>

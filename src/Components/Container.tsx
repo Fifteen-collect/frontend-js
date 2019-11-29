@@ -38,8 +38,7 @@ export function Container(props: ContainerProps): React.ReactElement {
                             return <div
                                 key={`${currentRow}-${currentColumn}`}
                                 className={`noselect block-node rounded d-flex align-items-center justify-content-center`}
-                                onMouseDown={() => props.clickHandler(currentRow, currentColumn)}
-                                onTouchStart={() => props.touchHandler(currentRow, currentColumn)}
+                                onTouchStart={() => props.clickHandler(currentRow, currentColumn)}
                                 style={{
                                     height: `${relativeSize}px`,
                                     color: theme.text,

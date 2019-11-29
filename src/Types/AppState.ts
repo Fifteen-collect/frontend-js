@@ -15,6 +15,7 @@ export interface AppState {
         availableMethods: Method[],
         modalToggle: boolean,
         availableThemes: Theme[],
+        pinSizesToTop: boolean,
     },
     moves: number,
     run: boolean,

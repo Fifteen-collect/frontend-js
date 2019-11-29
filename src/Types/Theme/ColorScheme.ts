@@ -10,6 +10,9 @@ export interface ThemeProps {
     },
     button: {
         background: Color,
+        classColor: string,
+        text: Color,
+        selectedText: Color,
     },
     main: {
         background: Color,
@@ -20,7 +23,11 @@ export interface ThemeProps {
             header: Color,
             body: Color,
             text: Color,
+            closeButton: Color,
         }
+    },
+    table: {
+        backgroundClass: string
     }
 }
 
@@ -38,6 +45,9 @@ export const scheme: ColorScheme = {
         },
         button: {
             background: Color.PRIMARY,
+            classColor: 'btn-outline-primary',
+            text: Color.BLACK,
+            selectedText: Color.WHITE,
         },
         main: {
             background: Color.WHITE,
@@ -48,7 +58,11 @@ export const scheme: ColorScheme = {
                 header: Color.LIGHT,
                 body: Color.WHITE,
                 text: Color.BLACK,
+                closeButton: Color.BLACK,
             }
+        },
+        table: {
+            backgroundClass: 'table-light'
         }
     },
     [Theme.DARK]: {
@@ -60,6 +74,9 @@ export const scheme: ColorScheme = {
         },
         button: {
             background: Color.COMPOSITIVEDARK,
+            classColor: 'btn-outline-dark',
+            text: Color.WHITE,
+            selectedText: Color.WHITE,
         },
         main: {
             background: Color.NIGHTDARK,
@@ -68,9 +85,13 @@ export const scheme: ColorScheme = {
             },
             modal: {
                 header: Color.NIGHTDARK,
-                body: Color.STRANGEDARK,
+                body: Color.NIGHTDARK,
                 text: Color.WHITE,
+                closeButton: Color.WHITE,
             }
+        },
+        table: {
+            backgroundClass: 'table-dark'
         }
     }
 };

@@ -37,11 +37,11 @@ export function Stats(props: StatsProps): React.ReactElement {
                             className="close"
                             onClick={props.toggleHandler}
                         >
-                            <span aria-hidden="true">&times;</span>
+                            <span aria-hidden="true" style={{color: theme.main.modal.closeButton}}>&times;</span>
                         </button>
                     </div>
                     <div className="modal-body p-0" style={{backgroundColor: theme.main.modal.body}}>
-                        <table className="table table-borderless table-dark table table-striped m-0">
+                        <table className={`table table-borderless table table-striped m-0 ${theme.table.backgroundClass}`}>
                             <thead>
                             <tr>
                                 <th>Puzzle</th>

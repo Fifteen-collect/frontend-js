@@ -14,7 +14,7 @@ export const Dark: BlockTheme = {
             },
             [Row.SECOND]: {
                 [Col.FIRST]: Color.STRANGEDARK,
-                [Col.SECOND]: Color.LIGHTSTATEGREY
+                [Col.SECOND]: Color.NIGHTDARK
             }
         },
         [Size.X3]: {
@@ -31,7 +31,7 @@ export const Dark: BlockTheme = {
             [Row.THIRD]: {
                 [Col.FIRST]: Color.STRANGEDARK,
                 [Col.SECOND]: Color.STRANGEDARK,
-                [Col.THIRD]: Color.LIGHTSTATEGREY,
+                [Col.THIRD]: Color.NIGHTDARK,
             }
         },
         [Size.X4]: {
@@ -57,7 +57,7 @@ export const Dark: BlockTheme = {
                 [Col.FIRST]: Color.STRANGEDARK,
                 [Col.SECOND]: Color.STRANGEDARK,
                 [Col.THIRD]: Color.STRANGEDARK,
-                [Col.FOURTH]: Color.LIGHTSTATEGREY,
+                [Col.FOURTH]: Color.NIGHTDARK,
             }
         },
         [Size.X5]: {
@@ -94,7 +94,7 @@ export const Dark: BlockTheme = {
                 [Col.SECOND]: Color.STRANGEDARK,
                 [Col.THIRD]: Color.STRANGEDARK,
                 [Col.FOURTH]: Color.STRANGEDARK,
-                [Col.FIFTH]: Color.LIGHTSTATEGREY,
+                [Col.FIFTH]: Color.NIGHTDARK,
             }
         },
         [Size.X6]: {
@@ -144,7 +144,7 @@ export const Dark: BlockTheme = {
                 [Col.THIRD]: Color.STRANGEDARK,
                 [Col.FOURTH]: Color.STRANGEDARK,
                 [Col.FIFTH]: Color.STRANGEDARK,
-                [Col.SIXTH]: Color.LIGHTSTATEGREY,
+                [Col.SIXTH]: Color.NIGHTDARK,
             }
         },
         [Size.X7]: {
@@ -209,7 +209,7 @@ export const Dark: BlockTheme = {
                 [Col.FOURTH]: Color.STRANGEDARK,
                 [Col.FIFTH]: Color.STRANGEDARK,
                 [Col.SIXTH]: Color.STRANGEDARK,
-                [Col.SEVENTH]: Color.LIGHTSTATEGREY,
+                [Col.SEVENTH]: Color.NIGHTDARK,
             }
         }
     },
@@ -221,7 +221,7 @@ export const Dark: BlockTheme = {
             },
             [Row.SECOND]: {
                 [Col.FIRST]: Color.ORANGE,
-                [Col.SECOND]: Color.LIGHTSTATEGREY
+                [Col.SECOND]: Color.NIGHTDARK
             }
         },
         [Size.X3]: {
@@ -238,7 +238,7 @@ export const Dark: BlockTheme = {
             [Row.THIRD]: {
                 [Col.FIRST]: Color.YELLOW,
                 [Col.SECOND]: Color.YELLOW,
-                [Col.THIRD]: Color.LIGHTSTATEGREY,
+                [Col.THIRD]: Color.NIGHTDARK,
             }
         },
         [Size.X4]: {
@@ -264,7 +264,7 @@ export const Dark: BlockTheme = {
                 [Col.FIRST]: Color.GREEN,
                 [Col.SECOND]: Color.GREEN,
                 [Col.THIRD]: Color.GREEN,
-                [Col.FOURTH]: Color.LIGHTSTATEGREY,
+                [Col.FOURTH]: Color.NIGHTDARK,
             }
         },
         [Size.X5]: {
@@ -301,7 +301,7 @@ export const Dark: BlockTheme = {
                 [Col.SECOND]: Color.CYAN,
                 [Col.THIRD]: Color.CYAN,
                 [Col.FOURTH]: Color.CYAN,
-                [Col.FIFTH]: Color.LIGHTSTATEGREY,
+                [Col.FIFTH]: Color.NIGHTDARK,
             }
         },
         [Size.X6]: {
@@ -351,7 +351,7 @@ export const Dark: BlockTheme = {
                 [Col.THIRD]: Color.BLUE,
                 [Col.FOURTH]: Color.BLUE,
                 [Col.FIFTH]: Color.BLUE,
-                [Col.SIXTH]: Color.LIGHTSTATEGREY,
+                [Col.SIXTH]: Color.NIGHTDARK,
             }
         },
         [Size.X7]: {
@@ -416,7 +416,7 @@ export const Dark: BlockTheme = {
                 [Col.FOURTH]: Color.PURPLE,
                 [Col.FIFTH]: Color.PURPLE,
                 [Col.SIXTH]: Color.PURPLE,
-                [Col.SEVENTH]: Color.LIGHTSTATEGREY,
+                [Col.SEVENTH]: Color.NIGHTDARK,
             }
         }
     },
@@ -428,7 +428,7 @@ export const Dark: BlockTheme = {
             },
             [Row.SECOND]: {
                 [Col.FIRST]: Color.RED,
-                [Col.SECOND]: Color.LIGHTSTATEGREY
+                [Col.SECOND]: Color.NIGHTDARK
             }
         },
         [Size.X3]: {
@@ -445,7 +445,7 @@ export const Dark: BlockTheme = {
             [Row.THIRD]: {
                 [Col.FIRST]: Color.RED,
                 [Col.SECOND]: Color.ORANGE,
-                [Col.THIRD]: Color.LIGHTSTATEGREY,
+                [Col.THIRD]: Color.NIGHTDARK,
             }
         },
         [Size.X4]: {
@@ -471,7 +471,7 @@ export const Dark: BlockTheme = {
                 [Col.FIRST]: Color.RED,
                 [Col.SECOND]: Color.ORANGE,
                 [Col.THIRD]: Color.YELLOW,
-                [Col.FOURTH]: Color.LIGHTSTATEGREY,
+                [Col.FOURTH]: Color.NIGHTDARK,
             }
         },
         [Size.X5]: {
@@ -508,7 +508,7 @@ export const Dark: BlockTheme = {
                 [Col.SECOND]: Color.ORANGE,
                 [Col.THIRD]: Color.YELLOW,
                 [Col.FOURTH]: Color.GREEN,
-                [Col.FIFTH]: Color.LIGHTSTATEGREY,
+                [Col.FIFTH]: Color.NIGHTDARK,
             }
         },
         [Size.X6]: {
@@ -558,7 +558,7 @@ export const Dark: BlockTheme = {
                 [Col.THIRD]: Color.YELLOW,
                 [Col.FOURTH]: Color.GREEN,
                 [Col.FIFTH]: Color.CYAN,
-                [Col.SIXTH]: Color.LIGHTSTATEGREY,
+                [Col.SIXTH]: Color.NIGHTDARK,
             }
         },
         [Size.X7]: {
@@ -623,7 +623,7 @@ export const Dark: BlockTheme = {
                 [Col.FOURTH]: Color.GREEN,
                 [Col.FIFTH]: Color.CYAN,
                 [Col.SIXTH]: Color.BLUE,
-                [Col.SEVENTH]: Color.LIGHTSTATEGREY,
+                [Col.SEVENTH]: Color.NIGHTDARK,
             }
         }
     },

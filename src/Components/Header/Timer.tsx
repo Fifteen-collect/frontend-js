@@ -34,12 +34,12 @@ export class Timer extends React.Component<TimerProps, TimerState> {
     };
 
     public render() {
-        let time: Date = new Date(0);
+        let time: Date = new Date(0, 0, 0, 0, 0, 0, 0);
         if (!this.context.run && this.context.solved) {
-            time = new Date(this.state.lastSolveTime)
+            time = new Date(0, 0, 0, 0, 0, 0, this.state.lastSolveTime);
         } else if (this.state.currentTime !== 0) {
             let milliseconds = this.state.currentTime - this.props.startTime;
-            time = new Date(milliseconds)
+            time = new Date(0, 0, 0, 0, 0, 0, milliseconds);
         }
 
         return <ThemeContext.Consumer>
@@ -90,12 +90,10 @@ function Time({children, time}: TimeInterface): React.ReactElement {
     return <ThemeContext.Consumer>
         {(theme: ThemeProps) => <b style={{color: theme.timerTextColor}}>
             {children}
-            {time ? <>
-                {time.getHours() - 3 ? `${time.getHours() - 3}:` : ''}
-                {time.getMinutes()}:
-                {time.getSeconds()}.
-                {time.getMilliseconds()}
-            </> : '0:0.0'}
+            {time.getHours() ? `${time.getHours()}:` : ''}
+            {time.getMinutes()}:
+            {time.getSeconds()}.
+            {time.getMilliseconds()}
         </b>}
     </ThemeContext.Consumer>
 }

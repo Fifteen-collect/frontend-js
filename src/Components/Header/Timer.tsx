@@ -1,9 +1,9 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
 import parseMs, {Parsed} from "parse-ms";
-import {Theme} from "../../Types/Theme";
-import {ThemeContext} from "../../Types/ThemeContext";
+import {Context as ThemeContext} from "../../Types/Theme/Context";
 import {GameContext} from "../../Types/GameContext";
+import {ThemeProps} from "../../Types/Theme/ColorScheme";
 
 export interface TimerProps {
     moves: number,
@@ -44,24 +44,14 @@ export class Timer extends React.Component<TimerProps, TimerState> {
         }
 
         return <ThemeContext.Consumer>
-            {(theme: Theme) => <>
-                <b className={theme === Theme.DARK ? "text-white-50" : "text-dark-50"}>
-                    {time
-                        ? <>
-                            {time.hours ? `${time.hours}:` : ''}
-                            {time.minutes}:
-                            {time.seconds}.
-                            {time.milliseconds}
-                        </>
-                        : '0:0.0'
-                    }
-                </b>
+            {(theme: ThemeProps) => <>
+                <Time time={time}>Time: </Time>
                 {this.context.solved
-                    ? <b className={theme === Theme.DARK ? "text-white-50" : "text-dark-50"}>
-                        tps: {(this.props.moves / (this.state.lastSolveTime || 1) * (this.state.lastSolveTime ? 1000 : 0)).toFixed(2)}
+                    ? <b style={{color: theme.timerTextColor}}>
+                        tps: {this.calculateTps()}
                     </b>
                     : <></>}
-                <b className={theme === Theme.DARK ? "text-white-50" : "text-dark-50"}> Moves: {this.props.moves}</b>
+                <b style={{color: theme.timerTextColor}}> Moves: {this.props.moves}</b>
             </>}
         </ThemeContext.Consumer>
     }
@@ -74,6 +64,12 @@ export class Timer extends React.Component<TimerProps, TimerState> {
         clearInterval(this.state.intervalUpdateId);
     }
 
+    calculateTps(): string {
+        const tps = this.props.moves / (this.state.lastSolveTime || 1) * (this.state.lastSolveTime ? 1000 : 0);
+
+        return tps.toFixed(2);
+    }
+
     tick(): void {
         this.setState({
             currentTime: this.context.run ? Date.now() : 0,
@@ -84,4 +80,23 @@ export class Timer extends React.Component<TimerProps, TimerState> {
             });
         }
     }
+}
+
+interface TimeInterface {
+    children: string,
+    time: Parsed,
+}
+
+function Time({children, time}: TimeInterface): React.ReactElement {
+    return <ThemeContext.Consumer>
+        {(theme: ThemeProps) => <b style={{color: theme.timerTextColor}}>
+            {children}
+            {time ? <>
+                {time.hours ? `${time.hours}:` : ''}
+                {time.minutes}:
+                {time.seconds}.
+                {time.milliseconds}
+            </> : '0:0.0'}
+        </b>}
+    </ThemeContext.Consumer>
 }

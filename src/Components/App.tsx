@@ -6,14 +6,16 @@ import {Settings} from "./Settings";
 import {Method} from "../Types/Method";
 import {Color} from "../Types/Color";
 import Bar from "./Bar";
-import {scheme, Size} from '../Types/Block/ColorScheme';
+import {scheme as BlockColorScheme} from '../Types/Block/ColorScheme';
+import {Size} from '../Types/Block/Size';
 import StatCountsService from "./Service/StatCountsService";
 import {Theme} from "../Types/Theme";
-import {ThemeContext} from "../Types/ThemeContext";
+import {Context as ThemeContext} from "../Types/Theme/Context";
 import {GameContext} from "../Types/GameContext";
 import {ThemeStorage} from "./Service/ThemeStorage";
 import {Container} from "./Container";
 import {Timer} from "./Header/Timer";
+import {scheme as ThemeColorScheme} from "../Types/Theme/ColorScheme";
 
 export default class App extends React.Component<{}, AppState> {
     public readonly state: AppState = {
@@ -62,10 +64,10 @@ export default class App extends React.Component<{}, AppState> {
     }
 
     render(): React.ReactElement {
-        return <ThemeContext.Provider value={this.state.theme}>
+        return <ThemeContext.Provider value={ThemeColorScheme[this.state.theme]}>
             <GameContext.Provider value={{run: this.state.run, solved: this.state.solved}}>
                 <div className="main h-100" style={{
-                    backgroundColor: this.state.theme === Theme.DARK ? Color.SEADARK : Color.LIGHT
+                    backgroundColor: ThemeColorScheme[this.state.theme].main.background
                 }}>
                     <Header
                         sizes={this.state.settings.availableSizes}
@@ -82,21 +84,22 @@ export default class App extends React.Component<{}, AppState> {
                         }}
                     />
                     <Settings
+                        currentTheme={this.state.theme}
                         collapsed={this.state.settings.menuCollapsed}
                         methods={this.state.settings.availableMethods}
                         sizes={this.state.settings.availableSizes}
                         themes={this.state.settings.availableThemes}
                         resetHandler={this.handleReset.bind(this)}
-                        changeTheme={(theme: Theme) => {
+                        changeTheme={(theme: Theme): void => {
                             this.setState({theme: theme});
                             ThemeStorage.set(theme);
                         }}
-                        changeMethodHandler={(method: Method) => {
+                        changeMethodHandler={(method: Method): void => {
                             let {settings, matrix} = this.state;
 
-                            matrix.forEach((row: Bar[]) => {
-                                row.forEach((block: Bar) => {
-                                    block.Color = scheme[this.state.theme][method][this.state.settings.size][block.X][block.Y];
+                            matrix.forEach((row: Bar[]): void => {
+                                row.forEach((block: Bar): void => {
+                                    block.Color = BlockColorScheme[this.state.theme][method][this.state.settings.size][block.X][block.Y];
                                 })
                             });
                             settings.method = method;
@@ -229,7 +232,7 @@ export default class App extends React.Component<{}, AppState> {
             matrix.push([]);
 
             for (let j = 0; j < size; j++) {
-                matrix[i][j] = new Bar(scheme[theme][method][size][i][j], count, i, j);
+                matrix[i][j] = new Bar(BlockColorScheme[theme][method][size][i][j], count, i, j);
 
                 if (count === (size * size) - 1) {
                     count = 0;

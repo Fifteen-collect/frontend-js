@@ -1,4 +1,4 @@
-import {Size} from "../../Types/Block/ColorScheme";
+import {Size} from "../../Types/Block/Size";
 import {PersonalBestInterface} from "../../Interfaces/PersonalBestInterface";
 
 export default class PersonalBestService {

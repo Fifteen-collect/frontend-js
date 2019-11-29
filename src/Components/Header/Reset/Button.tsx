@@ -1,25 +1,29 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
 import ResetHandler from "Interfaces/ResetHandler";
-import {Theme} from "../../Types/Theme";
-import {ThemeContext} from "../../Types/ThemeContext";
+import {Context as ThemeContext} from "../../../Types/Theme/Context";
+import {ThemeProps} from "Types/Theme/ColorScheme";
 
 export interface ResetButtonProps {
     resetHandler: ResetHandler;
 }
 
-export function ResetButton(props: ResetButtonProps): React.ReactElement {
+export function Button(props: ResetButtonProps): React.ReactElement {
     return <ThemeContext.Consumer>
-        {(theme: Theme) => <button
-            className={`btn btn-sm col-1 p-1 d-flex justify-content-center align-items-center ${theme === Theme.DARK ? 'btn-dark' : 'btn-primary'}`}
+        {(theme: ThemeProps) => <button
+            className="btn btn-sm col-1 p-1 d-flex justify-content-center align-items-center"
             onClickCapture={props.resetHandler}
+            style={{
+                backgroundColor: theme.button.background,
+                color: theme.text,
+            }}
         >
             <svg
                 aria-hidden="true"
                 focusable="false"
                 data-prefix="fas"
                 data-icon="undo-alt"
-                className={`svg-inline--fa fa-undo-alt fa-w-16 mt-1 ${theme === Theme.DARK ? 'text-white-50' : 'text-white'}`}
+                className="svg-inline--fa fa-undo-alt fa-w-16 mt-1"
                 role="img"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 512 512"
@@ -37,6 +41,6 @@ export function ResetButton(props: ResetButtonProps): React.ReactElement {
     </ThemeContext.Consumer>
 }
 
-ResetButton.propTypes = {
+Button.propTypes = {
     resetHandler: PropTypes.func,
 };

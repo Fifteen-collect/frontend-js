@@ -1,7 +1,9 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
-import {Size} from "../Types/Block/ColorScheme";
+import {Size} from "../Types/Block/Size";
 import {StatCounts} from "../Types/StatCounts";
+import {Context as ThemeContext} from "../Types/Theme/Context";
+import {ThemeProps} from "../Types/Theme/ColorScheme";
 
 export interface StatsProps {
     toggle: boolean,
@@ -9,47 +11,54 @@ export interface StatsProps {
     toggleHandler: () => void,
 }
 
-export const StatsPropTypes: { [T in keyof StatsProps]: PropTypes.Validator<any> } = {
+Stats.propTypes = {
     toggle: PropTypes.bool,
     sizes: PropTypes.array,
     toggleHandler: PropTypes.func,
 };
 
-export class Stats extends React.Component<StatsProps> {
-    public static readonly propTypes = StatsPropTypes;
+export function Stats(props: StatsProps): React.ReactElement {
+    if (!props.toggle) {
+        return <></>;
+    }
 
-    public render() {
-        if (!this.props.toggle) {
-            return <></>;
-        }
+    let counts: StatCounts = JSON.parse(localStorage.getItem('counts'));
 
-        let counts: StatCounts = JSON.parse(localStorage.getItem('counts'));
-
-        return <div
-            className="modal d-block"
-            onClick={this.props.toggleHandler}
-        >
+    return <ThemeContext.Consumer>
+        {(theme: ThemeProps) => <div className="modal d-block" onClick={props.toggleHandler}>
             <div className="modal-dialog">
-                <div className="modal-content">
-                    <div className="modal-header">
+                <div className="modal-content" style={{color: theme.main.modal.text}}>
+                    <div className="modal-header border-bottom-0 shadow"
+                         style={{backgroundColor: theme.main.modal.header}}>
                         <h5 className="modal-title">Count of solves</h5>
                         <button
                             type="button"
                             className="close"
-                            onClick={this.props.toggleHandler}
+                            onClick={props.toggleHandler}
                         >
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div className="modal-body">
-                        {this.props.sizes.map((size: Size) => {
-                            return <div key={size}>
-                                {size}x{size}: {counts && counts[size] || 0}
-                            </div>
-                        })}
+                    <div className="modal-body p-0" style={{backgroundColor: theme.main.modal.body}}>
+                        <table className="table table-borderless table-dark table table-striped m-0">
+                            <thead>
+                            <tr>
+                                <th>Puzzle</th>
+                                <th>Solves</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {props.sizes.map((size: Size) => {
+                                return <tr key={size}>
+                                    <td>{size}x{size}</td>
+                                    <td>{counts && counts[size] || 0}</td>
+                                </tr>
+                            })}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
-        </div>
-    }
+        </div>}
+    </ThemeContext.Consumer>
 }

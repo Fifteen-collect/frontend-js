@@ -1,15 +1,21 @@
 import * as React from "react";
-import {ReactNode} from "react";
-import Block from "./Block";
-import {AppState} from "../types/AppState";
+import {AppState} from "../Types/AppState";
 import randomInt from "random-int";
 import {Header} from "./Header";
-import {Container} from "./Container";
 import {Settings} from "./Settings";
-import {Method} from "../types/Method";
-import {Color} from "../types/Color";
+import {Method} from "../Types/Method";
+import {Color} from "../Types/Color";
 import Bar from "./Bar";
-import {scheme, Size} from '../types/ColorScheme';
+import {scheme as BlockColorScheme} from '../Types/Block/ColorScheme';
+import {Size} from '../Types/Block/Size';
+import StatCountsService from "./Service/StatCountsService";
+import {Theme} from "../Types/Theme";
+import {Context as ThemeContext} from "../Types/Theme/Context";
+import {GameContext} from "../Types/GameContext";
+import {ThemeStorage} from "./Service/ThemeStorage";
+import {Container} from "./Container";
+import {Timer} from "./Header/Timer";
+import {scheme as ThemeColorScheme} from "../Types/Theme/ColorScheme";
 
 export default class App extends React.Component<{}, AppState> {
     public readonly state: AppState = {
@@ -23,7 +29,8 @@ export default class App extends React.Component<{}, AppState> {
                 Method.LAYERED,
                 Method.FRIDGE,
             ],
-            menuCollapsed: true,
+            availableThemes: [Theme.LIGHT, Theme.DARK],
+            modalToggle: false,
         },
         moves: 0,
         run: false,
@@ -33,92 +40,101 @@ export default class App extends React.Component<{}, AppState> {
             y: 0,
         },
         solved: false,
+        theme: Theme.LIGHT,
     };
     private readonly windowSize: number;
 
     constructor(props: {}) {
         super(props);
 
+        const theme = ThemeStorage.get();
         const {matrix, buffer} = this.randomizeMatrix(
-            App.createDefaultMatrix(this.state.settings.size, this.state.settings.method),
+            App.createDefaultMatrix(this.state.settings.size, this.state.settings.method, theme),
             {
                 x: this.state.settings.size - 1,
                 y: this.state.settings.size - 1,
             }
         );
+
+        this.state.theme = theme;
         this.state.buffer = buffer;
         this.state.matrix = matrix;
         this.windowSize = innerWidth > innerHeight ? (innerHeight - innerHeight / 10) : innerWidth;
         this.state.relativeSize = this.windowSize / this.state.settings.size;
     }
 
-    render(): ReactNode {
-        return <div className={"container-fluid row main"}>
-            <Header
-                run={this.state.run}
-                startTime={this.state.startTime}
-                moves={this.state.moves}
-                solved={this.state.solved}
-                resetHandler={() => {
-                    return this.handleReset(this.state.settings.size);
-                }}
-                openSettingsHandler={() => {
-                    const {settings} = this.state;
-                    settings.menuCollapsed = !settings.menuCollapsed;
+    render(): React.ReactElement {
+        return <ThemeContext.Provider value={ThemeColorScheme[this.state.theme]}>
+            <GameContext.Provider value={{run: this.state.run, solved: this.state.solved}}>
+                <div className="main h-100" style={{
+                    backgroundColor: ThemeColorScheme[this.state.theme].main.background
+                }}>
+                    <Header
+                        sizes={this.state.settings.availableSizes}
+                        resetHandler={() => {
+                            return this.handleReset(this.state.settings.size);
+                        }}
+                        openSettingsHandler={() => {
+                            const {settings} = this.state;
+                            settings.modalToggle = !settings.modalToggle;
 
-                    this.setState({
-                        settings: settings,
-                    })
-                }}
-            />
-            <Settings
-                collapsed={this.state.settings.menuCollapsed}
-                methods={this.state.settings.availableMethods}
-                sizes={this.state.settings.availableSizes}
-                resetHandler={this.handleReset.bind(this)}
-                changeMethodHandler={(method: Method) => {
-                    let {settings, matrix} = this.state;
+                            this.setState({
+                                settings: settings,
+                            })
+                        }}
+                    />
+                    <Settings
+                        currentTheme={this.state.theme}
+                        toggle={this.state.settings.modalToggle}
+                        methods={this.state.settings.availableMethods}
+                        sizes={this.state.settings.availableSizes}
+                        themes={this.state.settings.availableThemes}
+                        resetHandler={this.handleReset.bind(this)}
+                        toggleHandler={() => {
+                            const {settings} = this.state;
+                            settings.modalToggle = !settings.modalToggle;
+                            this.setState({settings: settings});
+                        }}
+                        changeTheme={(theme: Theme): void => {
+                            this.setState({theme: theme});
+                            ThemeStorage.set(theme);
+                        }}
+                        changeMethodHandler={(method: Method): void => {
+                            let {settings, matrix} = this.state;
 
-                    matrix.forEach((row: Bar[]) => {
-                        row.forEach((block: Bar) => {
-                            block.Color = scheme[method][this.state.settings.size][block.X][block.Y];
-                        })
-                    });
-                    settings.method = method;
-                    this.setState({
-                        matrix: matrix,
-                        settings: settings,
-                    })
-                }}
-            />
-            <Container
-                size={this.windowSize}
-            >
-                {this.state.matrix.map((row: Bar[], currentRow: number) => {
-                    return row.map((block: Bar, currentColumn: number) => {
-                        return <Block
-                            key={`${currentRow}-${currentColumn}`}
-                            value={block.Value}
-                            size={this.state.relativeSize}
-                            color={!this.state.solved
-                                ? this.state.matrix[currentRow][currentColumn].Color
-                                : (block.Value !== 0 ? Color.SUCCESS : block.Color)}
-                            clickHandler={() => {
-                                this.blockEventHandler(currentRow, currentColumn);
-                            }}
-                            touchHandler={() => {
-                                this.blockEventHandler(currentRow, currentColumn);
-                            }}
-                        />
-                    })
-                })}
-            </Container>
-        </div>
+                            matrix.forEach((row: Bar[]): void => {
+                                row.forEach((block: Bar): void => {
+                                    block.Color = BlockColorScheme[this.state.theme][method][this.state.settings.size][block.X][block.Y];
+                                })
+                            });
+                            settings.method = method;
+                            this.setState({
+                                matrix: matrix,
+                                settings: settings,
+                            })
+                        }}
+                    />
+                    <div className="container">
+                        <div className="row d-flex align-items-center justify-content-around">
+                            <Timer moves={this.state.moves} startTime={this.state.startTime}/>
+                        </div>
+                    </div>
+                    <Container
+                        matrix={this.state.matrix}
+                        style={{height: `${this.windowSize}`}}
+                        size={this.state.settings.size}
+                        relativeSize={this.state.relativeSize}
+                        clickHandler={this.blockEventHandler.bind(this)}
+                        touchHandler={this.blockEventHandler.bind(this)}
+                    />
+                </div>
+            </GameContext.Provider>
+        </ThemeContext.Provider>
     }
 
     handleReset(size: number): void {
         const {matrix, buffer} = this.randomizeMatrix(
-            App.createDefaultMatrix(size, this.state.settings.method),
+            App.createDefaultMatrix(size, this.state.settings.method, this.state.theme),
             {x: size - 1, y: size - 1}
         );
         const {settings} = this.state;
@@ -143,12 +159,6 @@ export default class App extends React.Component<{}, AppState> {
 
         if (App.isBlockCanMove(matrix, rowIndex, blockIndex)) {
             const {x, y} = buffer;
-
-            if (!run && !this.state.solved) {
-                this.setState({
-                    startTime: Date.now(),
-                })
-            }
 
             if (this.state.solved) {
                 return;
@@ -192,12 +202,19 @@ export default class App extends React.Component<{}, AppState> {
                 }
             }
 
+            if (!run && !this.state.solved) {
+                this.setState({
+                    startTime: Date.now(),
+                });
+            }
+
             if (this.isMatrixSolved()) {
                 this.setState({
                     run: false,
                     solved: true,
                     moves: moves,
                 });
+                StatCountsService.increment(this.state.settings.size);
 
                 return;
             }
@@ -213,17 +230,19 @@ export default class App extends React.Component<{}, AppState> {
         });
     }
 
-    static createDefaultMatrix(size: number, method: Method): Bar[][] {
+    static createDefaultMatrix(size: number, method: Method, theme: Theme): Bar[][] {
         let matrix: Bar[][] = [];
 
         for (let i = 0, count = 1; i < size; i++) {
             matrix.push([]);
 
             for (let j = 0; j < size; j++) {
-                if (i + 1 === size && j + 1 === size) {
-                    matrix[i][j] = new Bar(Color.LIGHT, 0, size - 1, size - 1);
+                matrix[i][j] = new Bar(BlockColorScheme[theme][method][size][i][j], count, i, j);
+
+                if (count === (size * size) - 1) {
+                    count = 0;
                 } else {
-                    matrix[i][j] = new Bar(scheme[method][size][i][j], count++, i, j);
+                    count++
                 }
             }
         }
@@ -265,7 +284,7 @@ export default class App extends React.Component<{}, AppState> {
             }
         }
 
-        return  false;
+        return false;
     }
 
     static isBlockCanMoveRight(matrix: Bar[][], y: number, x: number): boolean {

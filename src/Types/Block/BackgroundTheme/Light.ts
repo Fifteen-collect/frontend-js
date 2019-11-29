@@ -1,46 +1,11 @@
-import {Color} from "./Color";
-import {Method} from "./Method";
+import {Method} from "../../Method";
+import {Color} from "../../Color";
+import {Col} from "../Col";
+import {Row} from "../Row";
+import {Size} from "../Size";
+import {Theme as BlockTheme} from "../Theme";
 
-export enum Size {
-    X2 = 2,
-    X3 = 3,
-    X4 = 4,
-    X5 = 5,
-    X6 = 6,
-    X7 = 7
-}
-
-export enum Row {
-    FIRST,
-    SECOND,
-    THIRD,
-    FOURTH,
-    FIFTH,
-    SIXTH,
-    SEVENTH,
-}
-
-export enum Col {
-    FIRST,
-    SECOND,
-    THIRD,
-    FOURTH,
-    FIFTH,
-    SIXTH,
-    SEVENTH,
-}
-
-export type ColorScheme = {
-    [method in Method]: {
-        [size: number]: {
-            [row: number]: {
-                [col: number]: Color,
-            },
-        }
-    }
-}
-
-export const scheme: ColorScheme = {
+export const Light: BlockTheme = {
     [Method.DEFAULT]: {
         [Size.X2]: {
             [Row.FIRST]: {

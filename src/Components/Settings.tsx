@@ -1,10 +1,11 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
-import {Method} from "../Types/Method";
-import {Size} from "../Types/Block/Size";
-import {Theme} from "../Types/Theme";
-import {ThemeProps} from "../Types/Theme/ColorScheme";
-import {Context as ThemeContext} from "../Types/Theme/Context";
+import {Method} from "Types/Method";
+import {Size} from "Types/Block/Size";
+import {Theme} from "Types/Theme";
+import {ThemeProps} from "Types/Theme/ColorScheme";
+import {Context as ThemeContext} from "Types/Theme/Context";
+import {Sizes} from "Components/Settings/Sizes";
 
 export interface SettingsProps {
     sizes: number[],
@@ -15,7 +16,9 @@ export interface SettingsProps {
     toggleHandler: (event: React.MouseEvent) => void,
     changeTheme: (theme: Theme) => void;
     themes: Theme[],
-    currentTheme: Theme,
+    pinSizes: boolean,
+    pinSizeToTop: (event: React.ChangeEvent) => void,
+    currentThemeType: string,
 }
 
 export const SettingsPropTypes: { [T in keyof SettingsProps]: PropTypes.Validator<any> } = {
@@ -27,7 +30,9 @@ export const SettingsPropTypes: { [T in keyof SettingsProps]: PropTypes.Validato
     toggleHandler: PropTypes.func,
     changeTheme: PropTypes.func,
     themes: PropTypes.array,
-    currentTheme: PropTypes.string,
+    pinSizes: PropTypes.bool,
+    pinSizeToTop: PropTypes.func,
+    currentThemeType: PropTypes.string,
 };
 
 export interface SettingsState {
@@ -48,21 +53,21 @@ export class Settings extends React.Component<SettingsProps, SettingsState> {
         }
 
         return <ThemeContext.Consumer>
-            {(theme: ThemeProps) => <div className="modal d-block">
+            {(currentTheme: ThemeProps) => <div className="modal d-block">
                 <div className="modal-dialog">
-                    <div className="modal-content" style={{color: theme.main.modal.text}}>
+                    <div className="modal-content" style={{color: currentTheme.main.modal.text}}>
                         <div className="modal-header border-bottom-0 shadow"
-                             style={{backgroundColor: theme.main.modal.header}}>
+                             style={{backgroundColor: currentTheme.main.modal.header}}>
                             <h5 className="modal-title">Settings</h5>
                             <button
                                 type="button"
                                 className="close"
                                 onClick={this.props.toggleHandler}
                             >
-                                <span aria-hidden="true">&times;</span>
+                                <span aria-hidden="true" style={{color: currentTheme.main.modal.closeButton}}>&times;</span>
                             </button>
                         </div>
-                        <div className="modal-body" style={{backgroundColor: theme.main.modal.body}}>
+                        <div className="modal-body" style={{backgroundColor: currentTheme.main.modal.body}}>
                             <div className="container-fluid mt-1">
                                 Themes:
                                 <div className="row">
@@ -70,11 +75,12 @@ export class Settings extends React.Component<SettingsProps, SettingsState> {
                                         return <button
                                             type={"button"}
                                             key={availableTheme}
-                                            className={`btn col-6 noselect ${this.props.currentTheme === availableTheme ? 'active' : ''}`}
-                                            onClickCapture={() => this.props.changeTheme(availableTheme)}
+                                            className={`btn col-6 noselect ${currentTheme.button.classColor} ${this.props.currentThemeType === availableTheme ? 'active' : ''}`}
+                                            onClick={() => {
+                                                this.props.changeTheme(availableTheme);
+                                            }}
                                             style={{
-                                                backgroundColor: theme.main.header.background,
-                                                color: theme.main.modal.text,
+                                                color: this.props.currentThemeType === availableTheme ? currentTheme.button.selectedText : currentTheme.button.text,
                                             }}
                                         >
                                             {availableTheme}
@@ -89,7 +95,7 @@ export class Settings extends React.Component<SettingsProps, SettingsState> {
                                         return <button
                                             type="button"
                                             key={method}
-                                            className={`btn col-4 noselect ${this.state.method === method ? 'active' : ''}`}
+                                            className={`btn col-4 noselect ${currentTheme.button.classColor} ${this.state.method === method ? 'active' : ''}`}
                                             onClickCapture={() => {
                                                 this.setState({
                                                     method: method
@@ -97,8 +103,7 @@ export class Settings extends React.Component<SettingsProps, SettingsState> {
                                                 this.props.changeMethodHandler(method);
                                             }}
                                             style={{
-                                                backgroundColor: theme.main.header.background,
-                                                color: theme.main.modal.text,
+                                                color: this.state.method === method ? currentTheme.button.selectedText : currentTheme.button.text,
                                             }}
                                         >
                                             {method}
@@ -108,29 +113,31 @@ export class Settings extends React.Component<SettingsProps, SettingsState> {
                             </div>
                             <div className="container-fluid mt-1">
                                 Available puzzle's sizes
-                                <div className="row">
-                                    {this.props.sizes.map((size: number) => {
-                                        return <button
-                                            type="button"
-                                            key={size}
-                                            className={`btn col-2 noselect ${this.state.size === size ? 'active' : ''}`}
-                                            onClickCapture={() => {
-                                                this.setState({
-                                                    size: size
-                                                });
-                                                this.props.resetHandler(size);
-                                            }}
-                                            style={{
-                                                backgroundColor: theme.main.header.background,
-                                                color: theme.main.modal.text,
-                                            }}
-                                        >
-                                            {size}
-                                        </button>
-                                    })}
+                                <Sizes
+                                    size={this.state.size}
+                                    sizes={this.props.sizes}
+                                    changeSize={(size: Size) => {
+                                        this.setState({
+                                            size: size
+                                        });
+                                        this.props.resetHandler(size);
+                                    }}
+                                />
+                            </div>
+                            <div className="container-fluid mt-1">
+                                <div className="row d-flex justify-content-center align-content-center align-items-center">
+                                    <span>Pin sizes to top</span>
+                                    <label className="switch m-0 ml-3" htmlFor="checkbox">
+                                        <input
+                                            type="checkbox"
+                                            id="checkbox"
+                                            checked={this.props.pinSizes}
+                                            onChange={this.props.pinSizeToTop}
+                                        />
+                                        <div className="slider round"/>
+                                    </label>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>

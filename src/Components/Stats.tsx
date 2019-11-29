@@ -1,9 +1,10 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
-import {Size} from "../Types/Block/Size";
-import {StatCounts} from "../Types/StatCounts";
-import {Context as ThemeContext} from "../Types/Theme/Context";
-import {ThemeProps} from "../Types/Theme/ColorScheme";
+import {Size} from "Types/Block/Size";
+import {StatCounts} from "Types/StatCounts";
+import {Context as ThemeContext} from "Types/Theme/Context";
+import {ThemeProps} from "Types/Theme/ColorScheme";
+import {getStatCounts} from "Components/Service/StatCountsStorage";
 
 export interface StatsProps {
     toggle: boolean,
@@ -22,7 +23,7 @@ export function Stats(props: StatsProps): React.ReactElement {
         return <></>;
     }
 
-    let counts: StatCounts = JSON.parse(localStorage.getItem('counts'));
+    let counts: StatCounts = getStatCounts();
 
     return <ThemeContext.Consumer>
         {(theme: ThemeProps) => <div className="modal d-block" onClick={props.toggleHandler}>
@@ -36,11 +37,11 @@ export function Stats(props: StatsProps): React.ReactElement {
                             className="close"
                             onClick={props.toggleHandler}
                         >
-                            <span aria-hidden="true">&times;</span>
+                            <span aria-hidden="true" style={{color: theme.main.modal.closeButton}}>&times;</span>
                         </button>
                     </div>
                     <div className="modal-body p-0" style={{backgroundColor: theme.main.modal.body}}>
-                        <table className="table table-borderless table-dark table table-striped m-0">
+                        <table className={`table table-borderless table table-striped m-0 ${theme.table.backgroundClass}`}>
                             <thead>
                             <tr>
                                 <th>Puzzle</th>

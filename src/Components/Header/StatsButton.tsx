@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
-import {Context as ThemeContext} from "../../Types/Theme/Context";
-import {ThemeProps} from "../../Types/Theme/ColorScheme";
+import {Context as ThemeContext} from "Types/Theme/Context";
+import {ThemeProps} from "Types/Theme/ColorScheme";
 
 export interface StatsButtonProps {
     onClick: (event: React.MouseEvent) => void,

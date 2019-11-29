@@ -23,6 +23,17 @@
                 "regenerator": true,
                 "useESModules": false
             }
+        ],
+        [
+            "module-resolver",
+            {
+                "root": [
+                    "./src"
+                ],
+                "alias": {
+                    "test": "./test"
+                }
+            }
         ]
     ]
 }

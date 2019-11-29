@@ -1,10 +1,10 @@
 import * as React from "react";
 import {CSSProperties} from "react";
 import * as PropTypes from "prop-types";
-import Bar from "./Bar";
-import {Context as ThemeContext} from "../Types/Theme/Context";
-import {GameContext} from "../Types/GameContext";
-import {ThemeProps} from "../Types/Theme/ColorScheme";
+import Bar from "Components/Bar";
+import {Context as ThemeContext} from "Types/Theme/Context";
+import {GameContext} from "Types/GameContext";
+import {ThemeProps} from "Types/Theme/ColorScheme";
 
 export interface ContainerProps {
     matrix: Bar[][],
@@ -38,8 +38,7 @@ export function Container(props: ContainerProps): React.ReactElement {
                             return <div
                                 key={`${currentRow}-${currentColumn}`}
                                 className={`noselect block-node rounded d-flex align-items-center justify-content-center`}
-                                onMouseDown={() => props.clickHandler(currentRow, currentColumn)}
-                                onTouchStart={() => props.touchHandler(currentRow, currentColumn)}
+                                onTouchStart={() => props.clickHandler(currentRow, currentColumn)}
                                 style={{
                                     height: `${relativeSize}px`,
                                     color: theme.text,

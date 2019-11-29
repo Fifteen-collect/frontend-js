@@ -1,9 +1,9 @@
-import {Method} from "../../Method";
-import {Color} from "../../Color";
-import {Col} from "../Col";
-import {Row} from "../Row";
-import {Size} from "../Size";
-import {Theme as BlockTheme} from "../Theme";
+import {Method} from "Types/Method";
+import {Color} from "Types/Color";
+import {Col} from "Types/Block/Col";
+import {Row} from "Types/Block/Row";
+import {Size} from "Types/Block/Size";
+import {Theme as BlockTheme} from "Types/Block/Theme";
 
 export const Light: BlockTheme = {
     [Method.DEFAULT]: {

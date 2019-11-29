@@ -1,6 +1,6 @@
-import {Method} from "./Method";
-import Bar from "../Components/Bar";
-import {Theme} from "./Theme";
+import {Method} from "Types/Method";
+import Bar from "Components/Bar";
+import {Theme} from "Types/Theme";
 
 export interface AppState {
     matrix?: Bar[][],
@@ -15,6 +15,7 @@ export interface AppState {
         availableMethods: Method[],
         modalToggle: boolean,
         availableThemes: Theme[],
+        pinSizesToTop: boolean,
     },
     moves: number,
     run: boolean,

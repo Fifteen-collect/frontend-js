@@ -1,20 +1,21 @@
 import * as React from "react";
-import {AppState} from "../Types/AppState";
-import randomInt from "../Helpers/randomInt";
-import {Header} from "./Header";
-import {Settings} from "./Settings";
-import {Method} from "../Types/Method";
-import Bar from "./Bar";
-import {scheme as BlockColorScheme} from '../Types/Block/ColorScheme';
-import {Size} from '../Types/Block/Size';
-import StatCountsService from "./Service/StatCountsService";
-import {Theme} from "../Types/Theme";
-import {Context as ThemeContext} from "../Types/Theme/Context";
-import {GameContext} from "../Types/GameContext";
-import {ThemeStorage} from "./Service/ThemeStorage";
-import {Container} from "./Container";
-import {Timer} from "./Header/Timer";
-import {scheme as ThemeColorScheme} from "../Types/Theme/ColorScheme";
+import {AppState} from "Types/AppState";
+import randomInt from "Helpers/randomInt";
+import {Header} from "Components/Header";
+import {Settings} from "Components/Settings";
+import {Method} from "Types/Method";
+import Bar from "Components/Bar";
+import {scheme as BlockColorScheme} from 'Types/Block/ColorScheme';
+import {Size} from 'Types/Block/Size';
+import {incrementStat} from "Components/Service/StatCountsStorage";
+import {Theme} from "Types/Theme";
+import {Context as ThemeContext} from "Types/Theme/Context";
+import {GameContext} from "Types/GameContext";
+import {getThemeFromStorage, saveThemeToStorage} from "Components/Service/ThemeStorage";
+import {Container} from "Components/Container";
+import {Timer} from "Components/Header/Timer";
+import {scheme as ThemeColorScheme} from "Types/Theme/ColorScheme";
+import {Sizes} from "Components/Settings/Sizes";
 
 export default class App extends React.Component<{}, AppState> {
     public readonly state: AppState = {
@@ -30,6 +31,7 @@ export default class App extends React.Component<{}, AppState> {
             ],
             availableThemes: [Theme.LIGHT, Theme.DARK],
             modalToggle: false,
+            pinSizesToTop: false,
         },
         moves: 0,
         run: false,
@@ -46,7 +48,7 @@ export default class App extends React.Component<{}, AppState> {
     constructor(props: {}) {
         super(props);
 
-        const theme = ThemeStorage.get();
+        const theme = getThemeFromStorage();
         const {matrix, buffer} = this.randomizeMatrix(
             App.createDefaultMatrix(this.state.settings.size, this.state.settings.method, theme),
             {
@@ -83,7 +85,7 @@ export default class App extends React.Component<{}, AppState> {
                         }}
                     />
                     <Settings
-                        currentTheme={this.state.theme}
+                        currentThemeType={this.state.theme}
                         toggle={this.state.settings.modalToggle}
                         methods={this.state.settings.availableMethods}
                         sizes={this.state.settings.availableSizes}
@@ -96,7 +98,8 @@ export default class App extends React.Component<{}, AppState> {
                         }}
                         changeTheme={(theme: Theme): void => {
                             this.setState({theme: theme});
-                            ThemeStorage.set(theme);
+                            this.handleReset(this.state.settings.size, theme);
+                            saveThemeToStorage(theme);
                         }}
                         changeMethodHandler={(method: Method): void => {
                             let {settings, matrix} = this.state;
@@ -112,7 +115,33 @@ export default class App extends React.Component<{}, AppState> {
                                 settings: settings,
                             })
                         }}
+                        pinSizes={this.state.settings.pinSizesToTop}
+                        pinSizeToTop={() => {
+                            const {settings} = this.state;
+                            settings.pinSizesToTop = !settings.pinSizesToTop;
+                            this.setState({
+                                settings: settings
+                            });
+                        }}
                     />
+
+                    {this.state.settings.pinSizesToTop
+                        ? <div className="container-fluid">
+                            <Sizes
+                                sizes={this.state.settings.availableSizes}
+                                size={this.state.settings.size}
+                                changeSize={(size) => {
+                                    const {settings} = this.state;
+
+                                    settings.size = size;
+                                    this.setState({
+                                        settings: settings
+                                    });
+                                    this.handleReset(size);
+                                }}
+                            />
+                        </div>
+                        : <></>}
                     <div className="container">
                         <div className="row d-flex align-items-center justify-content-around">
                             <Timer moves={this.state.moves} startTime={this.state.startTime}/>
@@ -131,9 +160,9 @@ export default class App extends React.Component<{}, AppState> {
         </ThemeContext.Provider>
     }
 
-    handleReset(size: number): void {
+    handleReset(size: number, theme?: Theme): void {
         const {matrix, buffer} = this.randomizeMatrix(
-            App.createDefaultMatrix(size, this.state.settings.method, this.state.theme),
+            App.createDefaultMatrix(size, this.state.settings.method, theme || this.state.theme),
             {x: size - 1, y: size - 1}
         );
         const {settings} = this.state;
@@ -213,7 +242,7 @@ export default class App extends React.Component<{}, AppState> {
                     solved: true,
                     moves: moves,
                 });
-                StatCountsService.increment(this.state.settings.size);
+                incrementStat(this.state.settings.size);
 
                 return;
             }

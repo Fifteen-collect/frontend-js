@@ -30,7 +30,7 @@ export default class App extends React.Component<{}, AppState> {
                 Method.FRIDGE,
             ],
             availableThemes: [Theme.LIGHT, Theme.DARK],
-            menuCollapsed: true,
+            modalToggle: false,
         },
         moves: 0,
         run: false,
@@ -76,7 +76,7 @@ export default class App extends React.Component<{}, AppState> {
                         }}
                         openSettingsHandler={() => {
                             const {settings} = this.state;
-                            settings.menuCollapsed = !settings.menuCollapsed;
+                            settings.modalToggle = !settings.modalToggle;
 
                             this.setState({
                                 settings: settings,
@@ -85,11 +85,16 @@ export default class App extends React.Component<{}, AppState> {
                     />
                     <Settings
                         currentTheme={this.state.theme}
-                        collapsed={this.state.settings.menuCollapsed}
+                        toggle={this.state.settings.modalToggle}
                         methods={this.state.settings.availableMethods}
                         sizes={this.state.settings.availableSizes}
                         themes={this.state.settings.availableThemes}
                         resetHandler={this.handleReset.bind(this)}
+                        toggleHandler={() => {
+                            const {settings} = this.state;
+                            settings.modalToggle = !settings.modalToggle;
+                            this.setState({settings: settings});
+                        }}
                         changeTheme={(theme: Theme): void => {
                             this.setState({theme: theme});
                             ThemeStorage.set(theme);

@@ -13,7 +13,7 @@ export interface AppState {
         method: Method,
         availableSizes: number[],
         availableMethods: Method[],
-        menuCollapsed: boolean,
+        modalToggle: boolean,
         availableThemes: Theme[],
     },
     moves: number,

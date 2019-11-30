@@ -8,10 +8,10 @@ export function getStatCounts(): StatCounts | null {
 }
 
 export function incrementStat(size: Size): void {
-    let counts = getStatCounts();
+    let counts: {[p: number]: number} = getStatCounts();
 
     if (!counts) {
-        let counts: {[p: number]: number} = {};
+        counts = {};
 
         for (const size in Size) {
             counts[size] = 0;

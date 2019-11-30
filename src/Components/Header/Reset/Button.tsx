@@ -18,12 +18,12 @@ Button.propTypes = {
 
 export function Button(props: ResetButtonProps) {
     const theme = React.useContext(ThemeContext);
-    const {size} = React.useContext(GameContext);
+    const {size, solved} = React.useContext(GameContext);
 
     return <button
         className="btn btn-sm col-1 p-1 d-flex justify-content-center align-items-center"
         onClick={event => {
-            Service.StatCountsStorage.incrementStat(size, Service.StatCountsStorage.RESETS_COUNTS_KEY);
+            !solved && Service.StatCountsStorage.incrementStat(size, Service.StatCountsStorage.RESETS_COUNTS_KEY);
             props.resetHandler(event);
         }}
         style={{

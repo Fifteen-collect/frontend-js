@@ -1,194 +1,78 @@
 import * as React from "react";
-import {AppState} from "Types/AppState";
-import randomInt from "Helpers/randomInt";
-import {Header} from "Components/Header";
-import {Settings} from "Components/Settings";
+
+import Bar from "./Bar";
+import {Container} from "./Container";
+import Header from "./Header";
+import Settings from "./Settings";
+import * as Service from "./Service";
+import {Timer} from "./Header/Timer";
+import Sizes from "./Settings/Sizes";
+
+import * as Helper from "Helpers";
+import isBlockCanMove from "Helpers/isBlockCanMove";
+
 import {Method} from "Types/Method";
-import Bar from "Components/Bar";
 import {scheme as BlockColorScheme} from 'Types/Block/ColorScheme';
 import {Size} from 'Types/Block/Size';
-import {incrementStat} from "Components/Service/StatCountsStorage";
 import {Theme} from "Types/Theme";
 import {Context as ThemeContext} from "Types/Theme/Context";
 import {GameContext} from "Types/GameContext";
-import {getThemeFromStorage, saveThemeToStorage} from "Components/Service/ThemeStorage";
-import {Container} from "Components/Container";
-import {Timer} from "Components/Header/Timer";
 import {scheme as ThemeColorScheme} from "Types/Theme/ColorScheme";
-import {Sizes} from "Components/Settings/Sizes";
+import isMatrixSolved from "Helpers/isMatrixSolved";
 
-export default class App extends React.Component<{}, AppState> {
-    public readonly state: AppState = {
-        matrix: [],
-        settings: {
-            size: Size.X4,
-            method: Method.DEFAULT,
-            availableSizes: [Size.X2, Size.X3, Size.X4, Size.X5, Size.X6, Size.X7],
-            availableMethods: [
-                Method.DEFAULT,
-                Method.LAYERED,
-                Method.FRIDGE,
-            ],
-            availableThemes: [Theme.LIGHT, Theme.DARK],
-            modalToggle: false,
-            pinSizesToTop: false,
-        },
-        moves: 0,
-        run: false,
-        startTime: 0,
-        buffer: {
-            x: 0,
-            y: 0,
-        },
-        solved: false,
-        theme: Theme.LIGHT,
-    };
-    private readonly windowSize: number;
+export default function App() {
+    const availableSizes: Size[] = (Object.values(Size) as Size[]).filter(s => typeof s === 'number');
+    const availableMethods: Method[] = Object.values(Method);
+    const availableThemes: Theme[] = Object.values(Theme);
+    const windowSize = innerWidth > innerHeight ? (innerHeight - innerHeight / 10) : innerWidth;
 
-    constructor(props: {}) {
-        super(props);
+    const [matrix, setMatrix] = React.useState([]) as [Bar[][], React.Dispatch<React.SetStateAction<Bar[][]>>];
+    const [size, setSize] = React.useState(Size.X4);
+    const [method, setMethod] = React.useState(Method.DEFAULT);
+    const [collapseModal, modalToggle] = React.useState(true);
+    const [pinnedSizesToTop, pinSizeToTopToggle] = React.useState(false);
+    const [moves, setMoves] = React.useState(0);
+    const [run, setRun] = React.useState(false);
+    const [startTime, setStartTime] = React.useState(0);
+    const [buffer, setBuffer] = React.useState({x: 0, y: 0});
+    const [solved, setSolved] = React.useState(false);
+    const [theme, setTheme] = React.useState(Service.ThemeStorage.getThemeFromStorage());
+    const [relativeSize, setRelativeSize] = React.useState(windowSize / size);
 
-        const theme = getThemeFromStorage();
-        const {matrix, buffer} = this.randomizeMatrix(
-            App.createDefaultMatrix(this.state.settings.size, this.state.settings.method, theme),
+    React.useEffect(() => {
+        const {matrix, buffer} = Helper.randomizeMatrix(
+            Helper.createDefaultMatrix(size, method, theme),
             {
-                x: this.state.settings.size - 1,
-                y: this.state.settings.size - 1,
+                x: size - 1,
+                y: size - 1,
             }
         );
 
-        this.state.theme = theme;
-        this.state.buffer = buffer;
-        this.state.matrix = matrix;
-        this.windowSize = innerWidth > innerHeight ? (innerHeight - innerHeight / 10) : innerWidth;
-        this.state.relativeSize = this.windowSize / this.state.settings.size;
-    }
+        setMatrix(matrix);
+        setBuffer(buffer);
+    }, []);
 
-    render(): React.ReactElement {
-        return <ThemeContext.Provider value={ThemeColorScheme[this.state.theme]}>
-            <GameContext.Provider value={{run: this.state.run, solved: this.state.solved}}>
-                <div className="main h-100" style={{
-                    backgroundColor: ThemeColorScheme[this.state.theme].main.background
-                }}>
-                    <Header
-                        sizes={this.state.settings.availableSizes}
-                        resetHandler={() => {
-                            return this.handleReset(this.state.settings.size);
-                        }}
-                        openSettingsHandler={() => {
-                            const {settings} = this.state;
-                            settings.modalToggle = !settings.modalToggle;
-
-                            this.setState({
-                                settings: settings,
-                            })
-                        }}
-                    />
-                    <Settings
-                        currentThemeType={this.state.theme}
-                        toggle={this.state.settings.modalToggle}
-                        methods={this.state.settings.availableMethods}
-                        sizes={this.state.settings.availableSizes}
-                        themes={this.state.settings.availableThemes}
-                        resetHandler={this.handleReset.bind(this)}
-                        toggleHandler={() => {
-                            const {settings} = this.state;
-                            settings.modalToggle = !settings.modalToggle;
-                            this.setState({settings: settings});
-                        }}
-                        changeTheme={(theme: Theme): void => {
-                            this.setState({theme: theme});
-                            this.handleReset(this.state.settings.size, theme);
-                            saveThemeToStorage(theme);
-                        }}
-                        changeMethodHandler={(method: Method): void => {
-                            let {settings, matrix} = this.state;
-
-                            matrix.forEach((row: Bar[]): void => {
-                                row.forEach((block: Bar): void => {
-                                    block.Color = BlockColorScheme[this.state.theme][method][this.state.settings.size][block.X][block.Y];
-                                })
-                            });
-                            settings.method = method;
-                            this.setState({
-                                matrix: matrix,
-                                settings: settings,
-                            })
-                        }}
-                        pinSizes={this.state.settings.pinSizesToTop}
-                        pinSizeToTop={() => {
-                            const {settings} = this.state;
-                            settings.pinSizesToTop = !settings.pinSizesToTop;
-                            this.setState({
-                                settings: settings
-                            });
-                        }}
-                    />
-
-                    {this.state.settings.pinSizesToTop
-                        ? <div className="container-fluid">
-                            <Sizes
-                                sizes={this.state.settings.availableSizes}
-                                size={this.state.settings.size}
-                                changeSize={(size) => {
-                                    const {settings} = this.state;
-
-                                    settings.size = size;
-                                    this.setState({
-                                        settings: settings
-                                    });
-                                    this.handleReset(size);
-                                }}
-                            />
-                        </div>
-                        : <></>}
-                    <div className="container">
-                        <div className="row d-flex align-items-center justify-content-around">
-                            <Timer moves={this.state.moves} startTime={this.state.startTime}/>
-                        </div>
-                    </div>
-                    <Container
-                        matrix={this.state.matrix}
-                        style={{height: `${this.windowSize}`}}
-                        size={this.state.settings.size}
-                        relativeSize={this.state.relativeSize}
-                        clickHandler={this.blockEventHandler.bind(this)}
-                        touchHandler={this.blockEventHandler.bind(this)}
-                    />
-                </div>
-            </GameContext.Provider>
-        </ThemeContext.Provider>
-    }
-
-    handleReset(size: number, theme?: Theme): void {
-        const {matrix, buffer} = this.randomizeMatrix(
-            App.createDefaultMatrix(size, this.state.settings.method, theme || this.state.theme),
+    const handleReset = (size: number, additionalTheme?: Theme) => {
+        const {matrix, buffer} = Helper.randomizeMatrix(
+            Helper.createDefaultMatrix(size, method, additionalTheme || theme),
             {x: size - 1, y: size - 1}
         );
-        const {settings} = this.state;
 
-        settings.size = size;
+        setMatrix(matrix);
+        setBuffer(buffer);
+        setMoves(0);
+        setRun(false);
+        setStartTime(0);
+        setSolved(false);
+        setSize(size);
+        setRelativeSize(windowSize / size);
+    };
 
-        this.setState({
-            matrix: matrix,
-            buffer: buffer,
-            moves: 0,
-            run: false,
-            startTime: 0,
-            solved: false,
-            settings: settings,
-            relativeSize: this.windowSize / size,
-        });
-    }
-
-    blockEventHandler(rowIndex: number, blockIndex: number): void {
-        let {matrix, moves, run} = this.state;
-        let buffer = this.state.buffer;
-
-        if (App.isBlockCanMove(matrix, rowIndex, blockIndex)) {
+    const blockEventHandler = (rowIndex: number, blockIndex: number) => {
+        if (isBlockCanMove(matrix, rowIndex, blockIndex)) {
             const {x, y} = buffer;
 
-            if (this.state.solved) {
+            if (solved) {
                 return;
             }
 
@@ -199,7 +83,7 @@ export default class App extends React.Component<{}, AppState> {
                         matrix[buffer.y][buffer.x] = matrix[rowIndex][elementX];
                         matrix[rowIndex][elementX] = temp;
                         buffer.x++;
-                        moves++;
+                        setMoves(moves + 1);
                     }
                 } else if (blockIndex < x) {
                     for (let elementX = x - 1; elementX >= blockIndex; elementX--) {
@@ -207,7 +91,7 @@ export default class App extends React.Component<{}, AppState> {
                         matrix[buffer.y][buffer.x] = matrix[rowIndex][elementX];
                         matrix[rowIndex][elementX] = temp;
                         buffer.x--;
-                        moves++;
+                        setMoves(moves + 1);
                     }
                 }
             } else if (blockIndex === x) {
@@ -217,7 +101,7 @@ export default class App extends React.Component<{}, AppState> {
                         matrix[buffer.y][buffer.x] = matrix[elementY][buffer.x];
                         matrix[elementY][buffer.x] = temp;
                         buffer.y++;
-                        moves++;
+                        setMoves(moves + 1);
                     }
                 } else if (rowIndex < y) {
                     for (let elementY = y - 1; elementY >= rowIndex; elementY--) {
@@ -225,188 +109,85 @@ export default class App extends React.Component<{}, AppState> {
                         matrix[buffer.y][buffer.x] = matrix[elementY][buffer.x];
                         matrix[elementY][buffer.x] = temp;
                         buffer.y--;
-                        moves++;
+                        setMoves(moves + 1);
                     }
                 }
             }
 
-            if (!run && !this.state.solved) {
-                this.setState({
-                    startTime: Date.now(),
-                });
-            }
+            !run && !solved && setStartTime(Date.now());
 
-            if (this.isMatrixSolved()) {
-                this.setState({
-                    run: false,
-                    solved: true,
-                    moves: moves,
-                });
-                incrementStat(this.state.settings.size);
+            if (isMatrixSolved(matrix)) {
+                setRun(false);
+                setSolved(true);
+                setMoves(moves);
+                Service.StatCountsStorage.incrementStat(size, Service.StatCountsStorage.SOLVED_COUNTS_KEY);
 
                 return;
             }
 
-            run = true;
+            setRun(true);
         }
+    };
 
-        this.setState({
-            matrix: matrix,
-            buffer: buffer,
-            moves: moves,
-            run: run,
-        });
-    }
-
-    static createDefaultMatrix(size: number, method: Method, theme: Theme): Bar[][] {
-        let matrix: Bar[][] = [];
-
-        for (let i = 0, count = 1; i < size; i++) {
-            matrix.push([]);
-
-            for (let j = 0; j < size; j++) {
-                matrix[i][j] = new Bar(BlockColorScheme[theme][method][size][i][j], count, i, j);
-
-                if (count === (size * size) - 1) {
-                    count = 0;
-                } else {
-                    count++
-                }
-            }
-        }
-
-        return matrix;
-    }
-
-    static isBlockCanMove(matrix: Bar[][], y: number, x: number): boolean {
-        return App.isBlockCanMoveUp(matrix, y, x)
-            || App.isBlockCanMoveDown(matrix, y, x)
-            || App.isBlockCanMoveLeft(matrix, y, x)
-            || App.isBlockCanMoveRight(matrix, y, x);
-    }
-
-    static isBlockCanMoveUp(matrix: Bar[][], y: number, x: number): boolean {
-        for (let yTarget = y; yTarget > 0; yTarget--) {
-            if (App.isBlockEmpty(matrix, yTarget - 1, x)) {
-                return !App.isBlockOnUpEdge(y)
-            }
-        }
-
-        return false;
-    }
-
-    static isBlockCanMoveDown(matrix: Bar[][], y: number, x: number): boolean {
-        for (let yTarget = y; yTarget < matrix.length - 1; yTarget++) {
-            if (App.isBlockEmpty(matrix, yTarget + 1, x)) {
-                return !App.isBlockOnDownEdge(y, matrix.length)
-            }
-        }
-
-        return false;
-    }
-
-    static isBlockCanMoveLeft(matrix: Bar[][], y: number, x: number): boolean {
-        for (let xTarget = x; xTarget > 0; xTarget--) {
-            if (App.isBlockEmpty(matrix, y, xTarget - 1)) {
-                return !App.isBlockOnLeftEdge(x)
-            }
-        }
-
-        return false;
-    }
-
-    static isBlockCanMoveRight(matrix: Bar[][], y: number, x: number): boolean {
-        for (let xTarget = x; xTarget < matrix.length - 1; xTarget++) {
-            if (App.isBlockEmpty(matrix, y, xTarget + 1)) {
-                return !App.isBlockOnRightEdge(x, matrix.length)
-            }
-        }
-
-        return false;
-    }
-
-    static isBlockOnUpEdge(y: number): boolean {
-        return y === 0;
-    }
-
-    static isBlockOnDownEdge(y: number, size: number): boolean {
-        return y === size - 1;
-    }
-
-    static isBlockOnLeftEdge(x: number): boolean {
-        return x === 0;
-    }
-
-    static isBlockOnRightEdge(x: number, size: number): boolean {
-        return x === size - 1;
-    }
-
-    static isBlockEmpty(matrix: Bar[][], y: number, x: number): boolean {
-        return matrix[y][x].Value === 0;
-    }
-
-    isMatrixSolved(): boolean {
-        for (let row = 0, counterValue = 0; row < this.state.matrix.length; row++) {
-            for (let col = 0; col < this.state.matrix[row].length; col++) {
-                ++counterValue;
-
-                if (this.state.matrix[row][col].Value === 0) {
-                    continue;
-                }
-                if (this.state.matrix[row][col].Value !== counterValue) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
-    randomizeMatrix(matrix: Bar[][], buffer: { x: number, y: number }) {
-        for (let move = 0; move < 50000; move++) {
-            let rndX = randomInt(matrix.length - 1);
-            let rndY = randomInt(matrix.length - 1);
-
-            if (App.isBlockCanMove(matrix, rndY, rndX)) {
-                if (rndY === buffer.y) {
-                    if (rndX > buffer.x) {
-                        for (let elementX = buffer.x + 1; elementX <= rndX; elementX++) {
-                            let temp = matrix[buffer.y][buffer.x];
-                            matrix[buffer.y][buffer.x] = matrix[rndY][elementX];
-                            matrix[rndY][elementX] = temp;
-                            buffer.x++;
-                        }
-                    } else if (rndX < buffer.x) {
-                        for (let elementX = buffer.x - 1; elementX >= rndX; elementX--) {
-                            let temp = matrix[buffer.y][buffer.x];
-                            matrix[buffer.y][buffer.x] = matrix[rndY][elementX];
-                            matrix[rndY][elementX] = temp;
-                            buffer.x--;
-                        }
-                    }
-                } else if (rndX === buffer.x) {
-                    if (rndY > buffer.y) {
-                        for (let elementY = buffer.y + 1; elementY <= rndY; elementY++) {
-                            let temp = matrix[buffer.y][buffer.x];
-                            matrix[buffer.y][buffer.x] = matrix[elementY][buffer.x];
-                            matrix[elementY][buffer.x] = temp;
-                            buffer.y++;
-                        }
-                    } else if (rndY < buffer.y) {
-                        for (let elementY = buffer.y - 1; elementY >= rndY; elementY--) {
-                            let temp = matrix[buffer.y][buffer.x];
-                            matrix[buffer.y][buffer.x] = matrix[elementY][buffer.x];
-                            matrix[elementY][buffer.x] = temp;
-                            buffer.y--;
-                        }
-                    }
-                }
-            }
-        }
-
-        return {
-            matrix: matrix,
-            buffer: buffer,
-        };
-    }
+    return <ThemeContext.Provider value={ThemeColorScheme[theme]}>
+        <GameContext.Provider value={{run: run, solved: solved, size: size}}>
+            <div className="main h-100" style={{backgroundColor: ThemeColorScheme[theme].main.background}}>
+                <Header
+                    sizes={availableSizes}
+                    resetHandler={() => handleReset(size)}
+                    openSettingsHandler={() => modalToggle(!collapseModal)}
+                />
+                <Settings
+                    currentThemeType={theme}
+                    toggle={collapseModal}
+                    methods={availableMethods}
+                    sizes={availableSizes}
+                    themes={availableThemes}
+                    resetHandler={size => handleReset(size)}
+                    toggleHandler={() => modalToggle(!collapseModal)}
+                    changeTheme={theme => {
+                        setTheme(theme);
+                        handleReset(size, theme);
+                        Service.ThemeStorage.saveThemeToStorage(theme);
+                    }}
+                    changeMethodHandler={method => {
+                        matrix.forEach(row => {
+                            row.forEach(block => {
+                                block.Color = BlockColorScheme[theme][method][size][block.X][block.Y]
+                            });
+                        });
+                        setMethod(method);
+                        setMatrix(matrix);
+                    }}
+                    pinSizes={pinnedSizesToTop}
+                    pinSizeToTop={() => pinSizeToTopToggle(!pinnedSizesToTop)}
+                />
+                {pinnedSizesToTop
+                    ? <div className="container-fluid">
+                        <Sizes
+                            sizes={availableSizes}
+                            size={size}
+                            changeSize={size => {
+                                setSize(size);
+                                handleReset(size);
+                            }}
+                        />
+                    </div>
+                    : <></>}
+                <div className="container">
+                    <div className="row d-flex align-items-center justify-content-around">
+                        <Timer moves={moves} startTime={startTime} run={run}/>
+                    </div>
+                </div>
+                <Container
+                    matrix={matrix}
+                    style={{height: windowSize.toString(10)}}
+                    size={size}
+                    relativeSize={relativeSize}
+                    touchHandler={(rowIndex, columnIndex) =>  blockEventHandler(rowIndex, columnIndex)}
+                    clickHandler={(rowIndex, columnIndex) => blockEventHandler(rowIndex, columnIndex)}
+                />
+            </div>
+        </GameContext.Provider>
+    </ThemeContext.Provider>
 }

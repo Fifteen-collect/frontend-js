@@ -1,29 +1,45 @@
 import {Size} from "Types/Block/Size";
 import {StatCounts} from "Types/StatCounts";
 
-const STATS_COUNT_KEY = 'counts';
+const SOLVED_COUNTS_KEY = 'counts';
+const RESETS_COUNTS_KEY = 'resets';
 
-export function getStatCounts(): StatCounts | null {
-    return <StatCounts>JSON.parse(localStorage.getItem(STATS_COUNT_KEY));
+function getStatCounts(type: string): StatCounts | null {
+    return <StatCounts>JSON.parse(
+        localStorage.getItem(type)
+    );
 }
 
-export function incrementStat(size: Size): void {
-    let counts: {[p: number]: number} = getStatCounts();
+function incrementStat(size: Size, types: string | string[]): void {
+    if (!Array.isArray(types)) {
+        types = [types];
+    }
 
-    if (!counts) {
-        counts = {};
+    types.forEach(type => {
+        let counts: {[p: number]: number} = getStatCounts(type);
 
-        for (const size in Size) {
+        if (!counts) {
+            counts = {};
+
+            for (const size in Size) {
+                counts[size] = 0;
+            }
+        }
+
+        if (!counts[size]) {
             counts[size] = 0;
         }
-    }
 
-    if (!counts[size]) {
-        counts[size] = 0;
-    }
+        counts[size]++;
 
-    counts[size]++;
+        localStorage.removeItem(type);
+        localStorage.setItem(type, JSON.stringify(counts));
+    });
+}
 
-    localStorage.removeItem(STATS_COUNT_KEY);
-    localStorage.setItem(STATS_COUNT_KEY, JSON.stringify(counts));
+export {
+    SOLVED_COUNTS_KEY,
+    RESETS_COUNTS_KEY,
+    getStatCounts,
+    incrementStat,
 }

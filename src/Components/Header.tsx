@@ -1,66 +1,45 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
-import {Stats} from "Components/Stats";
-import {Size} from "Types/Block/Size";
-import ResetHandler from "Interfaces/ResetHandler";
-import {Button as ResetButton} from "Components/Header/Reset/Button";
-import {StatsButton} from "Components/Header/StatsButton";
-import {Button as SettingsButton} from "Components/Header/Settings/Button";
-import {Context as ThemeContext} from "Types/Theme/Context";
-import {ThemeProps} from "Types/Theme/ColorScheme";
 
-export interface HeaderProps {
+import Stats from "Components/Stats";
+import * as HeaderComponent from "Components/Header/index";
+
+import {Size} from "Types/Block/Size";
+import {Context as ThemeContext} from "Types/Theme/Context";
+
+import ResetHandler from "Interfaces/ResetHandler";
+
+interface HeaderProps {
     resetHandler: ResetHandler,
     openSettingsHandler: (event: React.MouseEvent<Element, MouseEvent>) => void,
     sizes: Size[],
 }
 
-export const HeaderPropTypes: { [T in keyof HeaderProps]: PropTypes.Validator<any> } = {
+Header.propTypes = {
     resetHandler: PropTypes.func,
     openSettingsHandler: PropTypes.func,
     sizes: PropTypes.array,
 };
 
-export interface HeaderState {
-    toggleSettings: boolean,
-    toggleStats: boolean,
-}
+export default function Header({resetHandler, openSettingsHandler, sizes}: HeaderProps) {
+    const [statsCollapsed, toggleStats] = React.useState(true);
+    const [settingsCollapsed, toggleSettings] = React.useState(false);
+    const theme = React.useContext(ThemeContext);
 
-export class Header extends React.Component<HeaderProps, HeaderState> {
-    public static readonly propTypes = HeaderPropTypes;
-    public readonly state: HeaderState = {
-        toggleSettings: false,
-        toggleStats: false
-    };
-
-    public render(): React.ReactElement {
-        return <ThemeContext.Consumer>
-            {(theme: ThemeProps) => <div
-                className={`container-fluid inner-content shadow mb-2`}
-                style={{backgroundColor: theme.main.header.background}}
-            >
-                <div className="row p-2 d-flex align-items-center justify-content-between">
-                    <ResetButton resetHandler={this.props.resetHandler}/>
-                    <div className="text-center d-flex justify-content-end">
-                        <StatsButton onClick={() => this.setState({toggleStats: true})}/>
-                        <Stats
-                            toggle={this.state.toggleStats}
-                            sizes={this.props.sizes}
-                            toggleHandler={() => this.setState({toggleStats: false})}
-                        />
-                        <SettingsButton
-                            onClick={this.toggleSettings.bind(this)}
-                            onClickCapture={this.props.openSettingsHandler}
-                        />
-                    </div>
-                </div>
-            </div>}
-        </ThemeContext.Consumer>
-    }
-
-    toggleSettings(): void {
-        this.setState({
-            toggleSettings: !this.state.toggleSettings,
-        })
-    }
+    return <div
+        className="container-fluid inner-content shadow mb-2"
+        style={{backgroundColor: theme.main.header.background}}
+    >
+        <div className="row p-2 d-flex align-items-center justify-content-between">
+            <HeaderComponent.ResetButton resetHandler={resetHandler}/>
+            <div className="text-center d-flex justify-content-end">
+                <HeaderComponent.StatsButton onClick={() => toggleStats(!statsCollapsed)}/>
+                <Stats collapse={statsCollapsed} sizes={sizes} toggle={() => toggleStats(!statsCollapsed)}/>
+                <HeaderComponent.SettingsButton onClick={(event) => {
+                    toggleSettings(!settingsCollapsed);
+                    openSettingsHandler(event);
+                }}/>
+            </div>
+        </div>
+    </div>
 }

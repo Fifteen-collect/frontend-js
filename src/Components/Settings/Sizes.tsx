@@ -1,5 +1,6 @@
 import * as React from "react";
-import {ThemeProps} from "Types/Theme/ColorScheme";
+import * as PropTypes from "prop-types";
+
 import {Context as ThemeContext} from "Types/Theme/Context";
 import {Size} from "Types/Block/Size";
 
@@ -9,22 +10,28 @@ export interface SizesProps {
     sizes: Size[],
 }
 
-export function Sizes(props: SizesProps) {
-    return <ThemeContext.Consumer>
-        {(currentTheme: ThemeProps) => <div className="row">
-            {props.sizes.map((size: number) => {
-                return <button
-                    type="button"
-                    key={size}
-                    className={`btn col-2 noselect ${currentTheme.button.classColor} ${props.size === size ? 'active' : ''}`}
-                    style={{
-                        color: props.size === size ? currentTheme.button.selectedText : currentTheme.button.text,
-                    }}
-                    onClick={() => props.changeSize(size)}
-                >
-                    {size}
-                </button>
-            })}
-        </div>}
-    </ThemeContext.Consumer>
+Sizes.propTypes = {
+    changeSize: PropTypes.func,
+    size: PropTypes.number,
+    sizes: PropTypes.array,
+} as { [T in keyof SizesProps]: PropTypes.Validator<any> };
+
+export default function Sizes(props: SizesProps) {
+    const currentTheme = React.useContext(ThemeContext);
+
+    return <div className="row">
+        {props.sizes.map(size => {
+            return <button
+                type="button"
+                key={size}
+                className={`btn col-2 noselect ${currentTheme.button.classColor} ${props.size === size ? 'active' : ''}`}
+                style={{
+                    color: props.size === size ? currentTheme.button.selectedText : currentTheme.button.text,
+                }}
+                onClick={() => props.changeSize(size)}
+            >
+                {size}
+            </button>
+        })}
+    </div>
 }

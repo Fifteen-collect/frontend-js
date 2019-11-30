@@ -1,11 +1,12 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
+
+import Sizes from "Components/Settings/Sizes";
+
 import {Method} from "Types/Method";
 import {Size} from "Types/Block/Size";
 import {Theme} from "Types/Theme";
-import {ThemeProps} from "Types/Theme/ColorScheme";
 import {Context as ThemeContext} from "Types/Theme/Context";
-import {Sizes} from "Components/Settings/Sizes";
 
 export interface SettingsProps {
     sizes: number[],
@@ -21,7 +22,7 @@ export interface SettingsProps {
     currentThemeType: string,
 }
 
-export const SettingsPropTypes: { [T in keyof SettingsProps]: PropTypes.Validator<any> } = {
+Settings.propTypes = {
     sizes: PropTypes.array,
     methods: PropTypes.array,
     resetHandler: PropTypes.func,
@@ -33,115 +34,104 @@ export const SettingsPropTypes: { [T in keyof SettingsProps]: PropTypes.Validato
     pinSizes: PropTypes.bool,
     pinSizeToTop: PropTypes.func,
     currentThemeType: PropTypes.string,
-};
+} as { [T in keyof SettingsProps]: PropTypes.Validator<any> };
 
-export interface SettingsState {
-    method: Method;
-    size: Size;
-}
+export default function Settings(props: SettingsProps) {
+    if (props.toggle) {
+        return <></>;
+    }
 
-export class Settings extends React.Component<SettingsProps, SettingsState> {
-    public static readonly propTypes = SettingsPropTypes;
-    public readonly state: SettingsState = {
-        method: Method.DEFAULT,
-        size: Size.X4,
-    };
+    const [currentMethod, setMethod] = React.useState(Method.DEFAULT);
+    const [currentSize, setSize] = React.useState(Size.X4);
+    const currentTheme = React.useContext(ThemeContext);
 
-    public render(): React.ReactElement {
-        if (!this.props.toggle) {
-            return <></>;
-        }
+    return <div className="modal d-block">
+        <div className="modal-dialog">
+            <div className="modal-content" style={{color: currentTheme.main.modal.text}}>
+                <div className="modal-header border-bottom-0 shadow"
+                     style={{backgroundColor: currentTheme.main.modal.header}}>
+                    <h5 className="modal-title">Settings</h5>
+                    <button type="button" className="close" onClick={props.toggleHandler}>
+                        <span aria-hidden="true" style={{color: currentTheme.main.modal.closeButton}}>&times;</span>
+                    </button>
+                </div>
+                <div className="modal-body" style={{backgroundColor: currentTheme.main.modal.body}}>
+                    <div className="container-fluid mt-1">
+                        Themes:
+                        <div className="row">
+                            {props.themes.map(availableTheme => {
+                                const classColor = currentTheme.button.classColor;
+                                const active = props.currentThemeType === availableTheme ? 'active' : '';
 
-        return <ThemeContext.Consumer>
-            {(currentTheme: ThemeProps) => <div className="modal d-block">
-                <div className="modal-dialog">
-                    <div className="modal-content" style={{color: currentTheme.main.modal.text}}>
-                        <div className="modal-header border-bottom-0 shadow"
-                             style={{backgroundColor: currentTheme.main.modal.header}}>
-                            <h5 className="modal-title">Settings</h5>
-                            <button
-                                type="button"
-                                className="close"
-                                onClick={this.props.toggleHandler}
-                            >
-                                <span aria-hidden="true" style={{color: currentTheme.main.modal.closeButton}}>&times;</span>
-                            </button>
-                        </div>
-                        <div className="modal-body" style={{backgroundColor: currentTheme.main.modal.body}}>
-                            <div className="container-fluid mt-1">
-                                Themes:
-                                <div className="row">
-                                    {this.props.themes.map((availableTheme: Theme) => {
-                                        return <button
-                                            type={"button"}
-                                            key={availableTheme}
-                                            className={`btn col-6 noselect ${currentTheme.button.classColor} ${this.props.currentThemeType === availableTheme ? 'active' : ''}`}
-                                            onClick={() => {
-                                                this.props.changeTheme(availableTheme);
-                                            }}
-                                            style={{
-                                                color: this.props.currentThemeType === availableTheme ? currentTheme.button.selectedText : currentTheme.button.text,
-                                            }}
-                                        >
-                                            {availableTheme}
-                                        </button>
-                                    })}
-                                </div>
-                            </div>
-                            <div className="container-fluid mt-1">
-                                Color scheme for blocks
-                                <div className="row">
-                                    {this.props.methods.map((method: Method) => {
-                                        return <button
-                                            type="button"
-                                            key={method}
-                                            className={`btn col-4 noselect ${currentTheme.button.classColor} ${this.state.method === method ? 'active' : ''}`}
-                                            onClickCapture={() => {
-                                                this.setState({
-                                                    method: method
-                                                });
-                                                this.props.changeMethodHandler(method);
-                                            }}
-                                            style={{
-                                                color: this.state.method === method ? currentTheme.button.selectedText : currentTheme.button.text,
-                                            }}
-                                        >
-                                            {method}
-                                        </button>
-                                    })}
-                                </div>
-                            </div>
-                            <div className="container-fluid mt-1">
-                                Available puzzle's sizes
-                                <Sizes
-                                    size={this.state.size}
-                                    sizes={this.props.sizes}
-                                    changeSize={(size: Size) => {
-                                        this.setState({
-                                            size: size
-                                        });
-                                        this.props.resetHandler(size);
+                                return <button
+                                    type={"button"}
+                                    key={availableTheme}
+                                    className={`btn col-6 noselect ${classColor} ${active}`}
+                                    onClick={() => props.changeTheme(availableTheme)}
+                                    style={{
+                                        color: props.currentThemeType === availableTheme
+                                            ? currentTheme.button.selectedText
+                                            : currentTheme.button.text,
                                     }}
+                                >
+                                    {availableTheme}
+                                </button>
+                            })}
+                        </div>
+                    </div>
+                    <div className="container-fluid mt-1">
+                        Color scheme for blocks
+                        <div className="row">
+                            {props.methods.map(method => {
+                                const classColor = currentTheme.button.classColor;
+                                const active = currentMethod === method ? 'active' : '';
+
+                                return <button
+                                    type="button"
+                                    key={method}
+                                    className={`btn col-4 noselect ${classColor} ${active}`}
+                                    onClickCapture={() => {
+                                        setMethod(method);
+                                        props.changeMethodHandler(method);
+                                    }}
+                                    style={{
+                                        color: currentMethod === method
+                                            ? currentTheme.button.selectedText
+                                            : currentTheme.button.text,
+                                    }}
+                                >
+                                    {method}
+                                </button>
+                            })}
+                        </div>
+                    </div>
+                    <div className="container-fluid mt-1">
+                        Available puzzle's sizes
+                        <Sizes
+                            size={currentSize}
+                            sizes={props.sizes}
+                            changeSize={size => {
+                                setSize(size);
+                                props.resetHandler(size);
+                            }}
+                        />
+                    </div>
+                    <div className="container-fluid mt-1">
+                        <div className="row d-flex justify-content-center align-content-center align-items-center">
+                            <span>Pin sizes to top</span>
+                            <label className="switch m-0 ml-3" htmlFor="checkbox">
+                                <input
+                                    type="checkbox"
+                                    id="checkbox"
+                                    checked={props.pinSizes}
+                                    onChange={props.pinSizeToTop}
                                 />
-                            </div>
-                            <div className="container-fluid mt-1">
-                                <div className="row d-flex justify-content-center align-content-center align-items-center">
-                                    <span>Pin sizes to top</span>
-                                    <label className="switch m-0 ml-3" htmlFor="checkbox">
-                                        <input
-                                            type="checkbox"
-                                            id="checkbox"
-                                            checked={this.props.pinSizes}
-                                            onChange={this.props.pinSizeToTop}
-                                        />
-                                        <div className="slider round"/>
-                                    </label>
-                                </div>
-                            </div>
+                                <div className="slider round"/>
+                            </label>
                         </div>
                     </div>
                 </div>
-            </div>}
-        </ThemeContext.Consumer>
-    }
+            </div>
+        </div>
+    </div>
 }

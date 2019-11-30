@@ -2,98 +2,70 @@ import * as React from "react";
 import * as PropTypes from "prop-types";
 import {Context as ThemeContext} from "Types/Theme/Context";
 import {GameContext} from "Types/GameContext";
-import {ThemeProps} from "Types/Theme/ColorScheme";
+import {useEffect} from "react";
 
 export interface TimerProps {
     moves: number,
     startTime: number,
+    run: boolean,
 }
 
-export const TimerPropTypes: { [T in keyof TimerProps]: PropTypes.Validator<any> } = {
+function Time(props: { children: string, time: Date }) {
+    const theme = React.useContext(ThemeContext);
+
+    return <b className="noselect" style={{color: theme.timerTextColor}}>
+        {props.children}
+        {props.time.getHours() ? `${props.time.getHours()}:` : ''}
+        {props.time.getMinutes()}:
+        {props.time.getSeconds()}.
+        {props.time.getMilliseconds()}
+    </b>
+}
+
+Time.propTypes = {
     moves: PropTypes.number,
     startTime: PropTypes.number,
-};
+    run: PropTypes.bool,
+} as { [T in keyof TimerProps]: PropTypes.Validator<any> };
 
-export interface TimerState {
-    intervalUpdateId?: number,
-    lastSolveTime: number,
-    currentTime: number,
+function calculateTps(moves: number, time: number) {
+    return moves / (time || 1) * (time ? 1000 : 0);
 }
 
-export class Timer extends React.Component<TimerProps, TimerState> {
-    public static readonly propTypes = TimerPropTypes;
-    static contextType: React.Context<{
-        run: boolean,
-        solved: boolean,
-    }> = GameContext;
+export function Timer({moves, startTime, run}: TimerProps) {
+    const [tickId, setTickId] = React.useState(undefined);
+    const [lastSolveTime, setLastSolveTime] = React.useState(0);
+    const [currentTime, setCurrentTime] = React.useState(0);
+    const theme = React.useContext(ThemeContext);
+    const game = React.useContext(GameContext);
 
-    public readonly state: TimerState = {
-        intervalUpdateId: undefined,
-        lastSolveTime: 0,
-        currentTime: 0,
-    };
+    useEffect(() => {
+        setTickId(setInterval(() => {
+            setCurrentTime(game.run ? Date.now : 0);
 
-    public render() {
-        let time: Date = new Date(0, 0, 0, 0, 0, 0, 0);
-        if (!this.context.run && this.context.solved) {
-            time = new Date(0, 0, 0, 0, 0, 0, this.state.lastSolveTime);
-        } else if (this.state.currentTime !== 0) {
-            let milliseconds = this.state.currentTime - this.props.startTime;
-            time = new Date(0, 0, 0, 0, 0, 0, milliseconds);
-        }
+            if (run && currentTime !== 0) {
+                setLastSolveTime(currentTime - startTime);
+            }
+        }, 10, game.run));
 
-        return <ThemeContext.Consumer>
-            {(theme: ThemeProps) => <>
-                <Time time={time}>Time: </Time>
-                {this.context.solved
-                    ? <b style={{color: theme.timerTextColor}}>
-                        tps: {this.calculateTps()}
-                    </b>
-                    : <></>}
-                <b style={{color: theme.timerTextColor}}> Moves: {this.props.moves}</b>
-            </>}
-        </ThemeContext.Consumer>
+        return clearInterval(tickId);
+    }, [game]);
+
+    let time: Date = new Date(0, 0, 0, 0, 0, 0, 0);
+    if (!game.run && game.solved) {
+        time = new Date(0, 0, 0, 0, 0, 0, lastSolveTime);
+    } else if (currentTime !== 0) {
+        let milliseconds = currentTime - startTime;
+        time = new Date(0, 0, 0, 0, 0, 0, milliseconds);
     }
 
-    componentDidMount(): void {
-        this.state.intervalUpdateId = setInterval(() => this.tick(), 10);
-    }
-
-    componentWillUnmount(): void {
-        clearInterval(this.state.intervalUpdateId);
-    }
-
-    calculateTps(): string {
-        const tps = this.props.moves / (this.state.lastSolveTime || 1) * (this.state.lastSolveTime ? 1000 : 0);
-
-        return tps.toFixed(2);
-    }
-
-    tick(): void {
-        this.setState({
-            currentTime: this.context.run ? Date.now() : 0,
-        });
-        if (this.context.run && this.state.currentTime !== 0) {
-            this.setState({
-                lastSolveTime: this.state.currentTime - this.props.startTime
-            });
-        }
-    }
-}
-
-interface TimeInterface {
-    children: string,
-    time: Date,
-}
-
-function Time({children, time}: TimeInterface): React.ReactElement {
-    return <ThemeContext.Consumer>
-        {(theme: ThemeProps) => <b style={{color: theme.timerTextColor}}>
-            {children}
-            {time.getHours() ? `${time.getHours()}:` : ''}
-            {time.getMinutes()}:
-            {time.getSeconds()}.
-            {time.getMilliseconds()}
-        </b>}
-    </ThemeContext.Consumer>
+    return <>
+        <Time time={time}>Time: </Time>
+        {game.solved
+            ? <b style={{color: theme.timerTextColor}}>
+                tps: {calculateTps(moves, lastSolveTime).toFixed(2)}
+            </b>
+            : <></>}
+        <b style={{color: theme.timerTextColor}}> Moves: {moves}</b>
+    </>
 }

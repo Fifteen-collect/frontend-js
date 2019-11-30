@@ -5,15 +5,13 @@ import {ThemeProps} from "Types/Theme/ColorScheme";
 
 export interface SettingsProps {
     onClick: (event: React.MouseEvent) => void,
-    onClickCapture: (event: React.MouseEvent) => void,
 }
 
 Button.propTypes = {
     onClick: PropTypes.func,
-    onClickCapture: PropTypes.func,
-};
+} as { [T in keyof SettingsProps]: PropTypes.Validator<any>};
 
-export function Button(props: SettingsProps): React.ReactElement {
+export function Button(props: SettingsProps) {
     return <ThemeContext.Consumer>
         {(theme: ThemeProps) => <button
             className="btn btn-sm mr-1 ml-1 mt-0 p-1 d-flex justify-content-center align-items-center"

@@ -18,6 +18,10 @@ export function incrementStat(size: Size): void {
         }
     }
 
+    if (!counts[size]) {
+        counts[size] = 0;
+    }
+
     counts[size]++;
 
     localStorage.removeItem(STATS_COUNT_KEY);

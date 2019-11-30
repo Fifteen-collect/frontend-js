@@ -3,19 +3,19 @@
     "name": "Barley-break",
     "icons": [
         {
-            "src": "/barley-break/15_192.ico",
+            "src": "/frontend-js/15_192.ico",
             "type": "image/x-icon",
             "sizes": "192x192"
         },
         {
-            "src": "/barley-break/15_512.png",
+            "src": "/frontend-js/15_512.png",
             "type": "image/png",
             "sizes": "512x512"
         }
     ],
-    "start_url": "/barley-break/",
+    "start_url": "/frontend-js/",
     "background_color": "white",
     "display": "fullscreen",
-    "scope": "/barley-break/",
+    "scope": "/frontend-js/",
     "theme_color": "white"
 }

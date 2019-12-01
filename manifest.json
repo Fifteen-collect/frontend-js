@@ -14,8 +14,8 @@
         }
     ],
     "start_url": "/frontend-js/",
-    "background_color": "white",
+    "background_color": "Black",
     "display": "fullscreen",
-    "scope": "/frontend-js/",
+    "scope": "/frontend-js",
     "theme_color": "white"
 }

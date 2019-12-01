@@ -10,10 +10,6 @@ export interface TimerProps {
     clicks: number,
 }
 
-function calculatePerSecondManipulation(manipulation: number, seconds: number): number {
-    return manipulation / (seconds || 1) * (seconds ? 1000 : 0);
-}
-
 Timer.propTypes = {
     moves: PropTypes.number,
     startTime: PropTypes.number,
@@ -26,6 +22,10 @@ export function Timer({moves, startTime, clicks}: TimerProps) {
     const [currentTime, setCurrentTime] = React.useState(0);
     const theme = React.useContext(ThemeContext);
     const game = React.useContext(GameContext);
+
+    const calculateManipulationPerSecond = (manipulation: number, seconds: number): number => {
+        return manipulation / (seconds || 1) * (seconds ? 1000 : 0);
+    };
 
     React.useEffect(() => {
         setTickId(setInterval(() => {
@@ -57,10 +57,10 @@ export function Timer({moves, startTime, clicks}: TimerProps) {
         {game.solved
             ? <>
                 <b className="noselect" style={{color: theme.timerTextColor}}>
-                mps: {calculatePerSecondManipulation(moves, lastSolveTime).toFixed(2)}
+                mps: {calculateManipulationPerSecond(moves, lastSolveTime).toFixed(2)}
                 </b>
                 <b className="noselect" style={{color: theme.timerTextColor}}>
-                cps: {calculatePerSecondManipulation(clicks, lastSolveTime).toFixed(2)}
+                cps: {calculateManipulationPerSecond(clicks, lastSolveTime).toFixed(2)}
                 </b>
             </>
             : <></>}

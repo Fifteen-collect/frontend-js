@@ -33,10 +33,10 @@ export function Timer({moves, startTime, run, clicks}: TimerProps) {
         setTickId(setInterval(() => {
             setCurrentTime(game.run ? Date.now : 0);
 
-            if (run && currentTime !== 0) {
+            if (!game.run && currentTime !== 0) {
                 setLastSolveTime(currentTime - startTime);
             }
-        }, 10, game.run));
+        }, 10));
 
         return clearInterval(tickId);
     }, [game]);

@@ -8,31 +8,21 @@ export interface TimerProps {
     moves: number,
     startTime: number,
     run: boolean,
+    clicks: number,
 }
 
-function Time(props: { children: string, time: Date }) {
-    const theme = React.useContext(ThemeContext);
-
-    return <b className="noselect" style={{color: theme.timerTextColor}}>
-        {props.children}
-        {props.time.getHours() ? `${props.time.getHours()}:` : ''}
-        {props.time.getMinutes()}:
-        {props.time.getSeconds()}.
-        {props.time.getMilliseconds()}
-    </b>
+function calculatePerSecondManipulation(manipulation: number, seconds: number): number {
+    return manipulation / (seconds || 1) * (seconds ? 1000 : 0);
 }
 
-Time.propTypes = {
+Timer.propTypes = {
     moves: PropTypes.number,
     startTime: PropTypes.number,
     run: PropTypes.bool,
+    clicks: PropTypes.number,
 } as { [T in keyof TimerProps]: PropTypes.Validator<any> };
 
-function calculateTps(moves: number, time: number) {
-    return moves / (time || 1) * (time ? 1000 : 0);
-}
-
-export function Timer({moves, startTime, run}: TimerProps) {
+export function Timer({moves, startTime, run, clicks}: TimerProps) {
     const [tickId, setTickId] = React.useState(undefined);
     const [lastSolveTime, setLastSolveTime] = React.useState(0);
     const [currentTime, setCurrentTime] = React.useState(0);
@@ -60,12 +50,23 @@ export function Timer({moves, startTime, run}: TimerProps) {
     }
 
     return <>
-        <Time time={time}>Time: </Time>
+        <b className="noselect" style={{color: theme.timerTextColor}}>
+            Time: {time.getHours() ? `${time.getHours().toString()}:` : ''}
+            {time.getMinutes() ? `${time.getMinutes().toString()}:` : ''}
+            {time.getSeconds()}.
+            {time.getMilliseconds()}
+        </b>
         {game.solved
-            ? <b style={{color: theme.timerTextColor}}>
-                tps: {calculateTps(moves, lastSolveTime).toFixed(2)}
-            </b>
+            ? <>
+                <b className="noselect" style={{color: theme.timerTextColor}}>
+                mps: {calculatePerSecondManipulation(moves, lastSolveTime).toFixed(2)}
+                </b>
+                <b className="noselect" style={{color: theme.timerTextColor}}>
+                cps: {calculatePerSecondManipulation(clicks, lastSolveTime).toFixed(2)}
+                </b>
+            </>
             : <></>}
-        <b style={{color: theme.timerTextColor}}> Moves: {moves}</b>
+        <b className="noselect" style={{color: theme.timerTextColor}}> Moves: {moves}</b>
+        <b className="noselect" style={{color: theme.timerTextColor}}> Clicks: {clicks}</b>
     </>
 }

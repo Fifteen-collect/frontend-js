@@ -18,6 +18,7 @@ Sizes.propTypes = {
 
 export default function Sizes(props: SizesProps) {
     const currentTheme = React.useContext(ThemeContext);
+    console.log(props.size);
 
     return <div className="row">
         {props.sizes.map(size => {

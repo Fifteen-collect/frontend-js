@@ -1,13 +1,12 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
+
 import {Context as ThemeContext} from "Types/Theme/Context";
 import {GameContext} from "Types/GameContext";
-import {useEffect} from "react";
 
 export interface TimerProps {
     moves: number,
     startTime: number,
-    run: boolean,
     clicks: number,
 }
 
@@ -18,18 +17,17 @@ function calculatePerSecondManipulation(manipulation: number, seconds: number): 
 Timer.propTypes = {
     moves: PropTypes.number,
     startTime: PropTypes.number,
-    run: PropTypes.bool,
     clicks: PropTypes.number,
 } as { [T in keyof TimerProps]: PropTypes.Validator<any> };
 
-export function Timer({moves, startTime, run, clicks}: TimerProps) {
+export function Timer({moves, startTime, clicks}: TimerProps) {
     const [tickId, setTickId] = React.useState(undefined);
     const [lastSolveTime, setLastSolveTime] = React.useState(0);
     const [currentTime, setCurrentTime] = React.useState(0);
     const theme = React.useContext(ThemeContext);
     const game = React.useContext(GameContext);
 
-    useEffect(() => {
+    React.useEffect(() => {
         setTickId(setInterval(() => {
             setCurrentTime(game.run ? Date.now : 0);
 

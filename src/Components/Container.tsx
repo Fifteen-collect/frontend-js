@@ -4,29 +4,49 @@ import * as PropTypes from "prop-types";
 import Bar from "Components/Bar";
 import {Context as ThemeContext} from "Types/Theme/Context";
 import {GameContext} from "Types/GameContext";
+import {Buffer} from "Helpers/randomizeMatrix";
 
 export interface ContainerProps {
     matrix: Bar[][],
     style: CSSProperties,
     size?: number,
+    buffer: Buffer,
     relativeSize: number,
-    clickHandler: (row: number, column: number) => void,
-    touchHandler: (row: number, column: number) => void,
+    moveHandler: (row: number, column: number) => void,
 }
 
 Container.propTypes = {
     matrix: PropTypes.array,
     style: PropTypes.object,
     size: PropTypes.number,
+    buffer: PropTypes.object,
     relativeSize: PropTypes.number,
-    clickHandler: PropTypes.func,
-    touchHandler: PropTypes.func,
+    moveHandler: PropTypes.func,
 } as { [T in keyof ContainerProps]: PropTypes.Validator<any> };
 
 export function Container(props: ContainerProps) {
     const theme = React.useContext(ThemeContext);
     const {solved} = React.useContext(GameContext);
     const relativeSize = Math.floor(props.relativeSize);
+
+    React.useEffect(() => {
+        window.onkeydown = (event: KeyboardEvent) => {
+            switch (event.code) {
+                case 'ArrowLeft':
+                    props.buffer.x !== props.size - 1 && props.moveHandler(props.buffer.y, props.buffer.x + 1);
+                    break;
+                case 'ArrowRight':
+                    props.buffer.x !== 0 && props.moveHandler(props.buffer.y, props.buffer.x - 1);
+                    break;
+                case 'ArrowUp':
+                    props.buffer.y !== props.size - 1 && props.moveHandler(props.buffer.y + 1, props.buffer.x);
+                    break;
+                case 'ArrowDown':
+                    props.buffer.y !== 0 && props.moveHandler(props.buffer.y - 1, props.buffer.x);
+                    break;
+            }
+        }
+    }, [props]);
 
     return <div style={props.style}>
         {props.matrix.map((row, currentRow) => {
@@ -35,8 +55,8 @@ export function Container(props: ContainerProps) {
                     return <div
                         key={currentColumn}
                         className="noselect block-node rounded d-flex align-items-center justify-content-center"
-                        onClick={() => props.clickHandler(currentRow, currentColumn)}
-                        onTouchStart={() => props.clickHandler(currentRow, currentColumn)}
+                        onClick={() => props.moveHandler(currentRow, currentColumn)}
+                        onTouchStart={() => props.moveHandler(currentRow, currentColumn)}
                         style={{
                             height: `${relativeSize}px`,
                             color: theme.text,

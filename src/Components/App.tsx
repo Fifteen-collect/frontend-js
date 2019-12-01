@@ -181,11 +181,11 @@ export default function App() {
                 </div>
                 <Container
                     matrix={matrix}
+                    buffer={buffer}
                     style={{height: windowSize.toString(10)}}
                     size={size}
                     relativeSize={relativeSize}
-                    touchHandler={(rowIndex, columnIndex) =>  blockEventHandler(rowIndex, columnIndex)}
-                    clickHandler={(rowIndex, columnIndex) => blockEventHandler(rowIndex, columnIndex)}
+                    moveHandler={(rowIndex, columnIndex) =>  blockEventHandler(rowIndex, columnIndex)}
                 />
             </div>
         </GameContext.Provider>

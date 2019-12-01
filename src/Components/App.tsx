@@ -9,6 +9,7 @@ import {Timer} from "./Header/Timer";
 import Sizes from "./Settings/Sizes";
 
 import * as Helper from "Helpers";
+import isMatrixSolved from "Helpers/isMatrixSolved";
 import isBlockCanMove from "Helpers/isBlockCanMove";
 
 import {Method} from "Types/Method";
@@ -18,7 +19,6 @@ import {Theme} from "Types/Theme";
 import {Context as ThemeContext} from "Types/Theme/Context";
 import {GameContext} from "Types/GameContext";
 import {scheme as ThemeColorScheme} from "Types/Theme/ColorScheme";
-import isMatrixSolved from "Helpers/isMatrixSolved";
 
 export default function App() {
     const availableSizes: Size[] = (Object.values(Size) as Size[]).filter(s => typeof s === 'number');
@@ -32,6 +32,7 @@ export default function App() {
     const [collapseModal, modalToggle] = React.useState(true);
     const [pinnedSizesToTop, pinSizeToTopToggle] = React.useState(false);
     const [moves, setMoves] = React.useState(0);
+    const [clicks, setClicks] = React.useState(0);
     const [run, setRun] = React.useState(false);
     const [startTime, setStartTime] = React.useState(0);
     const [buffer, setBuffer] = React.useState({x: 0, y: 0});
@@ -64,8 +65,9 @@ export default function App() {
         setRun(false);
         setStartTime(0);
         setSolved(false);
-        setSize(size);
+        setClicks(0);
         setRelativeSize(windowSize / size);
+        setSize(size);
     };
 
     const blockEventHandler = (rowIndex: number, blockIndex: number) => {
@@ -76,6 +78,7 @@ export default function App() {
                 return;
             }
 
+            let movedBlocks = moves;
             if (rowIndex === y) {
                 if (blockIndex > x) {
                     for (let elementX = x + 1; elementX <= blockIndex; elementX++) {
@@ -83,7 +86,8 @@ export default function App() {
                         matrix[buffer.y][buffer.x] = matrix[rowIndex][elementX];
                         matrix[rowIndex][elementX] = temp;
                         buffer.x++;
-                        setMoves(moves + 1);
+                        movedBlocks++;
+                        setClicks(clicks + 1);
                     }
                 } else if (blockIndex < x) {
                     for (let elementX = x - 1; elementX >= blockIndex; elementX--) {
@@ -91,7 +95,8 @@ export default function App() {
                         matrix[buffer.y][buffer.x] = matrix[rowIndex][elementX];
                         matrix[rowIndex][elementX] = temp;
                         buffer.x--;
-                        setMoves(moves + 1);
+                        movedBlocks++;
+                        setClicks(clicks + 1);
                     }
                 }
             } else if (blockIndex === x) {
@@ -101,7 +106,8 @@ export default function App() {
                         matrix[buffer.y][buffer.x] = matrix[elementY][buffer.x];
                         matrix[elementY][buffer.x] = temp;
                         buffer.y++;
-                        setMoves(moves + 1);
+                        movedBlocks++;
+                        setClicks(clicks + 1);
                     }
                 } else if (rowIndex < y) {
                     for (let elementY = y - 1; elementY >= rowIndex; elementY--) {
@@ -109,17 +115,18 @@ export default function App() {
                         matrix[buffer.y][buffer.x] = matrix[elementY][buffer.x];
                         matrix[elementY][buffer.x] = temp;
                         buffer.y--;
-                        setMoves(moves + 1);
+                        movedBlocks++;
+                        setClicks(clicks + 1);
                     }
                 }
             }
 
             !run && !solved && setStartTime(Date.now());
+            setMoves(movedBlocks);
 
             if (isMatrixSolved(matrix)) {
                 setRun(false);
                 setSolved(true);
-                setMoves(moves);
                 Service.StatCountsStorage.incrementStat(size, Service.StatCountsStorage.SOLVED_COUNTS_KEY);
 
                 return;
@@ -138,6 +145,7 @@ export default function App() {
                     openSettingsHandler={() => modalToggle(!collapseModal)}
                 />
                 <Settings
+                    currentSize={size}
                     currentThemeType={theme}
                     toggle={collapseModal}
                     methods={availableMethods}
@@ -176,7 +184,7 @@ export default function App() {
                     : <></>}
                 <div className="container">
                     <div className="row d-flex align-items-center justify-content-around">
-                        <Timer moves={moves} startTime={startTime} run={run}/>
+                        <Timer moves={moves} clicks={clicks} startTime={startTime} run={run}/>
                     </div>
                 </div>
                 <Container

@@ -20,6 +20,7 @@ export interface SettingsProps {
     pinSizes: boolean,
     pinSizeToTop: (event: React.ChangeEvent) => void,
     currentThemeType: string,
+    currentSize: number,
 }
 
 Settings.propTypes = {
@@ -34,6 +35,7 @@ Settings.propTypes = {
     pinSizes: PropTypes.bool,
     pinSizeToTop: PropTypes.func,
     currentThemeType: PropTypes.string,
+    currentSize: PropTypes.number,
 } as { [T in keyof SettingsProps]: PropTypes.Validator<any> };
 
 export default function Settings(props: SettingsProps) {
@@ -42,7 +44,6 @@ export default function Settings(props: SettingsProps) {
     }
 
     const [currentMethod, setMethod] = React.useState(Method.DEFAULT);
-    const [currentSize, setSize] = React.useState(Size.X4);
     const currentTheme = React.useContext(ThemeContext);
 
     return <div className="modal d-block">
@@ -108,12 +109,9 @@ export default function Settings(props: SettingsProps) {
                     <div className="container-fluid mt-1">
                         Available puzzle's sizes
                         <Sizes
-                            size={currentSize}
+                            size={props.currentSize}
                             sizes={props.sizes}
-                            changeSize={size => {
-                                setSize(size);
-                                props.resetHandler(size);
-                            }}
+                            changeSize={size => props.resetHandler(size)}
                         />
                     </div>
                     <div className="container-fluid mt-1">

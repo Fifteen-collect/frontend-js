@@ -184,7 +184,7 @@ export default function App() {
                     : <></>}
                 <div className="container">
                     <div className="row d-flex align-items-center justify-content-around">
-                        <Timer moves={moves} clicks={clicks} startTime={startTime} run={run}/>
+                        <Timer moves={moves} clicks={clicks} startTime={startTime}/>
                     </div>
                 </div>
                 <Container

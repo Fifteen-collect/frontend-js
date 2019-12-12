@@ -3,7 +3,7 @@
         "baseUrl": "./src",
         "jsx": "react",
         "target": "esnext",
-        "module": "commonjs",
+        "module": "esnext",
         "noImplicitAny": true,
         "removeComments": true,
         "preserveConstEnums": true,

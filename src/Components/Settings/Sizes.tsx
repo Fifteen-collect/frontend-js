@@ -18,14 +18,15 @@ Sizes.propTypes = {
 
 export default function Sizes(props: SizesProps) {
     const currentTheme = React.useContext(ThemeContext);
-    console.log(props.size);
 
     return <div className="row">
         {props.sizes.map(size => {
+            const active = props.size === size ? 'active' : '';
+
             return <button
                 type="button"
                 key={size}
-                className={`btn col-2 noselect ${currentTheme.button.classColor} ${props.size === size ? 'active' : ''}`}
+                className={`btn col-2 noselect ${currentTheme.button.classColor} ${active}`}
                 style={{
                     color: props.size === size ? currentTheme.button.selectedText : currentTheme.button.text,
                 }}

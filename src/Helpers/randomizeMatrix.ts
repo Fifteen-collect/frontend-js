@@ -1,6 +1,7 @@
 import Bar from "Components/Bar";
 import randomInt from "Helpers/randomInt";
 import isBlockCanMove from "Helpers/isBlockCanMove";
+import isMatrixSolved from "Helpers/isMatrixSolved";
 
 export interface Buffer {
     x: number,
@@ -52,8 +53,10 @@ export default function randomizeMatrix(
         }
     }
 
-    return {
-        matrix: matrix,
-        buffer: buffer,
-    };
+    return isMatrixSolved(matrix)
+        ? randomizeMatrix(matrix, buffer)
+        : {
+            matrix: matrix,
+            buffer: buffer,
+        };
 }

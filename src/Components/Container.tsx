@@ -5,11 +5,11 @@ import Bar from "Components/Bar";
 import {Context as ThemeContext} from "Types/Theme/Context";
 import {GameContext} from "Types/GameContext";
 import {Buffer} from "Helpers/randomizeMatrix";
+import {Size} from "Types/Block/Size";
 
 export interface ContainerProps {
     matrix: Bar[][],
     style: CSSProperties,
-    size?: number,
     buffer: Buffer,
     relativeSize: number,
     moveHandler: (row: number, column: number) => void,
@@ -18,7 +18,6 @@ export interface ContainerProps {
 Container.propTypes = {
     matrix: PropTypes.array,
     style: PropTypes.object,
-    size: PropTypes.number,
     buffer: PropTypes.object,
     relativeSize: PropTypes.number,
     moveHandler: PropTypes.func,
@@ -26,20 +25,20 @@ Container.propTypes = {
 
 export function Container(props: ContainerProps) {
     const theme = React.useContext(ThemeContext);
-    const {solved} = React.useContext(GameContext);
+    const {solved, size} = React.useContext(GameContext);
     const relativeSize = Math.floor(props.relativeSize);
 
     React.useEffect(() => {
         window.onkeydown = (event: KeyboardEvent) => {
             switch (event.code) {
                 case 'ArrowLeft':
-                    props.buffer.x !== props.size - 1 && props.moveHandler(props.buffer.y, props.buffer.x + 1);
+                    props.buffer.x !== size - 1 && props.moveHandler(props.buffer.y, props.buffer.x + 1);
                     break;
                 case 'ArrowRight':
                     props.buffer.x !== 0 && props.moveHandler(props.buffer.y, props.buffer.x - 1);
                     break;
                 case 'ArrowUp':
-                    props.buffer.y !== props.size - 1 && props.moveHandler(props.buffer.y + 1, props.buffer.x);
+                    props.buffer.y !== size - 1 && props.moveHandler(props.buffer.y + 1, props.buffer.x);
                     break;
                 case 'ArrowDown':
                     props.buffer.y !== 0 && props.moveHandler(props.buffer.y - 1, props.buffer.x);
@@ -63,7 +62,7 @@ export function Container(props: ContainerProps) {
                             backgroundColor: !solved
                                 ? block.Color
                                 : (block.Value !== 0 ? theme.block.solved : block.Color),
-                            border: `1px solid ${theme.block.border}`,
+                            fontSize: size === Size.X6 || Size.X7 ? "2.2rem" : "2.5rem",
                         }}
                     >
                         {block.Value !== 0 ? block.Value : ''}

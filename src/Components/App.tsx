@@ -191,7 +191,6 @@ export default function App() {
                     matrix={matrix}
                     buffer={buffer}
                     style={{height: windowSize.toString(10)}}
-                    size={size}
                     relativeSize={relativeSize}
                     moveHandler={(rowIndex, columnIndex) =>  blockEventHandler(rowIndex, columnIndex)}
                 />

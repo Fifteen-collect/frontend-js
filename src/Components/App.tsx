@@ -5,7 +5,7 @@ import {Container} from "./Container";
 import Header from "./Header";
 import Settings from "./Settings";
 import * as Service from "./Service";
-import {Timer} from "./Header/Timer";
+import {Timer} from "Components/Timer";
 import Sizes from "./Settings/Sizes";
 
 import * as Helper from "Helpers";

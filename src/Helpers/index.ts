@@ -3,7 +3,7 @@ import randomInt from "./randomInt";
 import randomizeMatrix from "./randomizeMatrix";
 
 export {
-    createDefaultMatrix,
-    randomizeMatrix,
-    randomInt,
+  createDefaultMatrix,
+  randomizeMatrix,
+  randomInt,
 }

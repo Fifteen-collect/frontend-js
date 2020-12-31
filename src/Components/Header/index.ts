@@ -1,11 +1,11 @@
-import {StatsButton} from "./StatsButton";
-import {Timer} from "Components/Timer";
-import {Button as ResetButton} from "./Reset/Button";
-import {Button as SettingsButton} from "./Settings/Button";
+import StatsButton from "./StatsButton";
+import Timer from "Components/Timer";
+import ResetButton from "./Reset/Button";
+import SettingsButton from "./Settings/Button";
 
 export {
-    StatsButton,
-    Timer,
-    ResetButton,
-    SettingsButton,
+  StatsButton,
+  Timer,
+  ResetButton,
+  SettingsButton,
 }

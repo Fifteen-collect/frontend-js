@@ -38,10 +38,8 @@
         "no-duplicate-switch-case": true,
         "no-duplicate-variable": true,
         "no-empty": [
-            true,
-            "allow-empty-catch"
+            true
         ],
-        "no-implicit-dependencies": true,
         "no-invalid-template-strings": true,
         "no-invalid-this": true,
         "no-tautology-expression": true,
@@ -77,8 +75,7 @@
         "encoding": true,
         "increment-decrement": false,
         "interface-name": [
-            true,
-            "never-prefix"
+            true
         ]
     },
     "rulesDirectory": []

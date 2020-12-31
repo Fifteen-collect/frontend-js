@@ -1,5 +1,5 @@
 export enum Method {
-    DEFAULT = 'default',
-    LAYERED = 'layered',
-    FRIDGE = 'fridge',
+  DEFAULT = 'default',
+  LAYERED = 'layered',
+  FRIDGE = 'fridge',
 }

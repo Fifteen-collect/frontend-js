@@ -1,9 +1,9 @@
 export enum Row {
-    FIRST,
-    SECOND,
-    THIRD,
-    FOURTH,
-    FIFTH,
-    SIXTH,
-    SEVENTH,
+  FIRST,
+  SECOND,
+  THIRD,
+  FOURTH,
+  FIFTH,
+  SIXTH,
+  SEVENTH,
 }

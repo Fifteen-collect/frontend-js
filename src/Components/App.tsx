@@ -52,8 +52,8 @@ export default () => {
 
   const handleReset = (nextSize: number, additionalTheme?: Theme) => {
     const {matrix: randomMatrix, buffer: randomBuffer} = Helper.randomizeMatrix(
-      Helper.createDefaultMatrix(size, method, additionalTheme || theme),
-      {x: size - 1, y: size - 1}
+      Helper.createDefaultMatrix(nextSize, method, additionalTheme || theme),
+      {x: nextSize - 1, y: nextSize - 1}
     );
 
     setMatrix(randomMatrix);

@@ -1,5 +1,6 @@
 import React from "react";
 import * as ReactDOM from "react-dom";
+import {BrowserRouter} from 'react-router-dom';
 import App from "Components/App";
 import "bootstrap/dist/css/bootstrap.css";
 import "Styles/main.css";
@@ -19,8 +20,8 @@ if (!window.Intl) {
   require.ensure([], () => {
     require("intl");
 
-    ReactDOM.render(<App />, document.getElementById("root"));
+    ReactDOM.render(<BrowserRouter><App/></BrowserRouter>, document.getElementById("root"));
   });
 } else {
-  ReactDOM.render(<App />, document.getElementById("root"));
+  ReactDOM.render(<BrowserRouter><App/></BrowserRouter>, document.getElementById("root"));
 }

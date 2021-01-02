@@ -1,13 +1,13 @@
 import * as React from "react";
 import {CSSProperties} from "react";
+import * as Helpers from "Helpers";
 import Bar from "Components/Bar";
 import {Context as ThemeContext} from "Types/Theme/Context";
 import {GameContext} from "Types/GameContext";
-import {IBuffer} from "Helpers/randomizeMatrix";
 import {Size} from "Types/Block/Size";
 
 export interface IContainerProps {
-  buffer: IBuffer,
+  buffer: Helpers.matrixHelper.IBuffer,
   matrix: Bar[][],
   moveHandler: (row: number, column: number) => void,
   relativeSize: number,
@@ -46,15 +46,19 @@ export default (props: IContainerProps) => {
           }
 
           break;
-        default: break;
+        default:
+          break;
       }
     }
   }, [props]);
 
   return <div style={props.style}>
-    {props.matrix.map((row, currentRow) => <div
-      key={currentRow}
-      className="block-row"
+    {props.matrix.map((
+      row,
+      currentRow
+      ) => <div
+        key={currentRow}
+        className="block-row"
       >
         {row.map((block, currentColumn) => <div
           key={currentColumn}

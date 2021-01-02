@@ -1,9 +1,7 @@
-import createDefaultMatrix from "./createDefaultMatrix";
 import randomInt from "./randomInt";
-import randomizeMatrix from "./randomizeMatrix";
+import * as matrixHelper from "./matrixHelper";
 
 export {
-  createDefaultMatrix,
-  randomizeMatrix,
   randomInt,
+  matrixHelper,
 }

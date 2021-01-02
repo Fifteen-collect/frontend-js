@@ -31,11 +31,11 @@ export interface IThemeProps {
   timerTextColor: Color,
 }
 
-export type IColorScheme = {
+export type ColorScheme = {
   [theme in Theme]: IThemeProps
 }
 
-export const scheme: IColorScheme = {
+export const scheme: ColorScheme = {
   [Theme.LIGHT]: {
     block: {
       border: Color.LIGHT,

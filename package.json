@@ -5,7 +5,7 @@
     "description": "Barley-break game",
     "main": "index.js",
     "scripts": {
-        "start": "webpack-dev-server --colors --hot --inline --progress --config \"./webpack.config.js\"",
+        "start": "webpack-dev-server --colors --hot --host 0.0.0.0 --inline --progress --config \"./webpack.config.js\"",
         "build": "webpack --mode production",
         "test": "react-scripts test --env=jsdom",
         "lint": "tslint --project . && eslint src",

@@ -1,10 +1,12 @@
 import React from "react";
-import {Link} from "react-router-dom";
+import {Link, useLocation} from "react-router-dom";
 
 export default () => {
-  return <div className="shadow-top">
+  const location = useLocation();
+
+  return React.useMemo(() => <div className="shadow-top">
     <ul className="nav d-flex">
-      <li className="flex-fill nav-item d-flex justify-content-center">
+      <li className={`flex-fill nav-item d-flex justify-content-center border-top ${location.pathname === '/settings' ? 'border-primary' : 'border-white'}`}>
         <Link to="/settings" className="nav-link">
           <svg
             aria-hidden="true"
@@ -27,7 +29,7 @@ export default () => {
           </svg>
         </Link>
       </li>
-      <li className="flex-fill d-flex justify-content-center">
+      <li className={`flex-fill d-flex justify-content-center border-top ${location.pathname === '/' ? 'border-primary' : 'border-white'}`}>
         <Link to="/" className="nav-link">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -49,7 +51,7 @@ export default () => {
           </svg>
         </Link>
       </li>
-      <li className="flex-fill d-flex justify-content-center">
+      <li className={`flex-fill d-flex justify-content-center border-top ${location.pathname === '/statistic' ? 'border-primary' : 'border-white'}`}>
         <Link to="/statistic" className="nav-link">
           <svg
             aria-hidden="true"
@@ -73,5 +75,5 @@ export default () => {
         </Link>
       </li>
     </ul>
-  </div>
+  </div>, [location])
 }

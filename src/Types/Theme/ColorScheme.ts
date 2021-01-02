@@ -5,6 +5,7 @@ export interface IThemeProps {
   block: {
     border: Color,
     solved: Color,
+    text: Color,
   },
   button: {
     background: Color,
@@ -17,12 +18,6 @@ export interface IThemeProps {
     header: {
       background: Color,
     },
-    modal: {
-      body: Color,
-      closeButton: Color,
-      header: Color,
-      text: Color,
-    }
   },
   table: {
     backgroundClass: string
@@ -38,8 +33,9 @@ export type ColorScheme = {
 export const scheme: ColorScheme = {
   [Theme.LIGHT]: {
     block: {
-      border: Color.LIGHT,
+      border: Color.PRIMARY,
       solved: Color.GREEN,
+      text: Color.PRIMARY,
     },
     button: {
       background: Color.PRIMARY,
@@ -52,23 +48,18 @@ export const scheme: ColorScheme = {
       header: {
         background: Color.LIGHT,
       },
-      modal: {
-        body: Color.WHITE,
-        closeButton: Color.BLACK,
-        header: Color.LIGHT,
-        text: Color.BLACK,
-      }
     },
     table: {
       backgroundClass: 'table-light'
     },
-    text: Color.LIGHT,
+    text: Color.DARK,
     timerTextColor: Color.BLACK,
   },
   [Theme.DARK]: {
     block: {
       border: Color.LIGHTSTATEGREY,
       solved: Color.DEEPGREEN,
+      text: Color.LIGHT,
     },
     button: {
       background: Color.COMPOSITIVEDARK,
@@ -81,12 +72,6 @@ export const scheme: ColorScheme = {
       header: {
         background: Color.NIGHTDARK,
       },
-      modal: {
-        body: Color.NIGHTDARK,
-        closeButton: Color.WHITE,
-        header: Color.NIGHTDARK,
-        text: Color.WHITE,
-      }
     },
     table: {
       backgroundClass: 'table-dark'

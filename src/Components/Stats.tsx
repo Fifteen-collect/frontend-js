@@ -1,16 +1,13 @@
 import * as React from "react";
 import * as Storage from "Storage";
-import {Size} from "Types/Block/Size";
 import {Context as ThemeContext} from "Types/Theme/Context";
+import useApplicationSetup from "Components/useApplicationSetup";
 
-interface IStatsProps {
-  sizes: Size[],
-}
-
-export default ({sizes}: IStatsProps) => {
+export default () => {
   const theme = React.useContext(ThemeContext);
   const counts = Storage.StatCounts.getStatCounts(Storage.StatCounts.SOLVED_COUNTS_KEY);
   const resets = Storage.StatCounts.getStatCounts(Storage.StatCounts.RESETS_COUNTS_KEY);
+  const appSetup = useApplicationSetup();
 
   return <>
     <h5 className="modal-title">Count of solves</h5>
@@ -23,7 +20,7 @@ export default ({sizes}: IStatsProps) => {
       </tr>
       </thead>
       <tbody>
-      {sizes.map(size => <tr key={size}>
+      {appSetup.availableSizes.map(size => <tr key={size}>
         <td>{size}x{size}</td>
         <td>{counts && counts[size] || 0}</td>
         <td>{resets && resets[size] || 0}</td>

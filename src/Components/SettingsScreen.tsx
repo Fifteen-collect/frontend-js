@@ -1,42 +1,36 @@
 import * as React from "react";
 import Sizes from "Components/Settings/Sizes";
-import {Method} from "Types/Method";
-import {Theme} from "Types/Theme";
 import {Context as ThemeContext} from "Types/Theme/Context";
+import useApplicationSetup from "Components/useApplicationSetup";
+import * as Storage from "Storage";
+import * as Types from "Types";
+import useGameContext from "Components/Game/useGameContext";
 
-export interface ISettingsScreenProps {
-  changeMethodHandler: (method: Method) => void;
-  changeTheme: (theme: Theme) => void;
-  currentSize: number,
-  currentThemeType: string,
-  methods: Method[],
-  pinSizes: boolean,
-  pinSizeToTop: (event: React.ChangeEvent) => void,
-  resetHandler: (size: number) => void;
-  sizes: number[],
-  themes: Theme[],
-}
-
-export default (props: ISettingsScreenProps) => {
-  const [currentMethod, setMethod] = React.useState(Method.DEFAULT);
+export default () => {
   const currentTheme = React.useContext(ThemeContext);
+  const appSetup = useApplicationSetup();
+  const game = useGameContext();
 
   return <div className="container-fluid mt-1">
     <h5 className="modal-title">Settings</h5>
     <div className="container-fluid mt-1">
       Themes:
       <div className="row">
-        {props.themes.map(availableTheme => {
+        {appSetup.availableThemes.map(availableTheme => {
           const classColor = currentTheme.button.classColor;
-          const active = props.currentThemeType === availableTheme ? 'active' : '';
+          const active = game.theme === availableTheme ? 'active' : '';
 
           return <button
             type={"button"}
             key={availableTheme}
             className={`btn col-6 noselect ${classColor} ${active}`}
-            onClick={() => props.changeTheme(availableTheme)}
+            onClick={() => {
+              game.setTheme(availableTheme);
+              game.reset(game.size, availableTheme);
+              Storage.Themes.saveThemeToStorage(availableTheme);
+            }}
             style={{
-              color: props.currentThemeType === availableTheme
+              color: game.theme === availableTheme
                 ? currentTheme.button.selectedText
                 : currentTheme.button.text,
             }}
@@ -49,20 +43,26 @@ export default (props: ISettingsScreenProps) => {
     <div className="container-fluid mt-1">
       Color scheme for blocks
       <div className="row">
-        {props.methods.map(method => {
+        {appSetup.availableMethods.map(method => {
           const classColor = currentTheme.button.classColor;
-          const active = currentMethod === method ? 'active' : '';
+          const active = game.method === method ? 'active' : '';
 
           return <button
             type="button"
             key={method}
             className={`btn col-4 noselect ${classColor} ${active}`}
             onClickCapture={() => {
-              setMethod(method);
-              props.changeMethodHandler(method);
+              game.setMethod(method);
+              game.matrix.forEach(row => {
+                row.forEach(block => {
+                  block.Color = Types.ColorScheme[game.theme][method][game.size][block.X][block.Y]
+                });
+              });
+              game.setMethod(method);
+              game.setMatrix(game.matrix);
             }}
             style={{
-              color: currentMethod === method
+              color: game.method === method
                 ? currentTheme.button.selectedText
                 : currentTheme.button.text,
             }}
@@ -75,24 +75,10 @@ export default (props: ISettingsScreenProps) => {
     <div className="container-fluid mt-1">
       Available puzzle's sizes
       <Sizes
-        size={props.currentSize}
-        sizes={props.sizes}
-        changeSize={size => props.resetHandler(size)}
+        size={game.size}
+        sizes={appSetup.availableSizes}
+        changeSize={size => game.reset(size)}
       />
-    </div>
-    <div className="container-fluid mt-1">
-      <div className="row d-flex justify-content-center align-content-center align-items-center">
-        <span>Pin sizes to top</span>
-        <label className="switch m-0 ml-3" htmlFor="checkbox">
-          <input
-            type="checkbox"
-            id="checkbox"
-            checked={props.pinSizes}
-            onChange={props.pinSizeToTop}
-          />
-          <div className="slider round"/>
-        </label>
-      </div>
     </div>
   </div>;
 }

@@ -1,48 +1,52 @@
-import * as React from "react";
-import {CSSProperties} from "react";
+import React, {useEffect} from "react";
 import * as Helpers from "Helpers";
-import Bar from "Components/Bar";
 import {Context as ThemeContext} from "Types/Theme/Context";
-import {GameContext} from "Types/GameContext";
 import {Size} from "Types/Block/Size";
+import useWindowSettings from "Components/useWindowSettings";
+import useGameContext from "Components/Game/useGameContext";
 
-export interface IContainerProps {
-  buffer: Helpers.matrixHelper.IBuffer,
-  matrix: Bar[][],
-  moveHandler: (row: number, column: number) => void,
-  relativeSize: number,
-  style: CSSProperties,
-}
+export default () => {
+  const appTheme = React.useContext(ThemeContext);
+  const game = useGameContext();
+  const windowSettings = useWindowSettings(game.size);
 
-export default (props: IContainerProps) => {
-  const theme = React.useContext(ThemeContext);
-  const {solved, size} = React.useContext(GameContext);
-  const relativeSize = Math.floor(props.relativeSize);
+  useEffect(() => {
+    if (game.matrix.length === 0) {
+      const {matrix: randomMatrix, buffer: randomBuffer} = Helpers.matrixHelper.randomizeMatrix(
+        Helpers.matrixHelper.createDefaultMatrix(game.size, game.method, game.theme),
+        {
+          x: game.size - 1,
+          y: game.size - 1,
+        }
+      );
 
-  React.useEffect(() => {
+      game.setMatrix(randomMatrix);
+      game.setBuffer(randomBuffer);
+    }
+
     window.onkeydown = (event: KeyboardEvent) => {
       switch (event.code) {
         case 'ArrowLeft':
-          if (props.buffer.x !== size - 1) {
-            props.moveHandler(props.buffer.y, props.buffer.x + 1)
+          if (game.buffer.x !== game.size - 1) {
+            game.moveBlock(game.buffer.y, game.buffer.x + 1)
           }
 
           break;
         case 'ArrowRight':
-          if (props.buffer.x !== 0) {
-            props.moveHandler(props.buffer.y, props.buffer.x - 1)
+          if (game.buffer.x !== 0) {
+            game.moveBlock(game.buffer.y, game.buffer.x - 1)
           }
 
           break;
         case 'ArrowUp':
-          if (props.buffer.y !== size - 1) {
-            props.moveHandler(props.buffer.y + 1, props.buffer.x)
+          if (game.buffer.y !== game.size - 1) {
+            game.moveBlock(game.buffer.y + 1, game.buffer.x)
           }
 
           break;
         case 'ArrowDown':
-          if (props.buffer.y !== 0) {
-            props.moveHandler(props.buffer.y - 1, props.buffer.x)
+          if (game.buffer.y !== 0) {
+            game.moveBlock(game.buffer.y - 1, game.buffer.x)
           }
 
           break;
@@ -50,33 +54,28 @@ export default (props: IContainerProps) => {
           break;
       }
     }
-  }, [props]);
+  }, [game.matrix]);
 
-  return <div style={props.style}>
-    {props.matrix.map((
-      row,
-      currentRow
-      ) => <div
-        key={currentRow}
-        className="block-row"
-      >
+  return <React.Profiler id="Game container" onRender={Helpers.profilerHandler}>
+    <div style={{height: windowSettings.windowSize.toString(10)}}>
+      {game.matrix.map((row, currentRow) => <div key={currentRow} className="block-row">
         {row.map((block, currentColumn) => <div
           key={currentColumn}
-          className="noselect block-node rounded d-flex align-items-center justify-content-center"
-          onClick={() => props.moveHandler(currentRow, currentColumn)}
-          onTouchStart={() => props.moveHandler(currentRow, currentColumn)}
+          className="noselect block-node rounded-0 d-flex align-items-center justify-content-center border border-primary"
+          onClick={() => game.moveBlock(currentRow, currentColumn)}
+          onTouchStart={() => game.moveBlock(currentRow, currentColumn)}
           style={{
-            height: `${relativeSize}px`,
-            color: theme.text,
-            backgroundColor: !solved
+            height: `${Math.floor(windowSettings.relativeSize)}px`,
+            color: appTheme.block.text,
+            backgroundColor: !game.solved
               ? block.Color
-              : (block.Value !== 0 ? theme.block.solved : block.Color),
-            fontSize: size === Size.X6 || Size.X7 ? "2.2rem" : "2.5rem",
+              : (block.Value !== 0 ? appTheme.block.solved : block.Color),
+            fontSize: game.size === Size.X6 || Size.X7 ? "2.2rem" : "2.5rem",
           }}
         >
           {block.Value !== 0 ? block.Value : ''}
         </div>)}
-      </div>
-    )}
-  </div>
+      </div>)}
+    </div>
+  </React.Profiler>
 }

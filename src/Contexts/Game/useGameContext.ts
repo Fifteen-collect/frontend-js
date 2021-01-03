@@ -1,5 +1,5 @@
-import React, {createContext, useContext} from "react";
-import {IGame} from "Components/Game/useGameState";
+import {createContext, useContext} from "react";
+import {IGame} from "Hooks/Game/useGameState";
 import {Size} from "Types/Block";
 import {Method, Theme} from "Types";
 

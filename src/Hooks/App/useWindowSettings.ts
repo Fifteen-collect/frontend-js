@@ -1,5 +1,5 @@
 import {useState} from "react";
-import useGameContext from "Components/Game/useGameContext";
+import useGameContext from "Contexts/Game/useGameContext";
 
 export default (relative: number) => {
   const game = useGameContext();

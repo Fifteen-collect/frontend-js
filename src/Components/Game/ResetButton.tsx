@@ -1,14 +1,32 @@
 import React, {useMemo} from "react";
 import * as Storage from "Storage";
-import {Context as ThemeContext} from "Types/Theme/Context";
-import useGameContext from "Components/Game/useGameContext";
+import useGameContext from "Contexts/Game/useGameContext";
+import clsx from "clsx";
+import {useTheme} from "Contexts/App/useTheme";
+
+const styles = {
+  button: clsx([
+    'btn',
+    'btn-sm',
+    'text-primary',
+    'rounded-0',
+    'bg-white',
+    'd-flex',
+    'flex-fill',
+    'justify-content-center',
+    'align-items-center',
+  ]),
+  svg: {
+    width: '2rem',
+  }
+}
 
 export default () => {
-  const theme = React.useContext(ThemeContext);
+  const {theme} = useTheme();
   const game = useGameContext();
 
   return useMemo(() => <button
-    className="btn btn-sm text-primary rounded-0 bg-white d-flex flex-fill justify-content-center align-items-center"
+    className={styles.button}
     onClick={() => {
       if (!game.solved) {
         Storage.StatCounts.incrementStat(game.size, Storage.StatCounts.RESETS_COUNTS_KEY);
@@ -17,8 +35,8 @@ export default () => {
       game.reset(game.size);
     }}
     style={{
-      backgroundColor: theme.button.background,
-      color: theme.text,
+      backgroundColor: theme.styles.button.background,
+      color: theme.styles.text,
     }}
   >
     <svg
@@ -32,7 +50,7 @@ export default () => {
       viewBox="0 0 512 512"
       style={{
         pointerEvents: "none",
-        width: '2rem',
+        ...styles.svg,
       }}
     >
       <path

@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import * as Types from "Types";
 import {Method, Theme} from "Types";
-import Bar from "Components/Bar";
+import Block from "Components/Game/Block";
 import {Size} from "Types/Block";
 import * as Storage from "Storage";
 import * as Helpers from "Helpers";
@@ -13,8 +13,8 @@ export interface IGame {
   setSolved: React.Dispatch<boolean>,
   size: Size,
   setSize: React.Dispatch<Size>,
-  matrix: Bar[][],
-  setMatrix: React.Dispatch<Bar[][]>,
+  matrix: Block[][],
+  setMatrix: React.Dispatch<Block[][]>,
   theme: Theme,
   setTheme: React.Dispatch<Theme>,
   buffer: { x: number, y: number },
@@ -39,7 +39,7 @@ export default (): IGame => {
   const [method, setMethod] = useState(Method.DEFAULT);
   const [moves, setMoves] = useState(0);
   const [clicks, setClicks] = useState(0);
-  const [matrix, setMatrix] = useState([] as Bar[][]);
+  const [matrix, setMatrix] = useState([] as Block[][]);
   const [buffer, setBuffer] = useState({x: 0, y: 0});
   const [startTime, setStartTime] = useState(0);
   const reset = (nextSize: number, additionalTheme?: Types.Theme): void => {
@@ -131,7 +131,6 @@ export default (): IGame => {
       setRun(true);
     }
   };
-
 
   return {
     buffer,

@@ -1,13 +1,51 @@
 import React from "react";
 import {Link, useLocation} from "react-router-dom";
+import useRoute from "Hooks/App/useRoute";
+import clsx from "clsx";
+
+const styles = {
+  shadow: {
+    top: 'shadow-top',
+  },
+  nav: {
+    list: clsx(
+      'nav',
+      'd-flex',
+    ),
+    item: clsx(
+      'flex-fill',
+      'nav-item',
+      'd-flex',
+      'justify-content-center',
+      'border-top'
+    ),
+    link: 'nav-link',
+  },
+  border: {
+    color: {
+      white: 'border-white',
+      primary: 'border-primary',
+    }
+  },
+  svg: {
+    width: {
+      default: '2rem',
+      big: '2.5rem',
+    }
+  }
+}
 
 export default () => {
   const location = useLocation();
+  const route = useRoute();
 
-  return React.useMemo(() => <div className="shadow-top">
-    <ul className="nav d-flex">
-      <li className={`flex-fill nav-item d-flex justify-content-center border-top ${location.pathname === '/settings' ? 'border-primary' : 'border-white'}`}>
-        <Link to="/settings" className="nav-link">
+  return React.useMemo(() => <div className={styles.shadow.top}>
+    <ul className={styles.nav.list}>
+      <li className={clsx(
+        styles.nav.item,
+        location.pathname === route.settings.path ? styles.border.color.primary : styles.border.color.white
+      )}>
+        <Link to={route.settings.path} className={styles.nav.link}>
           <svg
             aria-hidden="true"
             focusable="false"
@@ -19,7 +57,7 @@ export default () => {
             viewBox="0 0 512 512"
             style={{
               pointerEvents: "none",
-              width: '2rem',
+              width: styles.svg.width.default,
             }}
           >
             <path
@@ -29,8 +67,11 @@ export default () => {
           </svg>
         </Link>
       </li>
-      <li className={`flex-fill d-flex justify-content-center border-top ${location.pathname === '/' ? 'border-primary' : 'border-white'}`}>
-        <Link to="/" className="nav-link">
+      <li className={clsx(
+        styles.nav.item,
+        location.pathname === route.game.path ? styles.border.color.primary : styles.border.color.white
+      )}>
+        <Link to={route.game.path} className={styles.nav.link}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             aria-hidden="true"
@@ -41,17 +82,21 @@ export default () => {
             role="img"
             viewBox="0 0 640 512"
             style={{
-              width: '2.5rem',
               pointerEvents: "none",
+              width: styles.svg.width.big,
             }}
           >
-            <path fill="currentColor"
-                  d="M480.07 96H160a160 160 0 1 0 114.24 272h91.52A160 160 0 1 0 480.07 96zM248 268a12 12 0 0 1-12 12h-52v52a12 12 0 0 1-12 12h-24a12 12 0 0 1-12-12v-52H84a12 12 0 0 1-12-12v-24a12 12 0 0 1 12-12h52v-52a12 12 0 0 1 12-12h24a12 12 0 0 1 12 12v52h52a12 12 0 0 1 12 12zm216 76a40 40 0 1 1 40-40 40 40 0 0 1-40 40zm64-96a40 40 0 1 1 40-40 40 40 0 0 1-40 40z"
+            <path
+              fill="currentColor"
+              d="M480.07 96H160a160 160 0 1 0 114.24 272h91.52A160 160 0 1 0 480.07 96zM248 268a12 12 0 0 1-12 12h-52v52a12 12 0 0 1-12 12h-24a12 12 0 0 1-12-12v-52H84a12 12 0 0 1-12-12v-24a12 12 0 0 1 12-12h52v-52a12 12 0 0 1 12-12h24a12 12 0 0 1 12 12v52h52a12 12 0 0 1 12 12zm216 76a40 40 0 1 1 40-40 40 40 0 0 1-40 40zm64-96a40 40 0 1 1 40-40 40 40 0 0 1-40 40z"
             />
           </svg>
         </Link>
       </li>
-      <li className={`flex-fill d-flex justify-content-center border-top ${location.pathname === '/statistic' ? 'border-primary' : 'border-white'}`}>
+      <li className={clsx(
+        styles.nav.item,
+        location.pathname === route.statistic.path ? styles.border.color.primary : styles.border.color.white
+      )}>
         <Link to="/statistic" className="nav-link">
           <svg
             aria-hidden="true"
@@ -63,8 +108,8 @@ export default () => {
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 576 512"
             style={{
-              width: '2rem',
               pointerEvents: "none",
+              width: styles.svg.width.default,
             }}
           >
             <path

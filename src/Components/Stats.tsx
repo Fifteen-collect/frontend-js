@@ -1,17 +1,17 @@
 import * as React from "react";
 import * as Storage from "Storage";
-import {Context as ThemeContext} from "Types/Theme/Context";
-import useApplicationSetup from "Components/useApplicationSetup";
+import useApplicationSetup from "Hooks/App/useApplicationSetup";
+import {useTheme} from "Contexts/App/useTheme";
 
 export default () => {
-  const theme = React.useContext(ThemeContext);
+  const {theme} = useTheme();
   const counts = Storage.StatCounts.getStatCounts(Storage.StatCounts.SOLVED_COUNTS_KEY);
   const resets = Storage.StatCounts.getStatCounts(Storage.StatCounts.RESETS_COUNTS_KEY);
   const appSetup = useApplicationSetup();
 
   return <>
     <h5 className="modal-title">Count of solves</h5>
-    <table className={`table table-borderless table table-striped m-0 ${theme.table.backgroundClass}`}>
+    <table className={`table table-borderless table table-striped m-0 ${theme.styles.table.backgroundClass}`}>
       <thead>
       <tr>
         <th>Puzzle</th>

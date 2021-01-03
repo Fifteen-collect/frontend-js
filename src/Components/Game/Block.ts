@@ -1,6 +1,6 @@
 import {Color} from "Types/Color";
 
-export default class Bar {
+export default class Block {
   private color: Color;
   private readonly value: number;
   private readonly x: number;

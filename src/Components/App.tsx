@@ -1,48 +1,93 @@
-import React, {useMemo} from "react";
+import React from "react";
+import {useTheme} from "Contexts/App/useTheme";
 import * as Component from "Components";
-import * as Helpers from "Helpers";
-import * as Types from "Types";
+import clsx from "clsx";
+import useRoute from "Hooks/App/useRoute";
 import {Route, Switch} from "react-router-dom";
-import useGameContext from "Components/Game/useGameContext";
+
+const styles = {
+  application: {
+    mainContainer: clsx([
+      'main',
+      'h-100',
+      'd-flex',
+      'flex-column',
+      'justify-content-between'
+    ]),
+  },
+  game: {
+    mainContainer: clsx([
+      'd-flex',
+      'flex-column',
+      'justify-content-between',
+      'flex-fill',
+    ]),
+    blockContainer: clsx([
+      'mb-auto',
+      'mt-3',
+    ]),
+    buttons: {
+      reset: {
+        container: clsx([
+          'shadow',
+          'd-flex',
+        ]),
+        height: '48px',
+      }
+    }
+  },
+  timer: {
+    container: clsx([
+      'container',
+      'mt-3',
+    ]),
+    wrapper: clsx([
+      'row',
+      'd-flex',
+      'align-items-center',
+      'justify-content-around'
+    ]),
+  }
+}
 
 export default () => {
-  const game = useGameContext();
+  const {theme} = useTheme();
+  const route = useRoute();
 
-  return <Types.AppTheme.Context.Provider value={Types.AppTheme.AppScheme[game.theme]}>
+  return <Component.Application.ThemeContextProvider>
     <Component.Game.ContextProvider>
-      <React.Profiler id="Application" onRender={Helpers.profilerHandler}>
-        <div
-          className="main h-100 d-flex flex-column justify-content-between"
-          style={{
-            backgroundColor: Types.AppTheme.AppScheme[game.theme].main.background
-          }}
-        >
-          <Switch>
-            <Route path={"/settings"}>
-              {useMemo(() => <Component.SettingsScreen/>, [game.theme, game.method, game.size])}
-            </Route>
-            <Route path={"/statistic"}>
-              <Component.Stats/>
-            </Route>
-            <Route path={"/"}>
-              <div className="d-flex flex-column justify-content-between flex-fill">
-                <div className="shadow d-flex" style={{height: "48px"}}>
-                  {useMemo(() => <Component.Game.ResetButton/>, [game.theme])}
-                </div>
-                <div className="container mt-3">
-                  <div className="row d-flex align-items-center justify-content-around">
-                    <Component.Game.Timer/>
-                  </div>
-                </div>
-                <div className="mb-auto mt-3">
-                  <Component.Game.Container/>
+      <div
+        className={styles.application.mainContainer}
+        style={{backgroundColor: theme.styles.main.background}}
+      >
+        <Switch>
+          <Route path={route.settings.path}>
+            <Component.SettingsScreen/>
+          </Route>
+          <Route path={route.statistic.path}>
+            <Component.Stats/>
+          </Route>
+          <Route path={route.game.path}>
+            <div className={styles.game.mainContainer}>
+              <div
+                className={styles.game.buttons.reset.container}
+                style={{height: styles.game.buttons.reset.height}}
+              >
+                <Component.Game.ResetButton/>
+              </div>
+              <div className={styles.timer.container}>
+                <div className={styles.timer.wrapper}>
+                  <Component.Game.Timer/>
                 </div>
               </div>
-            </Route>
-          </Switch>
-          {useMemo(() => <Component.Navbar/>, [game.theme])}
-        </div>
-      </React.Profiler>
+              <div className={styles.game.blockContainer}>
+                <Component.Game.Container/>
+              </div>
+            </div>
+          </Route>
+        </Switch>
+        <Component.Navbar/>
+      </div>
     </Component.Game.ContextProvider>
-  </Types.AppTheme.Context.Provider>
+  </Component.Application.ThemeContextProvider>
 }

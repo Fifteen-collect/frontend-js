@@ -1,6 +1,7 @@
 import * as React from "react";
-import {Context as ThemeContext} from "Types/Theme/Context";
 import {Size} from "Types/Block/Size";
+import clsx from "clsx";
+import {useTheme} from "Contexts/App/useTheme";
 
 export interface ISizesProps {
   changeSize: (size: Size) => void;
@@ -8,16 +9,34 @@ export interface ISizesProps {
   sizes: Size[],
 }
 
-export default (props: ISizesProps) => {
-  const currentTheme = React.useContext(ThemeContext);
+const styles = {
+  default: {
+    row: 'row',
+  },
+  button: [
+    'btn',
+    'col-2',
+    'noselect',
+  ],
+  active: 'active',
+}
 
-  return <div className="row">
+export default (props: ISizesProps) => {
+  const {theme} = useTheme();
+
+  return <div className={styles.default.row}>
     {props.sizes.map(size => <button
       type="button"
       key={size}
-      className={`btn col-2 noselect ${currentTheme.button.classColor} ${props.size === size ? 'active' : ''}`}
+      className={clsx(
+        styles.button,
+        theme.styles.button.classColor,
+        props.size === size ? styles.active : null
+      )}
       style={{
-        color: props.size === size ? currentTheme.button.selectedText : currentTheme.button.text,
+        color: props.size === size
+          ? theme.styles.button.selectedText
+          : theme.styles.button.text,
       }}
       onClick={() => props.changeSize(size)}
     >

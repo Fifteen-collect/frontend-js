@@ -1,12 +1,47 @@
 import React, {useEffect} from "react";
 import * as Helpers from "Helpers";
-import {Context as ThemeContext} from "Types/Theme/Context";
 import {Size} from "Types/Block/Size";
-import useWindowSettings from "Components/useWindowSettings";
-import useGameContext from "Components/Game/useGameContext";
+import useWindowSettings from "Hooks/App/useWindowSettings";
+import useGameContext from "Contexts/Game/useGameContext";
+import clsx from "clsx";
+import {useTheme} from "Contexts/App/useTheme";
+
+const styles = {
+  blocks: {
+    row: {
+      container: 'block-row',
+    },
+    block: {
+      main: [
+        'noselect',
+        'block-node',
+        'rounded-0',
+        'd-flex',
+        'align-items-center',
+        'justify-content-center',
+        'border-primary',
+        'border',
+      ],
+      font: {
+        size: {
+          small: '2.2rem',
+          default: '2.5rem',
+        }
+      }
+    }
+  },
+  border: {
+    left: {
+      none: 'border-left-0',
+    },
+    right: {
+      none: 'border-right-0',
+    }
+  }
+}
 
 export default () => {
-  const appTheme = React.useContext(ThemeContext);
+  const {theme} = useTheme();
   const game = useGameContext();
   const windowSettings = useWindowSettings(game.size);
 
@@ -56,26 +91,37 @@ export default () => {
     }
   }, [game.matrix]);
 
-  return <React.Profiler id="Game container" onRender={Helpers.profilerHandler}>
-    <div style={{height: windowSettings.windowSize.toString(10)}}>
-      {game.matrix.map((row, currentRow) => <div key={currentRow} className="block-row">
-        {row.map((block, currentColumn) => <div
-          key={currentColumn}
-          className="noselect block-node rounded-0 d-flex align-items-center justify-content-center border border-primary"
-          onClick={() => game.moveBlock(currentRow, currentColumn)}
-          onTouchStart={() => game.moveBlock(currentRow, currentColumn)}
-          style={{
-            height: `${Math.floor(windowSettings.relativeSize)}px`,
-            color: appTheme.block.text,
-            backgroundColor: !game.solved
-              ? block.Color
-              : (block.Value !== 0 ? appTheme.block.solved : block.Color),
-            fontSize: game.size === Size.X6 || Size.X7 ? "2.2rem" : "2.5rem",
-          }}
-        >
-          {block.Value !== 0 ? block.Value : ''}
-        </div>)}
+  return <div style={{height: windowSettings.windowSize.toString(10)}}>
+    {game.matrix.map((
+      row,
+      currentRow
+    ) => <div key={currentRow} className={styles.blocks.row.container}>
+      {row.map((
+        block,
+        currentColumn,
+        cols
+      ) => <div
+        key={currentColumn}
+        className={clsx([
+          styles.blocks.block.main,
+          currentColumn === 0 ? styles.border.left.none : null,
+          currentColumn === cols.length - 1 ? styles.border.right.none : null
+        ])}
+        onClick={() => game.moveBlock(currentRow, currentColumn)}
+        onTouchStart={() => game.moveBlock(currentRow, currentColumn)}
+        style={{
+          height: `${Math.floor(windowSettings.relativeSize)}px`,
+          color: theme.styles.block.text,
+          backgroundColor: !game.solved
+            ? block.Color
+            : (block.Value !== 0 ? theme.styles.block.solved : block.Color),
+          fontSize: game.size === Size.X6 || Size.X7
+            ? styles.blocks.block.font.size.small
+            : styles.blocks.block.font.size.default,
+        }}
+      >
+        {block.Value !== 0 ? block.Value : ''}
       </div>)}
-    </div>
-  </React.Profiler>
+    </div>)}
+  </div>
 }

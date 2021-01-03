@@ -1,6 +1,6 @@
 import React from "react";
-import {GameContext} from "Components/Game/useGameContext";
-import useGameState from "Components/Game/useGameState";
+import {GameContext} from "Contexts/Game/useGameContext";
+import useGameState from "Hooks/Game/useGameState";
 
 export default (props: {children: any}) => {
   const game = useGameState();

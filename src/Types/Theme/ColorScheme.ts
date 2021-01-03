@@ -1,7 +1,7 @@
 import {Theme} from "Types/Theme";
 import {Color} from "Types/Color";
 
-export interface IThemeProps {
+export interface ITheme {
   block: {
     border: Color,
     solved: Color,
@@ -27,7 +27,7 @@ export interface IThemeProps {
 }
 
 export type ColorScheme = {
-  [theme in Theme]: IThemeProps
+  [theme in Theme]: ITheme
 }
 
 export const scheme: ColorScheme = {

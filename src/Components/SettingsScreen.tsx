@@ -1,13 +1,13 @@
 import * as React from "react";
 import Sizes from "Components/Settings/Sizes";
-import {Context as ThemeContext} from "Types/Theme/Context";
-import useApplicationSetup from "Components/useApplicationSetup";
+import useApplicationSetup from "Hooks/App/useApplicationSetup";
 import * as Storage from "Storage";
 import * as Types from "Types";
-import useGameContext from "Components/Game/useGameContext";
+import useGameContext from "Contexts/Game/useGameContext";
+import {useTheme} from "Contexts/App/useTheme";
 
 export default () => {
-  const currentTheme = React.useContext(ThemeContext);
+  const {theme} = useTheme();
   const appSetup = useApplicationSetup();
   const game = useGameContext();
 
@@ -17,7 +17,7 @@ export default () => {
       Themes:
       <div className="row">
         {appSetup.availableThemes.map(availableTheme => {
-          const classColor = currentTheme.button.classColor;
+          const classColor = theme.styles.button.classColor;
           const active = game.theme === availableTheme ? 'active' : '';
 
           return <button
@@ -31,8 +31,8 @@ export default () => {
             }}
             style={{
               color: game.theme === availableTheme
-                ? currentTheme.button.selectedText
-                : currentTheme.button.text,
+                ? theme.styles.button.selectedText
+                : theme.styles.button.text,
             }}
           >
             {availableTheme}
@@ -44,7 +44,7 @@ export default () => {
       Color scheme for blocks
       <div className="row">
         {appSetup.availableMethods.map(method => {
-          const classColor = currentTheme.button.classColor;
+          const classColor = theme.styles.button.classColor;
           const active = game.method === method ? 'active' : '';
 
           return <button
@@ -63,8 +63,8 @@ export default () => {
             }}
             style={{
               color: game.method === method
-                ? currentTheme.button.selectedText
-                : currentTheme.button.text,
+                ? theme.styles.button.selectedText
+                : theme.styles.button.text,
             }}
           >
             {method}

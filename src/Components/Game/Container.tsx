@@ -5,6 +5,7 @@ import useWindowSettings from "Hooks/App/useWindowSettings";
 import useGameContext from "Contexts/Game/useGameContext";
 import clsx from "clsx";
 import {useTheme} from "Contexts/App/useTheme";
+import {Color} from "Types";
 
 const styles = {
   blocks: {
@@ -12,30 +13,45 @@ const styles = {
       container: 'block-row',
     },
     block: {
-      main: [
+      main: clsx(
         'noselect',
         'block-node',
         'rounded-0',
         'd-flex',
         'align-items-center',
         'justify-content-center',
-        'border-primary',
-        'border',
-      ],
+      ),
       font: {
         size: {
           small: '2.2rem',
-          default: '2.5rem',
+          default: '3rem',
         }
       }
     }
   },
   border: {
+    enable: 'border',
+    disable: 'border-0',
+    color: {
+      white: 'border-white',
+    },
     left: {
       none: 'border-left-0',
+      default: 'border-left',
     },
     right: {
       none: 'border-right-0',
+      default: 'border-right',
+    },
+    top: {
+      none: 'border-top-0',
+      default: 'border-top',
+      primary: 'border-top-primary',
+    },
+    bottom: {
+      none: 'border-bottom-0',
+      default: 'border-bottom',
+      primary: 'border-bottom-primary',
     }
   }
 }
@@ -91,10 +107,14 @@ export default () => {
     }
   }, [game.matrix]);
 
-  return <div style={{height: windowSettings.windowSize.toString(10)}}>
+  return <div
+    className={clsx(styles.border.enable, styles.border.top.primary, styles.border.bottom.primary)}
+    style={{height: windowSettings.windowSize.toString(10)}}
+  >
     {game.matrix.map((
       row,
-      currentRow
+      currentRow,
+      rows
     ) => <div key={currentRow} className={styles.blocks.row.container}>
       {row.map((
         block,
@@ -102,20 +122,20 @@ export default () => {
         cols
       ) => <div
         key={currentColumn}
-        className={clsx([
+        className={clsx(
           styles.blocks.block.main,
-          currentColumn === 0 ? styles.border.left.none : null,
-          currentColumn === cols.length - 1 ? styles.border.right.none : null
-        ])}
+          styles.border.color.white,
+          !game.solved ? styles.border.enable : styles.border.disable
+        )}
         onClick={() => game.moveBlock(currentRow, currentColumn)}
         onTouchStart={() => game.moveBlock(currentRow, currentColumn)}
         style={{
           height: `${Math.floor(windowSettings.relativeSize)}px`,
           color: theme.styles.block.text,
-          backgroundColor: !game.solved
-            ? block.Color
-            : (block.Value !== 0 ? theme.styles.block.solved : block.Color),
-          fontSize: game.size === Size.X6 || Size.X7
+          backgroundColor: block.X === game.buffer.x && block.Y === game.buffer.y && game.solved
+            ? Color.LIGHT
+            : block.Color,
+          fontSize: game.size === Size.X6 || game.size === Size.X7
             ? styles.blocks.block.font.size.small
             : styles.blocks.block.font.size.default,
         }}

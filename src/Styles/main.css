@@ -110,3 +110,11 @@ input:checked + .slider:before {
 .shadow-top {
     box-shadow: 0 -0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
 }
+
+.border-bottom-primary {
+    border-bottom-color: #007bff !important;
+}
+
+.border-top-primary {
+    border-top-color: #007bff !important;
+}

@@ -8,7 +8,6 @@ import {Route, Switch} from "react-router-dom";
 const styles = {
   application: {
     mainContainer: clsx([
-      'main',
       'h-100',
       'd-flex',
       'flex-column',

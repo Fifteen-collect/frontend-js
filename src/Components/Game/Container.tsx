@@ -108,7 +108,7 @@ export default () => {
   }, [game.matrix]);
 
   return <div
-    className={clsx(styles.border.enable, styles.border.top.primary, styles.border.bottom.primary)}
+    className={clsx(styles.border.top.primary, styles.border.bottom.primary)}
     style={{height: windowSettings.windowSize.toString(10)}}
   >
     {game.matrix.map((
@@ -125,6 +125,8 @@ export default () => {
         className={clsx(
           styles.blocks.block.main,
           styles.border.color.white,
+          currentColumn === 0 ? styles.border.left.none : null,
+          currentColumn === cols.length - 1 ? styles.border.right.none : null,
           !game.solved ? styles.border.enable : styles.border.disable
         )}
         onClick={() => game.moveBlock(currentRow, currentColumn)}

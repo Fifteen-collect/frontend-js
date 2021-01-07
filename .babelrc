@@ -16,6 +16,7 @@
     "plugins": [
         "@babel/plugin-transform-modules-commonjs",
         "@babel/proposal-object-rest-spread",
+        "react-hot-loader/babel",
         [
             "@babel/plugin-transform-runtime",
             {

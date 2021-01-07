@@ -108,27 +108,23 @@ export default () => {
   }, [game.matrix]);
 
   return <div
-    className={clsx(styles.border.enable, styles.border.top.primary, styles.border.bottom.primary)}
+    className={clsx(styles.border.top.primary, styles.border.bottom.primary)}
     style={{height: windowSettings.windowSize.toString(10)}}
   >
-    {game.matrix.map((
-      row,
-      currentRow,
-      rows
-    ) => <div key={currentRow} className={styles.blocks.row.container}>
-      {row.map((
-        block,
-        currentColumn,
-        cols
-      ) => <div
+    {game.matrix.map((row, currentRow) => <div key={currentRow} className={styles.blocks.row.container}>
+      {row.map((block, currentColumn, cols) => <div
         key={currentColumn}
+        id={`${currentRow}_${currentColumn}`}
         className={clsx(
           styles.blocks.block.main,
           styles.border.color.white,
+          currentColumn === 0 ? styles.border.left.none : null,
+          currentColumn === cols.length - 1 ? styles.border.right.none : null,
           !game.solved ? styles.border.enable : styles.border.disable
         )}
-        onClick={() => game.moveBlock(currentRow, currentColumn)}
-        onTouchStart={() => game.moveBlock(currentRow, currentColumn)}
+        // onClick={() => game.moveBlock(currentRow, currentColumn)}
+        // onTouchStart={() => game.moveBlock(currentRow, currentColumn)}
+        onTouchMove={e => console.log(Object.values(e))}
         style={{
           height: `${Math.floor(windowSettings.relativeSize)}px`,
           color: theme.styles.block.text,

@@ -102,35 +102,3 @@ input:checked + .slider:before {
 .slider.round:before {
     border-radius: 50%;
 }
-
-.shadow-top-sm {
-    box-shadow: 0 -0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
-}
-
-.shadow-top {
-    box-shadow: 0 -0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-}
-
-.border-left-0 {
-    border-left: none !important;
-}
-
-.border-right-0 {
-    border-right: none !important;
-}
-
-.border-bottom-0 {
-    border-bottom: none !important;
-}
-
-.border-top-0 {
-    border-top: none !important;
-}
-
-.border-bottom-primary {
-    border-bottom: 1px solid #007bff !important;
-}
-
-.border-top-primary {
-    border-top: 1px solid #007bff !important;
-}
